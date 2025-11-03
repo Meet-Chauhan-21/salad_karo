@@ -1,0 +1,896 @@
+@keyframes slideInCartBar {
+  0% {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-slide-in-cart {
+  animation: slideInCartBar 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* Smooth slide-up animation for cart bar */
+@keyframes slideUpCartBar {
+  0% { 
+    opacity: 0; 
+    transform: translateY(100px) scale(0.95); 
+  }
+  60% { 
+    opacity: 1; 
+    transform: translateY(-4px) scale(1.02); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
+}
+
+.animate-slide-up {
+  animation: slideUpModern 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Fast smooth slide-up animation */
+@keyframes slideUpSimple {
+  0% { 
+    opacity: 0; 
+    transform: translateY(100%);
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0);
+  }
+}
+
+/* Fast smooth slide-down animation for hiding */
+@keyframes slideDownSimple {
+  0% { 
+    opacity: 1; 
+    transform: translateY(0);
+  }
+  100% { 
+    opacity: 0; 
+    transform: translateY(100%);
+  }
+}
+
+/* Smooth scrolling and focus styles for order navigation */
+.smooth-scroll-target {
+  scroll-margin-top: 6rem;
+}
+
+.smooth-scroll-target:focus {
+  outline: none; /* Remove focus outline to avoid any visual animation */
+}
+
+.animate-slide-up {
+  animation: slideUpSimple 0.25s ease-out forwards;
+}
+
+.animate-slide-down {
+  animation: slideDownSimple 0.25s ease-in forwards;
+}
+@keyframes slideInRightToLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(100%) scale(0.96);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(-8px) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.slide-in-rtl {
+  animation: slideInRightToLeft 0.45s cubic-bezier(0.4,0,0.2,1);
+}
+/* Salad Karo Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+  background: hsl(var(--background));
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+  border-radius: 8px;
+  box-shadow: 0 2px 8px hsl(var(--primary) / 0.15);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, hsl(var(--primary-glow)), hsl(var(--primary)));
+}
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+  border-radius: 8px;
+}
+html {
+  scrollbar-color: hsl(var(--primary)) hsl(var(--background));
+  scrollbar-width: thin;
+}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Salad Karo Design System - Fresh, Healthy, Modern */
+
+@layer base {
+  :root {
+    /* Fresh Color Palette */
+    --background: 60 100% 98%;
+    --foreground: 120 15% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 120 15% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 120 15% 15%;
+
+    /* Primary - Fresh Green */
+    --primary: 122 39% 49%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 122 45% 65%;
+
+    /* Secondary - Light Yellow */
+    --secondary: 54 100% 90%;
+    --secondary-foreground: 120 15% 15%;
+
+    /* Accent - Light Orange */
+    --accent: 28 100% 75%;
+    --accent-foreground: 120 15% 15%;
+
+    --muted: 60 20% 95%;
+    --muted-foreground: 120 10% 45%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 120 20% 88%;
+    --input: 120 20% 88%;
+    --ring: 122 39% 49%;
+
+    --radius: 0.75rem;
+
+    /* Beautiful Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(122 45% 65%), hsl(54 100% 85%), hsl(28 100% 80%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(60 100% 97%));
+    --gradient-button: linear-gradient(135deg, hsl(122 39% 49%), hsl(122 45% 55%));
+    --gradient-accent: linear-gradient(135deg, hsl(28 100% 75%), hsl(28 100% 80%));
+
+    /* Elegant Shadows */
+    --shadow-soft: 0 4px 20px -4px hsl(122 39% 49% / 0.15);
+    --shadow-card: 0 8px 32px -8px hsl(122 39% 49% / 0.12);
+    --shadow-button: 0 4px 16px -4px hsl(122 39% 49% / 0.3);
+    --shadow-glow: 0 0 40px hsl(122 45% 65% / 0.3);
+
+    /* Smooth Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-inter;
+  }
+}
+
+@layer components {
+  /* Hero Button Variant */
+  .btn-hero {
+    @apply bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-4 rounded-full font-semibold text-lg shadow-[var(--shadow-button)] hover:shadow-[var(--shadow-glow)] hover:scale-105 transition-[var(--transition-bounce)];
+  }
+
+  /* Product Card Styling */
+  .card-product {
+    @apply bg-gradient-to-br from-card to-secondary/20 border border-border rounded-2xl shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-glow)] hover:-translate-y-2 transition-[var(--transition-smooth)] overflow-hidden;
+  }
+
+  /* Floating Animation */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-float-delayed {
+    animation: float 6s ease-in-out infinite 2s;
+  }
+
+  /* Gradient Text */
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent;
+  }
+
+  /* Pulse Glow Effect */
+  .pulse-glow {
+    @apply animate-pulse shadow-[var(--shadow-glow)];
+  }
+}
+
+@layer utilities {
+  /* Custom Animations - Enhanced for Unique Motion */
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg) scale(1);
+    }
+    25% {
+      transform: translateY(-25px) rotate(3deg) scale(1.02);
+    }
+    50% {
+      transform: translateY(-15px) rotate(-2deg) scale(0.98);
+    }
+    75% {
+      transform: translateY(-20px) rotate(2deg) scale(1.01);
+    }
+  }
+
+  @keyframes zigzagFloat {
+    0%, 100% {
+      transform: translateX(0) translateY(0) rotate(0deg);
+    }
+    25% {
+      transform: translateX(15px) translateY(-20px) rotate(5deg);
+    }
+    50% {
+      transform: translateX(-10px) translateY(-35px) rotate(-3deg);
+    }
+    75% {
+      transform: translateX(8px) translateY(-15px) rotate(2deg);
+    }
+  }
+
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(60px) scale(0.9);
+    }
+    30% {
+      opacity: 0.3;
+      transform: translateY(20px) scale(0.95);
+    }
+    60% {
+      opacity: 0.7;
+      transform: translateY(5px) scale(1.02);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes scaleIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.5) rotate(-10deg);
+    }
+    40% {
+      opacity: 0.6;
+      transform: scale(0.9) rotate(5deg);
+    }
+    70% {
+      opacity: 0.9;
+      transform: scale(1.05) rotate(-2deg);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+    }
+  }
+
+  @keyframes liquidMotion {
+    0%, 100% {
+      border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+      transform: scale(1) skewX(0deg);
+    }
+    25% {
+      border-radius: 60% 40% 30% 70% / 60% 30% 40% 60%;
+      transform: scale(1.1) skewX(10deg);
+    }
+    50% {
+      border-radius: 40% 60% 60% 40% / 70% 60% 30% 40%;
+      transform: scale(0.9) skewX(-5deg);
+    }
+    75% {
+      border-radius: 70% 30% 40% 60% / 40% 70% 60% 30%;
+      transform: scale(1.05) skewX(3deg);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+
+  .animate-float {
+    animation: float 8s ease-in-out infinite;
+  }
+
+  .animate-float-delayed {
+    animation: zigzagFloat 9s ease-in-out infinite;
+    animation-delay: 2s;
+  }
+
+  .animate-liquid-motion {
+    animation: liquidMotion 15s ease-in-out infinite;
+  }
+
+  /* Stagger delays for slow animations */
+  .delay-100 {
+    animation-delay: 0.3s;
+  }
+  .delay-200 {
+    animation-delay: 0.6s;
+  }
+  .delay-300 {
+    animation-delay: 0.9s;
+  }
+  .delay-400 {
+    animation-delay: 1.2s;
+  }
+  .delay-500 {
+    animation-delay: 1.5s;
+  }
+  .delay-600 {
+    animation-delay: 1.8s;
+  }
+
+  /* New Advanced Animations - Various Unique Effects */
+  @keyframes bounceInLeft {
+    0% {
+      opacity: 0;
+      transform: translateX(-150px) scale(0.6);
+    }
+    30% {
+      opacity: 0.4;
+      transform: translateX(20px) scale(1.03);
+    }
+    60% {
+      opacity: 0.8;
+      transform: translateX(-8px) scale(1.01);
+    }
+    80% {
+      opacity: 0.95;
+      transform: translateX(3px) scale(1.005);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+  }
+
+  @keyframes bounceInRight {
+    0% {
+      opacity: 0;
+      transform: translateX(150px) scale(0.6);
+    }
+    30% {
+      opacity: 0.4;
+      transform: translateX(-20px) scale(1.03);
+    }
+    60% {
+      opacity: 0.8;
+      transform: translateX(8px) scale(1.01);
+    }
+    80% {
+      opacity: 0.95;
+      transform: translateX(-3px) scale(1.005);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+  }
+
+  @keyframes slideInFromTop {
+    0% {
+      opacity: 0;
+      transform: translateY(-100px) rotateX(20deg);
+    }
+    40% {
+      opacity: 0.6;
+      transform: translateY(8px) rotateX(-3deg);
+    }
+    70% {
+      opacity: 0.9;
+      transform: translateY(-2px) rotateX(1deg);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) rotateX(0deg);
+    }
+  }
+
+  @keyframes waveMotion {
+    0%, 100% {
+      border-radius: 30% 70% 40% 60% / 50% 60% 70% 40%;
+      transform: translateY(0) skewX(0deg) scaleX(1);
+      background: linear-gradient(45deg, rgba(var(--primary-rgb), 0.08), rgba(var(--accent-rgb), 0.05));
+    }
+    25% {
+      border-radius: 60% 40% 70% 30% / 40% 50% 60% 50%;
+      transform: translateY(-10px) skewX(5deg) scaleX(1.1);
+      background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.06), rgba(var(--primary-rgb), 0.04));
+    }
+    50% {
+      border-radius: 40% 60% 30% 70% / 60% 40% 50% 60%;
+      transform: translateY(-5px) skewX(-3deg) scaleX(0.9);
+      background: linear-gradient(225deg, rgba(var(--primary-rgb), 0.10), rgba(var(--accent-rgb), 0.03));
+    }
+    75% {
+      border-radius: 70% 30% 60% 40% / 30% 70% 40% 60%;
+      transform: translateY(5px) skewX(2deg) scaleX(1.05);
+      background: linear-gradient(315deg, rgba(var(--accent-rgb), 0.07), rgba(var(--primary-rgb), 0.06));
+    }
+  }
+
+  @keyframes twinkleStars {
+    0%, 100% {
+      opacity: 0.2;
+      transform: scale(0.8) rotateZ(0deg);
+      filter: brightness(0.8) drop-shadow(0 0 5px rgba(var(--accent-rgb), 0.3));
+    }
+    20% {
+      opacity: 0.5;
+      transform: scale(1.1) rotateZ(72deg);
+      filter: brightness(1.2) drop-shadow(0 0 10px rgba(var(--accent-rgb), 0.5));
+    }
+    40% {
+      opacity: 0.8;
+      transform: scale(1.4) rotateZ(144deg);
+      filter: brightness(1.5) drop-shadow(0 0 15px rgba(var(--accent-rgb), 0.7));
+    }
+    60% {
+      opacity: 1;
+      transform: scale(1.6) rotateZ(216deg);
+      filter: brightness(1.8) drop-shadow(0 0 20px rgba(var(--accent-rgb), 0.9));
+    }
+    80% {
+      opacity: 0.7;
+      transform: scale(1.2) rotateZ(288deg);
+      filter: brightness(1.3) drop-shadow(0 0 12px rgba(var(--accent-rgb), 0.6));
+    }
+  }
+
+  @keyframes typingEffect {
+    0% {
+      width: 0;
+      opacity: 0;
+      border-right-color: transparent;
+    }
+    1% {
+      border-right-color: hsl(var(--primary));
+    }
+    20% {
+      opacity: 0.3;
+      border-right-color: hsl(var(--primary));
+    }
+    60% {
+      opacity: 0.8;
+      border-right-color: hsl(var(--primary));
+    }
+    99% {
+      border-right-color: hsl(var(--primary));
+    }
+    100% {
+      width: 100%;
+      opacity: 1;
+      border-right-color: transparent;
+    }
+  }
+
+  @keyframes prismShift {
+    0% {
+      filter: hue-rotate(0deg) brightness(1) saturate(1) contrast(1) blur(0px);
+      box-shadow: 0 0 0 rgba(var(--primary-rgb), 0);
+    }
+    16.66% {
+      filter: hue-rotate(60deg) brightness(1.03) saturate(1.1) contrast(1.02) blur(0.5px);
+      box-shadow: 0 5px 15px rgba(var(--primary-rgb), 0.1);
+    }
+    33.33% {
+      filter: hue-rotate(120deg) brightness(1.06) saturate(1.2) contrast(1.04) blur(0px);
+      box-shadow: 0 10px 25px rgba(var(--accent-rgb), 0.15);
+    }
+    50% {
+      filter: hue-rotate(180deg) brightness(1.08) saturate(1.3) contrast(1.05) blur(0.5px);
+      box-shadow: 0 15px 35px rgba(var(--primary-rgb), 0.2);
+    }
+    66.66% {
+      filter: hue-rotate(240deg) brightness(1.06) saturate(1.2) contrast(1.04) blur(0px);
+      box-shadow: 0 10px 25px rgba(var(--accent-rgb), 0.15);
+    }
+    83.33% {
+      filter: hue-rotate(300deg) brightness(1.03) saturate(1.1) contrast(1.02) blur(0.5px);
+      box-shadow: 0 5px 15px rgba(var(--primary-rgb), 0.1);
+    }
+    100% {
+      filter: hue-rotate(360deg) brightness(1) saturate(1) contrast(1) blur(0px);
+      box-shadow: 0 0 0 rgba(var(--primary-rgb), 0);
+    }
+  }
+
+  @keyframes gentlePulse {
+    0%, 100% {
+      transform: scale(1) translateY(0);
+      filter: brightness(1) drop-shadow(0 0 5px rgba(var(--primary-rgb), 0.2));
+    }
+    20% {
+      transform: scale(1.015) translateY(-2px);
+      filter: brightness(1.02) drop-shadow(0 2px 8px rgba(var(--primary-rgb), 0.25));
+    }
+    40% {
+      transform: scale(1.035) translateY(-4px);
+      filter: brightness(1.05) drop-shadow(0 4px 12px rgba(var(--primary-rgb), 0.3));
+    }
+    60% {
+      transform: scale(1.055) translateY(-3px);
+      filter: brightness(1.08) drop-shadow(0 6px 16px rgba(var(--primary-rgb), 0.35));
+    }
+    80% {
+      transform: scale(1.025) translateY(-1px);
+      filter: brightness(1.03) drop-shadow(0 3px 10px rgba(var(--primary-rgb), 0.28));
+    }
+  }
+
+  /* Animation Classes - Various Unique Effects */
+  .animate-bounce-in-left {
+    animation: bounceInLeft 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+
+  .animate-bounce-in-right {
+    animation: bounceInRight 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+
+  .animate-slide-in-top {
+    animation: slideInFromTop 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+
+  .animate-wave-motion {
+    animation: waveMotion 10s ease-in-out infinite;
+  }
+
+  .animate-twinkle-stars {
+    animation: twinkleStars 3.5s ease-in-out infinite;
+  }
+
+  .animate-typing-effect {
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 3px solid hsl(var(--primary));
+    animation: typingEffect 4s steps(40, end), blink-caret 1.2s step-end infinite;
+  }
+
+  .animate-prism-shift {
+    animation: prismShift 7s ease-in-out infinite;
+  }
+
+  .animate-gentle-pulse {
+    animation: gentlePulse 2.8s ease-in-out infinite;
+  }
+
+  /* Additional Unique Animation Classes */
+  .animate-morphing {
+    animation: waveMotion 12s ease-in-out infinite;
+  }
+
+  .animate-sparkle {
+    animation: twinkleStars 4s ease-in-out infinite;
+  }
+
+  .animate-typing {
+    animation: typingEffect 5s steps(40, end), blink-caret 1.2s step-end infinite;
+  }
+
+  .animate-colorShift {
+    animation: prismShift 8s ease-in-out infinite;
+  }
+
+  .animate-heartbeat {
+    animation: gentlePulse 3s ease-in-out infinite;
+  }
+
+  @keyframes blink-caret {
+    from, to {
+      border-color: transparent;
+    }
+    50% {
+      border-color: hsl(var(--primary));
+    }
+  }
+
+  /* Enhanced Animation Classes for Interactive Elements */
+  .animate-bounce-in {
+    animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  .animate-gentle-float {
+    animation: gentleFloat 4s ease-in-out infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite alternate;
+  }
+
+  .animate-gradient-shift {
+    animation: gradientShift 8s ease-in-out infinite;
+  }
+
+  .animate-float-slow {
+    animation: float 8s ease-in-out infinite;
+  }
+
+  .animate-float-slow-delayed {
+    animation: float 8s ease-in-out infinite 2s;
+  }
+
+  .animate-float-slower {
+    animation: float 12s ease-in-out infinite 4s;
+  }
+
+  .animate-bounce-slow {
+    animation: bounceSlow 3s ease-in-out infinite;
+  }
+
+  .animate-bounce-slow-delayed {
+    animation: bounceSlow 3s ease-in-out infinite 1.5s;
+  }
+
+  .animate-pulse-slow {
+    animation: pulseSlow 3s ease-in-out infinite;
+  }
+
+  @keyframes bounceIn {
+    0% {
+      transform: scale(0.3);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    70% {
+      transform: scale(0.9);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes scaleIn {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes gentleFloat {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes pulseGlow {
+    0% {
+      opacity: 0.8;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes gradientShift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  @keyframes bounceSlow {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  @keyframes pulseSlow {
+    0%, 100% {
+      opacity: 0.8;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes wiggle {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(1deg); }
+    75% { transform: rotate(-1deg); }
+    100% { transform: rotate(0deg); }
+  }
+
+  @keyframes floatUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes scaleIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .scale-in {
+    animation: scaleIn 0.3s ease-out;
+  }
+
+  /* Utility classes for better UX */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Custom Select Dropdown Styles */
+  select {
+    background-image: none;
+  }
+
+  select::-ms-expand {
+    display: none;
+  }
+
+  select option {
+    padding: 12px 16px;
+    background-color: white;
+    color: #374151;
+    font-weight: 500;
+  }
+
+  select option:hover {
+    background-color: #f0fdf4;
+  }
+
+  select option:checked {
+    background-color: #22c55e;
+    color: white;
+    font-weight: 600;
+  }
+}
