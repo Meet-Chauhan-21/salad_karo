@@ -9,6 +9,7 @@ const DebugPage: React.FC = () => {
       <div className="max-w-2xl mx-auto bg-white rounded-lg shadow p-6">
         <h1 className="text-2xl font-bold mb-4">Debug Information</h1>
         
+        
         <div className="space-y-4">
           <div>
             <h3 className="font-semibold">LocalStorage State:</h3>
