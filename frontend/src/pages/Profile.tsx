@@ -4,7 +4,9 @@ import ModernFooter from '../components/ModernFooter';
 import QuickOrderTopBar from '../components/QuickOrderTopBar';
 import AdminAccessButton from '../components/AdminAccessButton';
 import { useAuth } from '../contexts/AuthContext';
+import { useOrderHistory } from '../contexts/OrderHistoryContext';
 import { toast } from '@/components/ui/sonner';
+import axios from 'axios';
 import { 
   User, 
   Mail, 
@@ -20,48 +22,15 @@ import {
   ShoppingBag,
   Leaf,
   Award,
-  TrendingUp
+  TrendingUp,
+  ArrowRight
 } from 'lucide-react';
-
-// Mock data for order history
-const mockOrders = [
-  {
-    id: 'ORD-2024-001',
-    date: '2024-10-18',
-    items: [
-      { name: 'Mediterranean Delight', quantity: 2, price: 299 },
-      { name: 'Caesar Supreme', quantity: 1, price: 249 }
-    ],
-    total: 847,
-    status: 'Delivered',
-    deliveryDate: '2024-10-18'
-  },
-  {
-    id: 'ORD-2024-002',
-    date: '2024-10-15',
-    items: [
-      { name: 'Greek Garden Fresh', quantity: 1, price: 279 },
-      { name: 'Protein Power Bowl', quantity: 1, price: 329 }
-    ],
-    total: 608,
-    status: 'Delivered',
-    deliveryDate: '2024-10-15'
-  },
-  {
-    id: 'ORD-2024-003',
-    date: '2024-10-12',
-    items: [
-      { name: 'Quinoa Crunch', quantity: 3, price: 269 }
-    ],
-    total: 807,
-    status: 'Delivered',
-    deliveryDate: '2024-10-12'
-  }
-];
 
 const Profile: React.FC = () => {
   const { user, isLoggedIn, isHydrated, updateProfile, logout } = useAuth();
+  const { orders, getTotalOrders, getTotalSpent, getFavoriteItem } = useOrderHistory();
   const [isEditing, setIsEditing] = useState(false);
+  const [showAllOrders, setShowAllOrders] = useState(false);
   const [editForm, setEditForm] = useState({
     name: user?.name ?? '',
     city: user?.city ?? '',
@@ -91,8 +60,9 @@ const Profile: React.FC = () => {
     return null;
   }
 
-  const handleSaveProfile = () => {
+  const handleSaveProfile = async () => {
     try {
+      // Update in local context
       const result = updateProfile({
         name: editForm.name.trim() || undefined,
         city: editForm.city.trim() || undefined,
@@ -100,13 +70,28 @@ const Profile: React.FC = () => {
       });
       
       if (result.ok) {
-        toast.success('Profile updated successfully!');
-        setIsEditing(false);
+        // Also update in backend database
+        try {
+          await axios.put('http://localhost:3030/auth/update-profile', {
+            email: user?.email,
+            name: editForm.name.trim(),
+            city: editForm.city.trim(),
+            address: editForm.address.trim()
+          });
+          toast.success('Profile updated successfully!');
+          setIsEditing(false);
+        } catch (dbError) {
+          console.error('Database update error:', dbError);
+          // Local update succeeded, so we still show success
+          toast.success('Profile updated locally!');
+          setIsEditing(false);
+        }
       } else {
         const errorMsg = 'error' in result ? result.error : 'Failed to update profile';
         toast.error(errorMsg);
       }
     } catch (error) {
+      console.error('Profile update error:', error);
       toast.error('An error occurred while updating profile');
     }
   };
@@ -119,23 +104,6 @@ const Profile: React.FC = () => {
       phone: user?.phone ?? ''
     });
     setIsEditing(false);
-  };
-
-  const getTotalOrders = () => mockOrders.length;
-  const getTotalSpent = () => mockOrders.reduce((total, order) => total + order.total, 0);
-  const getFavoriteItem = () => {
-    const itemCounts: { [key: string]: number } = {};
-    mockOrders.forEach(order => {
-      order.items.forEach(item => {
-        itemCounts[item.name] = (itemCounts[item.name] || 0) + item.quantity;
-      });
-    });
-    
-    const mostOrdered = Object.entries(itemCounts).reduce((max, [name, count]) => 
-      count > max.count ? { name, count } : max, { name: '', count: 0 }
-    );
-    
-    return mostOrdered.name;
   };
 
   const getStatusColor = (status: string) => {
@@ -337,7 +305,7 @@ const Profile: React.FC = () => {
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <TrendingUp className="w-6 h-6 text-blue-600" />
                 </div>
-                <p className="text-2xl font-bold text-gray-900">₹{getTotalSpent()}</p>
+                <p className="text-2xl font-bold text-gray-900">₹{getTotalSpent().toFixed(2)}</p>
                 <p className="text-sm text-gray-500">Total Spent</p>
               </div>
             </div>
@@ -373,71 +341,86 @@ const Profile: React.FC = () => {
               </div>
 
               <div className="p-6">
-                {mockOrders.length === 0 ? (
+                {orders.length === 0 ? (
                   <div className="text-center py-12">
                     <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                       <ShoppingBag className="w-10 h-10 text-gray-400" />
                     </div>
                     <h3 className="text-lg font-medium text-gray-900 mb-2">No Orders Yet</h3>
                     <p className="text-gray-500 mb-6">Start ordering your favorite salads!</p>
-                    <button className="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition-colors">
+                    <a href="/#shop" className="inline-block bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition-colors">
                       Browse Menu
-                    </button>
+                    </a>
                   </div>
                 ) : (
-                  <div className="space-y-6">
-                    {mockOrders.map((order) => (
-                      <div key={order.id} className="border border-gray-200 rounded-2xl p-6 hover:shadow-md transition-shadow">
-                        {/* Order Header */}
-                        <div className="flex items-center justify-between mb-4">
-                          <div>
-                            <h3 className="font-semibold text-gray-900">{order.id}</h3>
-                            <div className="flex items-center gap-2 text-sm text-gray-500">
-                              <Calendar className="w-4 h-4" />
-                              {new Date(order.date).toLocaleDateString('en-IN', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric'
-                              })}
-                            </div>
-                          </div>
-                          <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(order.status)}`}>
-                            {order.status}
-                          </span>
-                        </div>
-
-                        {/* Order Items */}
-                        <div className="space-y-2 mb-4">
-                          {order.items.map((item, index) => (
-                            <div key={index} className="flex items-center justify-between py-2">
-                              <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                                  <Leaf className="w-4 h-4 text-green-600" />
-                                </div>
-                                <div>
-                                  <p className="font-medium text-gray-900">{item.name}</p>
-                                  <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
-                                </div>
+                  <>
+                    <div className="space-y-6">
+                      {(showAllOrders ? orders : orders.slice(0, 2)).map((order) => (
+                        <div key={order.id} className="border border-gray-200 rounded-2xl p-6 hover:shadow-md transition-shadow">
+                          {/* Order Header */}
+                          <div className="flex items-center justify-between mb-4">
+                            <div>
+                              <h3 className="font-semibold text-gray-900">{order.id}</h3>
+                              <div className="flex items-center gap-2 text-sm text-gray-500">
+                                <Calendar className="w-4 h-4" />
+                                {new Date(order.date).toLocaleDateString('en-IN', {
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric'
+                                })}
                               </div>
-                              <p className="font-semibold text-gray-900">₹{item.price * item.quantity}</p>
                             </div>
-                          ))}
-                        </div>
+                            <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(order.status)}`}>
+                              {order.status}
+                            </span>
+                          </div>
 
-                        {/* Order Footer */}
-                        <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                          <div className="flex items-center gap-2 text-sm text-gray-500">
-                            <Clock className="w-4 h-4" />
-                            Delivered on {new Date(order.deliveryDate).toLocaleDateString('en-IN')}
+                          {/* Order Items */}
+                          <div className="space-y-2 mb-4">
+                            {order.items.map((item, index) => (
+                              <div key={index} className="flex items-center justify-between py-2">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <Leaf className="w-4 h-4 text-green-600" />
+                                  </div>
+                                  <div>
+                                    <p className="font-medium text-gray-900">{item.name}</p>
+                                    <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                                  </div>
+                                </div>
+                                <p className="font-semibold text-gray-900">₹{item.price * item.quantity}</p>
+                              </div>
+                            ))}
                           </div>
-                          <div className="text-right">
-                            <p className="text-lg font-bold text-green-600">₹{order.total}</p>
-                            <p className="text-sm text-gray-500">Total Amount</p>
+
+                          {/* Order Footer */}
+                          <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                            <div className="flex items-center gap-2 text-sm text-gray-500">
+                              <Clock className="w-4 h-4" />
+                              Delivered on {new Date(order.deliveryDate || order.date).toLocaleDateString('en-IN')}
+                            </div>
+                            <div className="text-right">
+                              <p className="text-lg font-bold text-green-600">₹{order.total.toFixed(2)}</p>
+                              <p className="text-sm text-gray-500">Total Amount</p>
+                            </div>
                           </div>
                         </div>
+                      ))}
+                    </div>
+                    
+                    {/* Show All/Less Button */}
+                    {orders.length > 2 && (
+                      <div className="mt-6 text-center">
+                        <button
+                          onClick={() => setShowAllOrders(!showAllOrders)}
+                          className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors font-medium"
+                        >
+                          {showAllOrders ? 'Show Less History' : `Show All History (${orders.length} orders)`}
+                          <ArrowRight className={`w-4 h-4 transition-transform ${showAllOrders ? 'rotate-180' : ''}`} />
+                        </button>
                       </div>
-                    ))}
-                  </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>

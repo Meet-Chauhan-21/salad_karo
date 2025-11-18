@@ -57,7 +57,7 @@ const FloatingControls = () => {
   return (
     <>
       {/* Floating Controls Container */}
-      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-40 flex flex-col items-end space-y-3 sm:space-y-4">
+      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-[60] flex flex-col items-end space-y-3 sm:space-y-4">
         
         {/* Back to Top Button */}
         {isScrollVisible && (

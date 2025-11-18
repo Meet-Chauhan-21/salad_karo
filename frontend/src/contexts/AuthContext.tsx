@@ -113,6 +113,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = useCallback(() => {
     setUser(null);
+    // Clear admin-related localStorage items on logout
+    localStorage.removeItem('isAdmin');
+    localStorage.removeItem('adminUser');
+    // Dispatch custom event to notify other components (like AdminAccessButton)
+    window.dispatchEvent(new Event('admin-logout'));
   }, []);
 
   const value = useMemo<AuthContextValue>(

@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { Leaf, Heart, Star, Minus, Plus, Trash2, ShoppingBag, ArrowRight } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
+import { useOrderHistory } from '../contexts/OrderHistoryContext';
+import { useAuth } from '../contexts/AuthContext';
+import { toast } from '@/components/ui/sonner';
+import axios from 'axios';
 import Header from '../components/Header';
 import ModernFooter from '../components/ModernFooter';
 import QuickOrderTopBar from '../components/QuickOrderTopBar';
@@ -9,6 +13,8 @@ import { useOrderNavigation } from '../hooks/use-order-navigation';
 
 const Cart: React.FC = () => {
   const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
+  const { addOrder } = useOrderHistory();
+  const { user } = useAuth();
   const { handleOrderNow } = useOrderNavigation();
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -37,6 +43,86 @@ const Cart: React.FC = () => {
 
   const calculateTotal = () => {
     return calculateSubtotal() + calculateTax() + calculateDelivery();
+  };
+
+  const handleCheckout = async () => {
+    if (!user?.email) {
+      toast.error('Please login to place an order');
+      return;
+    }
+
+    try {
+      // Prepare order data
+      const orderData = {
+        userEmail: user.email,
+        items: cart.items.map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price
+        })),
+        subtotal: calculateSubtotal(),
+        tax: parseFloat(calculateTax().toFixed(2)),
+        delivery: calculateDelivery(),
+        total: parseFloat(calculateTotal().toFixed(2))
+      };
+
+      console.log('Sending order data:', orderData);
+
+      // Save order to database
+      const response = await axios.post('http://localhost:3030/orders/create', orderData);
+
+      console.log('Order response:', response.data);
+
+      if (response.data.success) {
+        // Save order to local history
+        addOrder(orderData);
+
+        // Format cart items for WhatsApp message
+        let message = "🥗 *New Order from Salad Karo*\n\n";
+        message += "📦 *Order Details:*\n";
+        message += "━━━━━━━━━━━━━━━━\n\n";
+        
+        cart.items.forEach((item, index) => {
+          message += `${index + 1}. *${item.name}*\n`;
+          message += `   Quantity: ${item.quantity}\n`;
+          message += `   Price: ₹${item.price} each\n`;
+          message += `   Subtotal: ₹${item.price * item.quantity}\n\n`;
+        });
+        
+        message += "━━━━━━━━━━━━━━━━\n";
+        message += `💰 *Subtotal:* ₹${calculateSubtotal()}\n`;
+        message += `📊 *Tax (5%):* ₹${calculateTax().toFixed(2)}\n`;
+        message += `🚚 *Delivery:* ${calculateDelivery() === 0 ? 'Free' : '₹' + calculateDelivery()}\n`;
+        message += `━━━━━━━━━━━━━━━━\n`;
+        message += `✅ *Total Amount:* ₹${calculateTotal().toFixed(2)}\n\n`;
+        message += `👤 *Customer:* ${user.name || user.email}\n`;
+        message += "Thank you for your order! 🙏";
+        
+        const phoneNumber = '919265379915';
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+        
+        // Clear cart
+        clearCart();
+        
+        // Show success message
+        toast.success('🎉 Order Successfully Confirmed!', {
+          description: 'Your order has been placed. Opening WhatsApp...',
+          duration: 5000
+        });
+        
+        // Open WhatsApp
+        setTimeout(() => {
+          window.open(whatsappURL, '_blank');
+        }, 500);
+      } else {
+        toast.error('Failed to create order. Please try again.');
+      }
+    } catch (error: any) {
+      console.error('Order creation error:', error);
+      console.error('Error response:', error.response?.data);
+      toast.error(error.response?.data?.message || 'Failed to create order. Please try again.');
+    }
   };
 
   return (
@@ -213,7 +299,10 @@ const Cart: React.FC = () => {
                   </div>
                 </div>
                 
-                <button className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-4 rounded-xl font-semibold text-lg hover:shadow-lg hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2">
+                <button 
+                  onClick={handleCheckout}
+                  className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-4 rounded-xl font-semibold text-lg hover:shadow-lg hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+                >
                   Proceed to Checkout
                   <ArrowRight className="w-5 h-5" />
                 </button>

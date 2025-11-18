@@ -63,6 +63,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage }) => {
   const handleLogout = () => {
     localStorage.removeItem('isAdmin');
     localStorage.removeItem('adminUser');
+    // Dispatch custom event to notify other components
+    window.dispatchEvent(new Event('admin-logout'));
     window.location.href = '/login';
   };
 

@@ -8,6 +8,7 @@ import { CartProvider } from "./contexts/CartContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { LikesProvider } from "./contexts/LikesContext";
 import { OverlayProvider } from "./contexts/OverlayContext";
+import { OrderHistoryProvider } from "./contexts/OrderHistoryContext";
 import GlobalCartBar from "./components/GlobalCartBar";
 import Index from "./pages/Index";
 import ModernIndex from "./pages/ModernIndex";
@@ -43,11 +44,12 @@ const App = () => (
   
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <CartProvider>
-        <LikesProvider>
-          <OverlayProvider>
-            <ToastProvider>
-              <TooltipProvider>
+      <OrderHistoryProvider>
+        <CartProvider>
+          <LikesProvider>
+            <OverlayProvider>
+              <ToastProvider>
+                <TooltipProvider>
               <Toaster />
               <Sonner />
               <Routes>
@@ -89,6 +91,7 @@ const App = () => (
           </OverlayProvider>
         </LikesProvider>
       </CartProvider>
+      </OrderHistoryProvider>
     </AuthProvider>
   </QueryClientProvider>
 );

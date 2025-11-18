@@ -8,15 +8,41 @@ const AdminAccessButton: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is admin
-    const adminStatus = localStorage.getItem('isAdmin');
-    const adminUser = localStorage.getItem('adminUser');
+    // Function to check admin status
+    const checkAdminStatus = () => {
+      const adminStatus = localStorage.getItem('isAdmin');
+      const adminUser = localStorage.getItem('adminUser');
+      
+      if (adminStatus === 'true' && adminUser) {
+        setIsAdmin(true);
+        // Show the button after a small delay for better UX
+        setTimeout(() => setIsVisible(true), 1000);
+      } else {
+        setIsAdmin(false);
+        setIsVisible(false);
+      }
+    };
+
+    // Check on mount
+    checkAdminStatus();
+
+    // Listen for storage changes (e.g., from logout in another component)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'isAdmin' || e.key === 'adminUser' || e.key === null) {
+        checkAdminStatus();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
     
-    if (adminStatus === 'true' && adminUser) {
-      setIsAdmin(true);
-      // Show the button after a small delay for better UX
-      setTimeout(() => setIsVisible(true), 1000);
-    }
+    // Also listen for custom logout event
+    const handleLogout = () => checkAdminStatus();
+    window.addEventListener('admin-logout', handleLogout);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('admin-logout', handleLogout);
+    };
   }, []);
 
   const handleAdminAccess = () => {
