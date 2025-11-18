@@ -56,19 +56,24 @@ const Register: React.FC = () => {
       // be defensive — some servers wrap message differently
       const msg = response.data?.message || response.statusText;
 
-      if (response.status === 201 || msg?.toLowerCase().includes('signup')) {
-        // Register user in AuthContext to log them in
+      if (response.status === 201 && response.data.success) {
+        // Store auth token
+        if (response.data.jwtToken) {
+          localStorage.setItem('authToken', response.data.jwtToken);
+        }
+        
+        // Register user in AuthContext using backend response data
         const authResult = registerUser({
-          email: email,
+          email: response.data.email,
           password: password,
-          name: name,
-          phone: phone,
-          city: city,
-          address: address
+          name: response.data.name,
+          phone: response.data.phone,
+          city: response.data.city,
+          address: response.data.address
         });
         
         if (authResult.ok) {
-          toast.success('Account created successfully! Welcome ' + name + '!');
+          toast.success('Account created successfully! Welcome ' + response.data.name + '!');
           navigate('/');
         } else {
           toast.error('Registration successful but login failed. Please login manually.');

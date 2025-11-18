@@ -47,7 +47,7 @@ export const getSaladDetailRoute = (product: any, initialQuantity: number = 1) =
  */
 export const navigateToSaladDetailById = (
   navigate: NavigateFunction,
-  productId: number,
+  productId: string,
   initialQuantity: number = 1
 ) => {
   const isMobile = window.innerWidth <= 768;

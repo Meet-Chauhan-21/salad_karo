@@ -4,7 +4,6 @@ import { useCart } from '../contexts/CartContext';
 import { useOrderHistory } from '../contexts/OrderHistoryContext';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from '@/components/ui/sonner';
-import axios from 'axios';
 import Header from '../components/Header';
 import ModernFooter from '../components/ModernFooter';
 import QuickOrderTopBar from '../components/QuickOrderTopBar';
@@ -54,7 +53,6 @@ const Cart: React.FC = () => {
     try {
       // Prepare order data
       const orderData = {
-        userEmail: user.email,
         items: cart.items.map(item => ({
           name: item.name,
           quantity: item.quantity,
@@ -66,44 +64,49 @@ const Cart: React.FC = () => {
         total: parseFloat(calculateTotal().toFixed(2))
       };
 
-      console.log('Sending order data:', orderData);
+      console.log('Creating order:', orderData);
 
-      // Save order to database
-      const response = await axios.post('http://localhost:3030/orders/create', orderData);
+      // Save order to database through context
+      await addOrder(orderData);
 
-      console.log('Order response:', response.data);
-
-      if (response.data.success) {
-        // Save order to local history
-        addOrder(orderData);
-
-        // Format cart items for WhatsApp message
-        let message = "🥗 *New Order from Salad Karo*\n\n";
-        message += "📦 *Order Details:*\n";
-        message += "━━━━━━━━━━━━━━━━\n\n";
-        
-        cart.items.forEach((item, index) => {
-          message += `${index + 1}. *${item.name}*\n`;
-          message += `   Quantity: ${item.quantity}\n`;
-          message += `   Price: ₹${item.price} each\n`;
-          message += `   Subtotal: ₹${item.price * item.quantity}\n\n`;
-        });
-        
-        message += "━━━━━━━━━━━━━━━━\n";
-        message += `💰 *Subtotal:* ₹${calculateSubtotal()}\n`;
-        message += `📊 *Tax (5%):* ₹${calculateTax().toFixed(2)}\n`;
-        message += `🚚 *Delivery:* ${calculateDelivery() === 0 ? 'Free' : '₹' + calculateDelivery()}\n`;
-        message += `━━━━━━━━━━━━━━━━\n`;
-        message += `✅ *Total Amount:* ₹${calculateTotal().toFixed(2)}\n\n`;
-        message += `👤 *Customer:* ${user.name || user.email}\n`;
-        message += "Thank you for your order! 🙏";
-        
-        const phoneNumber = '919265379915';
-        const encodedMessage = encodeURIComponent(message);
-        const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-        
-        // Clear cart
-        clearCart();
+      // Format cart items for WhatsApp message
+      let message = "🥗 *New Order from Salad Karo*\n\n";
+      message += "📦 *Order Details:*\n";
+      message += "━━━━━━━━━━━━━━━━\n\n";
+      
+      cart.items.forEach((item, index) => {
+        message += `${index + 1}. *${item.name}*\n`;
+        message += `   Quantity: ${item.quantity}\n`;
+        message += `   Price: ₹${item.price} each\n`;
+        message += `   Subtotal: ₹${item.price * item.quantity}\n\n`;
+      });
+      
+      message += "━━━━━━━━━━━━━━━━\n";
+      message += `💰 *Subtotal:* ₹${calculateSubtotal()}\n`;
+      message += `📊 *Tax (5%):* ₹${calculateTax().toFixed(2)}\n`;
+      message += `🚚 *Delivery:* ${calculateDelivery() === 0 ? 'Free' : '₹' + calculateDelivery()}\n`;
+      message += `━━━━━━━━━━━━━━━━\n`;
+      message += `✅ *Total Amount:* ₹${calculateTotal().toFixed(2)}\n\n`;
+      message += `👤 *Customer:* ${user.name || user.email}\n`;
+      message += "Thank you for your order! 🙏";
+      
+      const phoneNumber = '919265379915';
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+      
+      // Clear cart
+      clearCart();
+      
+      // Show success message
+      toast.success('🎉 Order Successfully Confirmed!', {
+        description: 'Your order has been placed. Opening WhatsApp...',
+        duration: 5000
+      });
+      
+      // Open WhatsApp
+      setTimeout(() => {
+        window.open(whatsappURL, '_blank');
+      }, 500);
         
         // Show success message
         toast.success('🎉 Order Successfully Confirmed!', {

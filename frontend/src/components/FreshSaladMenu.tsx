@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { ShoppingCart, Heart, Star, Leaf, Clock } from 'lucide-react';
-import { PRODUCTS } from '@/lib/products';
+import { useSalads } from '@/hooks/useSalads';
 
 const FreshSaladMenu = () => {
-  const [likedItems, setLikedItems] = useState<Set<number>>(new Set());
+  const [likedItems, setLikedItems] = useState<Set<string>>(new Set());
+  const { products, loading, error } = useSalads();
 
-  const toggleLike = (productId: number) => {
+  const toggleLike = (productId: string) => {
     const newLikedItems = new Set(likedItems);
     if (newLikedItems.has(productId)) {
       newLikedItems.delete(productId);
@@ -14,6 +15,30 @@ const FreshSaladMenu = () => {
     }
     setLikedItems(newLikedItems);
   };
+
+  if (loading) {
+    return (
+      <section className="py-20 bg-gradient-to-b from-white to-green-50">
+        <div className="container mx-auto px-6 lg:px-8">
+          <div className="text-center py-12">
+            <p className="text-xl text-gray-600">Loading fresh salads...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="py-20 bg-gradient-to-b from-white to-green-50">
+        <div className="container mx-auto px-6 lg:px-8">
+          <div className="text-center py-12">
+            <p className="text-xl text-red-500">Error loading salads. Please try again later.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-20 bg-gradient-to-b from-white to-green-50">
@@ -37,7 +62,7 @@ const FreshSaladMenu = () => {
 
         {/* Product Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {PRODUCTS.map((product, index) => (
+          {products.map((product, index) => (
             <div 
               key={product.id}
               className="group relative bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 animate-fade-in-up"

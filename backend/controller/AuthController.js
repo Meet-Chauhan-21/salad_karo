@@ -11,7 +11,7 @@ const signup = async (req,res)=>{
         if(user){
             return res.status(409)
                 .json({
-                    message: "user already exiest",
+                    message: "User already exists",
                     success: false
                 })
         }
@@ -27,16 +27,20 @@ const signup = async (req,res)=>{
         
         res.status(201)
             .json({
-                message: "signup successfully",
+                message: "Registration successful",
                 success: true,
                 jwtToken,
                 email: userModel.email,
-                name: userModel.name
+                name: userModel.name,
+                phone: userModel.phone,
+                city: userModel.city,
+                address: userModel.address
             }) 
     } catch(err) {
+        console.error("Signup error:", err);
         res.status(500)
             .json({
-                message: "internal server error",
+                message: "Internal server error",
                 success: false
             }) 
     }
@@ -48,17 +52,17 @@ const login = async (req,res)=>{
         const {email,password} = req.body;
         const user = await UserModel.findOne({email});
         if(!user){
-            return res.status(409)
+            return res.status(401)
                 .json({
-                    message: "user not exiest",
+                    message: "Invalid email or password",
                     success: false
                 })
         }
         const isPassEqual = await bcrypt.compare(password,user.password);
         if(!isPassEqual){
-            return res.status(409)
+            return res.status(401)
                 .json({
-                    message: "user not exiest",
+                    message: "Invalid email or password",
                     success: false
                 })
         }
@@ -69,18 +73,22 @@ const login = async (req,res)=>{
             {expiresIn: "24h"}
         )
 
-        res.status(201)
+        res.status(200)
             .json({
-                message: "login successfully",
+                message: "Login successful",
                 success: true,
                 jwtToken,
-                email,
-                name:user.name
+                email: user.email,
+                name: user.name,
+                phone: user.phone,
+                city: user.city,
+                address: user.address
             }) 
     } catch(err) {
+        console.error("Login error:", err);
         res.status(500)
             .json({
-                message: "internal server error",
+                message: "Internal server error",
                 success: false
             }) 
     }

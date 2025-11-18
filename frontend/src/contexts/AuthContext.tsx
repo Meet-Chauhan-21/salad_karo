@@ -18,7 +18,7 @@ interface AuthContextValue {
   user: AuthUser | null;
   isLoggedIn: boolean;
   isHydrated: boolean;
-  login: (email: string, password: string) => AuthResult;
+  login: (email: string, password: string) => Promise<AuthResult>;
   register: (params: { email: string; password: string; name?: string; phone?: string; city?: string; address?: string }) => AuthResult;
   logout: () => void;
   updateProfile: (updates: { name?: string; city?: string; address?: string }) => AuthResult;
@@ -77,22 +77,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [user]);
 
-  const login = useCallback((email: string, password: string): AuthResult => {
-    const users = readUsers();
-    const found = users[email.toLowerCase()];
-    if (!found) return { ok: false, error: 'User not found' };
-    if (found.password !== password) return { ok: false, error: 'Invalid credentials' };
-    setUser({ email: found.email, name: found.name, phone: found.phone, city: found.city, address: found.address });
-    return { ok: true };
+  const login = useCallback(async (email: string, password: string): Promise<AuthResult> => {
+    try {
+      const response = await fetch('http://localhost:3030/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        const userData = {
+          email: data.email,
+          name: data.name,
+          phone: data.phone,
+          city: data.city,
+          address: data.address
+        };
+        setUser(userData);
+        // Store token in localStorage for API requests
+        localStorage.setItem('authToken', data.jwtToken);
+        return { ok: true };
+      } else {
+        return { ok: false, error: data.message || 'Login failed' };
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      return { ok: false, error: 'Network error. Please try again.' };
+    }
   }, []);
 
   const register = useCallback((params: { email: string; password: string; name?: string; phone?: string; city?: string; address?: string }): AuthResult => {
-    const { email, password, name, phone, city, address } = params;
-    const key = email.toLowerCase();
-    const users = readUsers();
-    if (users[key]) return { ok: false, error: 'Email already registered' };
-    users[key] = { email, password, name, phone, city, address };
-    writeUsers(users);
+    // This function is now only used to set user state after successful backend registration
+    const { email, name, phone, city, address } = params;
     setUser({ email, name, phone, city, address });
     return { ok: true };
   }, []);
@@ -113,7 +133,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = useCallback(() => {
     setUser(null);
-    // Clear admin-related localStorage items on logout
+    // Clear auth token and admin-related localStorage items on logout
+    localStorage.removeItem('authToken');
     localStorage.removeItem('isAdmin');
     localStorage.removeItem('adminUser');
     // Dispatch custom event to notify other components (like AdminAccessButton)

@@ -88,13 +88,21 @@ const Login: React.FC = () => {
                 return;
               }
               
-              const res = login(email.trim(), password);
-              if (!res.ok) {
-                setErrors({ email: 'Invalid email or password', password: 'Invalid email or password' });
-                return;
+              try {
+                const res = await login(email.trim(), password);
+                if (!res.ok) {
+                  const errorMsg = 'error' in res ? res.error : 'Login failed';
+                  setErrors({ email: errorMsg, password: errorMsg });
+                  toast.error(errorMsg);
+                  return;
+                }
+                toast.success('Welcome back!');
+                navigate('/');
+              } catch (error) {
+                console.error('Login error:', error);
+                setErrors({ email: 'Login failed', password: 'Login failed' });
+                toast.error('Login failed. Please try again.');
               }
-              toast.success('Welcome back!');
-              navigate('/');
             }}
           >
             Continue

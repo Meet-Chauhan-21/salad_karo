@@ -48,9 +48,9 @@ const apiCall = async (endpoint: string, options: RequestInit = {}) => {
 };
 
 interface LikesContextValue {
-  likedProductIds: Set<number>;
-  isLiked: (productId: number) => boolean;
-  toggleLike: (productId: number) => Promise<void>;
+  likedProductIds: Set<string>;
+  isLiked: (productId: string) => boolean;
+  toggleLike: (productId: string) => Promise<void>;
   getLikesCount: () => number;
   clearAllLikes: () => void;
 }
@@ -61,7 +61,7 @@ const storageKeyForUser = (email: string) => `skfb_likes_${email}`;
 
 export const LikesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
-  const [likedProductIds, setLikedProductIds] = useState<Set<number>>(new Set());
+  const [likedProductIds, setLikedProductIds] = useState<Set<string>>(new Set());
 
   // Load likes when user changes
   useEffect(() => {
@@ -72,7 +72,7 @@ export const LikesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       const raw = localStorage.getItem(storageKeyForUser(user.email));
       if (raw) {
-        const arr = JSON.parse(raw) as number[];
+        const arr = JSON.parse(raw) as string[];
         setLikedProductIds(new Set(arr));
       } else {
         setLikedProductIds(new Set());
@@ -95,11 +95,11 @@ export const LikesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, [likedProductIds, user]);
 
-  const isLiked = useCallback((productId: number) => {
+  const isLiked = useCallback((productId: string) => {
     return likedProductIds.has(productId);
   }, [likedProductIds]);
 
-  const toggleLike = useCallback(async (productId: number) => {
+  const toggleLike = useCallback(async (productId: string) => {
     const wasLiked = likedProductIds.has(productId);
     
     // Optimistic update

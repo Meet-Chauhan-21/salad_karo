@@ -9,7 +9,7 @@ import AdminAccessButton from '../components/AdminAccessButton';
 import { CartContext, useCart } from '../contexts/CartContext';
 import { LikesContext, useLikes } from '../contexts/LikesContext';
 import { useOverlay } from '../contexts/OverlayContext';
-import { PRODUCTS, Product } from '../lib/products';
+import { useSalads, Product } from '../hooks/useSalads';
 import { useNavigate } from 'react-router-dom';
 import { useOrderNavigation } from '../hooks/use-order-navigation';
 
@@ -27,6 +27,7 @@ const SaladMenu = () => {
   const gridRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
   const { handleOrderNow } = useOrderNavigation();
+  const { products, loading, error } = useSalads();
   // Overlay state and handlers
   const [selectedSalad, setSelectedSalad] = useState<ExtendedProduct | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -61,13 +62,13 @@ const SaladMenu = () => {
   const { setIsSaladDetailOpen } = useOverlay();
 
   // Get quantity of a product in cart
-  const getProductQuantity = (productId: number): number => {
+  const getProductQuantity = (productId: string): number => {
     const cartItem = cart.items.find(item => item.id === productId);
     return cartItem ? cartItem.quantity : 0;
   };
 
   // Handle quantity change
-  const handleQuantityChange = (productId: number, change: number, e: React.MouseEvent) => {
+  const handleQuantityChange = (productId: string, change: number, e: React.MouseEvent) => {
     e.stopPropagation();
     const currentQty = getProductQuantity(productId);
     const newQty = currentQty + change;
@@ -104,9 +105,9 @@ const SaladMenu = () => {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 350]);
   const [sortBy, setSortBy] = useState('popularity');
 
-  // Map PRODUCTS to ExtendedProduct with mock data for missing fields
+  // Map products to ExtendedProduct with mock data for missing fields
   const extendedSalads: ExtendedProduct[] = useMemo(() => 
-    PRODUCTS.map(p => ({
+    products.map(p => ({
       ...p,
       category: p.badge || 'Classic',
       ingredients: ['Lettuce', 'Tomato', 'Cucumber', 'Olive Oil', 'Fresh Herbs'],
@@ -115,7 +116,7 @@ const SaladMenu = () => {
       preparationTime: '15 min',
       calories: 120,
     })),
-    []
+    [products]
   );
 
   // Get all unique ingredients
@@ -180,6 +181,41 @@ const SaladMenu = () => {
   const getTotalCartItems = () => {
     return cart.items.reduce((total, item) => total + item.quantity, 0);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100 overflow-x-hidden">
+        <Header />
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+            <p className="text-xl text-gray-600">Loading delicious salads...</p>
+          </div>
+        </div>
+        <ModernFooter />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100 overflow-x-hidden">
+        <Header />
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center">
+            <p className="text-xl text-red-500 mb-4">Error loading salads</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+        <ModernFooter />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100 overflow-x-hidden">

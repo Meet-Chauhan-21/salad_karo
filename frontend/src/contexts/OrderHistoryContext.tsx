@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
+import axios from 'axios';
 
 export interface OrderItem {
   name: string;
@@ -8,20 +9,25 @@ export interface OrderItem {
 }
 
 export interface Order {
-  id: string;
-  date: string;
+  _id: string;
+  userEmail: string;
+  userName: string;
+  userPhone: string;
+  orderDate: string;
+  deliveryDate?: string;
   items: OrderItem[];
   subtotal: number;
   tax: number;
   delivery: number;
   total: number;
   status: 'Processing' | 'Delivered' | 'Cancelled';
-  deliveryDate?: string;
 }
 
 interface OrderHistoryContextType {
   orders: Order[];
-  addOrder: (order: Omit<Order, 'id' | 'date' | 'status' | 'deliveryDate'>) => void;
+  loading: boolean;
+  addOrder: (order: Omit<Order, '_id' | 'userEmail' | 'userName' | 'userPhone' | 'orderDate' | 'status' | 'deliveryDate'>) => Promise<void>;
+  fetchOrders: () => Promise<void>;
   getOrdersByUser: () => Order[];
   getTotalOrders: () => number;
   getTotalSpent: () => number;
@@ -33,47 +39,55 @@ const OrderHistoryContext = createContext<OrderHistoryContextType | undefined>(u
 export const OrderHistoryProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { user } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  // Load orders from localStorage when component mounts or user changes
+  // Fetch orders from database when user changes
   useEffect(() => {
     if (user?.email) {
-      const storageKey = `order_history_${user.email}`;
-      const storedOrders = localStorage.getItem(storageKey);
-      if (storedOrders) {
-        try {
-          setOrders(JSON.parse(storedOrders));
-        } catch (error) {
-          console.error('Error loading orders:', error);
-          setOrders([]);
-        }
-      } else {
-        setOrders([]);
-      }
+      fetchOrders();
     } else {
       setOrders([]);
     }
   }, [user?.email]);
 
-  // Save orders to localStorage whenever they change
-  useEffect(() => {
-    if (user?.email && orders.length > 0) {
-      const storageKey = `order_history_${user.email}`;
-      localStorage.setItem(storageKey, JSON.stringify(orders));
-    }
-  }, [orders, user?.email]);
-
-  const addOrder = (orderData: Omit<Order, 'id' | 'date' | 'status' | 'deliveryDate'>) => {
+  const fetchOrders = async () => {
     if (!user?.email) return;
 
-    const newOrder: Order = {
-      ...orderData,
-      id: `ORD-${Date.now()}`,
-      date: new Date().toISOString(),
-      status: 'Processing',
-      deliveryDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // Next day
-    };
+    try {
+      setLoading(true);
+      const response = await axios.get(`http://localhost:3030/orders/user/${user.email}`);
+      if (response.data.success) {
+        setOrders(response.data.orders);
+      } else {
+        console.error('Failed to fetch orders:', response.data.message);
+        setOrders([]);
+      }
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      setOrders([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    setOrders(prev => [newOrder, ...prev]);
+  const addOrder = async (orderData: Omit<Order, '_id' | 'userEmail' | 'userName' | 'userPhone' | 'orderDate' | 'status' | 'deliveryDate'>) => {
+    if (!user?.email) return;
+
+    try {
+      const response = await axios.post('http://localhost:3030/orders/create', {
+        userEmail: user.email,
+        ...orderData
+      });
+
+      if (response.data.success) {
+        // Refresh orders list after successful creation
+        await fetchOrders();
+      } else {
+        console.error('Failed to create order:', response.data.message);
+      }
+    } catch (error) {
+      console.error('Error creating order:', error);
+    }
   };
 
   const getOrdersByUser = () => {
@@ -106,7 +120,7 @@ export const OrderHistoryProvider: React.FC<{ children: ReactNode }> = ({ childr
   };
 
   return (
-    <OrderHistoryContext.Provider value={{ orders, addOrder, getOrdersByUser, getTotalOrders, getTotalSpent, getFavoriteItem }}>
+    <OrderHistoryContext.Provider value={{ orders, loading, addOrder, fetchOrders, getOrdersByUser, getTotalOrders, getTotalSpent, getFavoriteItem }}>
       {children}
     </OrderHistoryContext.Provider>
   );

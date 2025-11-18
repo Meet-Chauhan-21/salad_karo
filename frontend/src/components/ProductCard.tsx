@@ -6,7 +6,7 @@ import { useLikes } from '../contexts/LikesContext';
 import { toast } from '@/components/ui/sonner';
 
 interface Product {
-  id: number;
+  id: string;
   name: string;
   description: string;
   price: number;
@@ -25,13 +25,13 @@ const ProductCard = ({ product }: { product: Product }) => {
   const [isHeartPinging, setIsHeartPinging] = useState(false);
 
   // Get quantity of product in cart
-  const getProductQuantity = (productId: number): number => {
+  const getProductQuantity = (productId: string): number => {
     const cartItem = cart.items.find(item => item.id === productId);
     return cartItem ? cartItem.quantity : 0;
   };
 
   // Handle quantity change
-  const handleQuantityChange = (productId: number, change: number, e?: React.MouseEvent) => {
+  const handleQuantityChange = (productId: string, change: number, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     const currentQty = getProductQuantity(productId);
     const newQty = currentQty + change;

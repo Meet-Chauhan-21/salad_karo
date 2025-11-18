@@ -1,9 +1,34 @@
 import React from 'react';
 import ProductCard from './ProductCard';
-import { PRODUCTS, Product } from '@/lib/products';
+import { Product } from '@/lib/products';
+import { useSalads } from '@/hooks/useSalads';
 
 const ProductGrid = () => {
-  const products: Product[] = PRODUCTS;
+  const { products, loading, error } = useSalads();
+
+  if (loading) {
+    return (
+      <section id="shop" className="py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-card to-background">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center py-12">
+            <p className="text-lg text-muted-foreground">Loading fresh salads...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section id="shop" className="py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-card to-background">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center py-12">
+            <p className="text-lg text-red-500">Error loading salads. Please try again later.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="shop" className="py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-card to-background">

@@ -28,7 +28,7 @@ import {
 
 const Profile: React.FC = () => {
   const { user, isLoggedIn, isHydrated, updateProfile, logout } = useAuth();
-  const { orders, getTotalOrders, getTotalSpent, getFavoriteItem } = useOrderHistory();
+  const { orders, loading, getTotalOrders, getTotalSpent, getFavoriteItem } = useOrderHistory();
   const [isEditing, setIsEditing] = useState(false);
   const [showAllOrders, setShowAllOrders] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -341,7 +341,15 @@ const Profile: React.FC = () => {
               </div>
 
               <div className="p-6">
-                {orders.length === 0 ? (
+                {loading ? (
+                  <div className="text-center py-12">
+                    <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+                      <ShoppingBag className="w-10 h-10 text-gray-400" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Loading Orders...</h3>
+                    <p className="text-gray-500">Please wait while we fetch your order history.</p>
+                  </div>
+                ) : orders.length === 0 ? (
                   <div className="text-center py-12">
                     <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                       <ShoppingBag className="w-10 h-10 text-gray-400" />
@@ -356,14 +364,14 @@ const Profile: React.FC = () => {
                   <>
                     <div className="space-y-6">
                       {(showAllOrders ? orders : orders.slice(0, 2)).map((order) => (
-                        <div key={order.id} className="border border-gray-200 rounded-2xl p-6 hover:shadow-md transition-shadow">
+                        <div key={order._id} className="border border-gray-200 rounded-2xl p-6 hover:shadow-md transition-shadow">
                           {/* Order Header */}
                           <div className="flex items-center justify-between mb-4">
                             <div>
-                              <h3 className="font-semibold text-gray-900">{order.id}</h3>
+                              <h3 className="font-semibold text-gray-900">ORD-{order._id.slice(-8).toUpperCase()}</h3>
                               <div className="flex items-center gap-2 text-sm text-gray-500">
                                 <Calendar className="w-4 h-4" />
-                                {new Date(order.date).toLocaleDateString('en-IN', {
+                                {new Date(order.orderDate).toLocaleDateString('en-IN', {
                                   year: 'numeric',
                                   month: 'long',
                                   day: 'numeric'
@@ -397,7 +405,7 @@ const Profile: React.FC = () => {
                           <div className="flex items-center justify-between pt-4 border-t border-gray-200">
                             <div className="flex items-center gap-2 text-sm text-gray-500">
                               <Clock className="w-4 h-4" />
-                              Delivered on {new Date(order.deliveryDate || order.date).toLocaleDateString('en-IN')}
+                              Delivered on {new Date(order.deliveryDate || order.orderDate).toLocaleDateString('en-IN')}
                             </div>
                             <div className="text-right">
                               <p className="text-lg font-bold text-green-600">₹{order.total.toFixed(2)}</p>

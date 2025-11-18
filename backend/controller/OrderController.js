@@ -13,13 +13,24 @@ const createOrder = async (req, res) => {
             });
         }
 
+        // Get user details from database
+        const user = await UserModel.findOne({ email: userEmail });
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found",
+                success: false
+            });
+        }
+
         // Create delivery date (next day)
         const deliveryDate = new Date();
         deliveryDate.setDate(deliveryDate.getDate() + 1);
 
-        // Create new order
+        // Create new order with user details
         const newOrder = new OrderModel({
             userEmail,
+            userName: user.name,
+            userPhone: user.phone,
             items,
             subtotal,
             tax,

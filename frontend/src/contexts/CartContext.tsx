@@ -60,7 +60,7 @@ const apiCall = async (endpoint: string, options: RequestInit = {}) => {
 };
 
 interface Product {
-  id: number;
+  id: string;
   name: string;
   description: string;
   price: number;
@@ -83,8 +83,8 @@ interface CartState {
 interface CartContextType {
   cart: CartState;
   addToCart: (product: Product) => Promise<void>;
-  removeFromCart: (productId: number) => Promise<void>;
-  updateQuantity: (productId: number, quantity: number) => void;
+  removeFromCart: (productId: string) => Promise<void>;
+  updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
   getCartItemsCount: () => number;
 }
@@ -93,8 +93,8 @@ export const CartContext = createContext<CartContextType | undefined>(undefined)
 
 type CartAction = 
   | { type: 'ADD_TO_CART'; payload: Product }
-  | { type: 'REMOVE_FROM_CART'; payload: number }
-  | { type: 'UPDATE_QUANTITY'; payload: { id: number; quantity: number } }
+  | { type: 'REMOVE_FROM_CART'; payload: string }
+  | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
   | { type: 'HYDRATE_CART'; payload: CartState }
   | { type: 'CLEAR_CART' };
 
@@ -225,7 +225,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const removeFromCart = async (productId: number) => {
+  const removeFromCart = async (productId: string) => {
     // Optimistic update
     dispatch({ type: 'REMOVE_FROM_CART', payload: productId });
     
@@ -243,7 +243,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const updateQuantity = (productId: number, quantity: number) => {
+  const updateQuantity = (productId: string, quantity: number) => {
     dispatch({ type: 'UPDATE_QUANTITY', payload: { id: productId, quantity } });
   };
 

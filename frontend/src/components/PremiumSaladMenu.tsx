@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Plus, Heart, Star, Filter, Utensils, Leaf, Zap, Salad, Pizza, Dumbbell, ShieldCheck, Flame, Crown, ChefHat, Minus } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { useLikes } from '../contexts/LikesContext';
-import { PRODUCTS } from '../lib/products';
+import { useSalads } from '../hooks/useSalads';
 import SaladDetailOverlay from './SaladDetailOverlay';
 
 const PremiumSaladMenu = () => {
@@ -11,40 +11,41 @@ const PremiumSaladMenu = () => {
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
   const { addToCart, cart, updateQuantity, removeFromCart } = useCart();
   const { isLiked, toggleLike } = useLikes();
+  const { products, loading, error } = useSalads();
 
   // Get quantity of a product in cart
-  const getProductQuantity = (productId: number): number => {
+  const getProductQuantity = (productId: string): number => {
     const cartItem = cart.items.find(item => item.id === productId);
     return cartItem ? cartItem.quantity : 0;
   };
 
-  // Category definitions with icons matching requirements
+  // Category definitions with icons matching actual badges in database
   const categories = [
     { name: 'All', icon: Salad, color: 'from-green-500 to-green-600', filter: 'all' },
-    { name: 'Italian', icon: Pizza, color: 'from-red-500 to-red-600', filter: 'italian' },
-    { name: 'Paneer Salad', icon: ChefHat, color: 'from-yellow-500 to-orange-500', filter: 'paneer' },
-    { name: 'Low-Fiber', icon: Minus, color: 'from-blue-400 to-blue-500', filter: 'low-fiber' },
-    { name: 'High-Protein', icon: Dumbbell, color: 'from-purple-500 to-purple-600', filter: 'high-protein' },
-    { name: 'Healthy', icon: Heart, color: 'from-green-400 to-green-500', filter: 'healthy' },
+    { name: 'Popular', icon: Star, color: 'from-yellow-500 to-orange-500', filter: 'popular' },
     { name: 'Spicy', icon: Flame, color: 'from-orange-500 to-red-500', filter: 'spicy' },
-    { name: 'Premium', icon: Crown, color: 'from-purple-600 to-pink-500', filter: 'premium' }
+    { name: 'Premium', icon: Crown, color: 'from-purple-600 to-pink-500', filter: 'premium' },
+    { name: 'Healthy', icon: Heart, color: 'from-green-400 to-green-500', filter: 'healthy' },
+    { name: 'Tangy', icon: Zap, color: 'from-blue-400 to-blue-500', filter: 'tangy' },
+    { name: 'Protein Rich', icon: Dumbbell, color: 'from-purple-500 to-purple-600', filter: 'protein rich' },
+    { name: 'Classic', icon: ChefHat, color: 'from-red-500 to-red-600', filter: 'classic' }
   ];
 
   // Filter products based on selected category and badge
   const filteredProducts = useMemo(() => {
     if (selectedCategory === 'All') {
-      return PRODUCTS;
+      return products;
     }
-    return PRODUCTS.filter(product => 
-      product.badge && product.badge.toLowerCase().includes(selectedCategory.toLowerCase())
+    return products.filter(product => 
+      product.badge && product.badge.toLowerCase() === selectedCategory.toLowerCase()
     );
-  }, [selectedCategory]);
+  }, [products, selectedCategory]);
 
   const handleAddToCart = (product: any) => {
     addToCart(product);
   };
 
-  const handleQuantityChange = (productId: number, change: number, e?: React.MouseEvent) => {
+  const handleQuantityChange = (productId: string, change: number, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     const currentQty = getProductQuantity(productId);
     const newQty = currentQty + change;
@@ -65,6 +66,30 @@ const PremiumSaladMenu = () => {
     setIsOverlayOpen(false);
     setSelectedProduct(null);
   };
+
+  if (loading) {
+    return (
+      <section id="menu" className="relative py-20 overflow-hidden bg-gradient-to-b from-white to-green-50">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center py-12">
+            <p className="text-xl text-gray-600">Loading premium salads...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section id="menu" className="relative py-20 overflow-hidden bg-gradient-to-b from-white to-green-50">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center py-12">
+            <p className="text-xl text-red-500">Error loading salads. Please try again later.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="menu" className="relative py-20 overflow-hidden bg-gradient-to-b from-white to-green-50">

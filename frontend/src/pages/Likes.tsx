@@ -5,7 +5,7 @@ import ProductCard from '../components/ProductCard';
 import SaladDetailOverlay from '../components/SaladDetailOverlay';
 import { useLikes } from '../contexts/LikesContext';
 import { useAuth } from '../contexts/AuthContext';
-import { PRODUCTS } from '@/lib/products';
+import { useSalads } from '../hooks/useSalads';
 import { Leaf, Heart, Star } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 
@@ -13,12 +13,13 @@ const Likes: React.FC = () => {
   const { likedProductIds, clearAllLikes } = useLikes();
   const { isLoggedIn } = useAuth();
   const { cart } = useCart();
-  const likedList = PRODUCTS.filter(p => likedProductIds.has(p.id));
-  const [selectedProduct, setSelectedProduct] = React.useState(null);
+  const { products, loading, error } = useSalads();
+  const likedList = products.filter(p => likedProductIds.has(p.id));
+  const [selectedProduct, setSelectedProduct] = React.useState<any>(null);
   const [isDetailOpen, setIsDetailOpen] = React.useState(false);
 
   // Get quantity of a product in cart
-  const getProductQuantity = (productId: number): number => {
+  const getProductQuantity = (productId: string): number => {
     const cartItem = cart.items.find(item => item.id === productId);
     return cartItem ? cartItem.quantity : 0;
   };
@@ -38,7 +39,17 @@ const Likes: React.FC = () => {
       <Header />
       <main className="container mx-auto px-4 py-10">
         <h1 className="text-3xl font-bold mb-6">Your Likes</h1>
-        {!isLoggedIn ? (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="text-3xl font-bold mb-2">Loading your liked salads...</div>
+            <p className="text-muted-foreground">Please wait while we fetch your favorites.</p>
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="text-3xl font-bold mb-2 text-red-500">Error loading salads</div>
+            <p className="text-muted-foreground">Please try again later.</p>
+          </div>
+        ) : !isLoggedIn ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <Heart className="w-12 h-12 text-accent mb-6 animate-float" />
             <div className="text-3xl font-bold mb-2">Please log in to see your liked salads</div>

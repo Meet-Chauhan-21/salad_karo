@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../components/AdminLayout';
+import axios from 'axios';
 import { 
   Plus, 
   Edit, 
@@ -8,95 +9,28 @@ import {
   Filter,
   Eye,
   Save,
-  X
+  X,
+  Power,
+  PowerOff
 } from 'lucide-react';
 
 interface Salad {
-  id: string;
-  title: string;
+  _id: string;
+  name: string;
   description: string;
   price: number;
+  originalPrice?: number;
   image: string;
+  rating: number;
+  reviews: number;
+  badge?: string;
   category: string;
   isActive: boolean;
 }
 
 const AdminSalads: React.FC = () => {
-  const [salads, setSalads] = useState<Salad[]>([
-    {
-      id: '1',
-      title: 'Caesar Salad',
-      description: 'Fresh romaine lettuce with caesar dressing, croutons, and parmesan cheese',
-      price: 299,
-      image: '/src/assets/vegetable-salad.jpg',
-      category: 'Classic',
-      isActive: true
-    },
-    {
-      id: '2',
-      title: 'Greek Salad',
-      description: 'Mixed greens with feta cheese, olives, tomatoes, and olive oil dressing',
-      price: 349,
-      image: '/src/assets/italian-salad.jpg',
-      category: 'Mediterranean',
-      isActive: true
-    },
-    {
-      id: '3',
-      title: 'Italian Salad',
-      description: 'Fresh basil, mozzarella, tomatoes with balsamic vinaigrette',
-      price: 399,
-      image: '/src/assets/italian-salad.jpg',
-      category: 'Italian',
-      isActive: true
-    },
-    {
-      id: '4',
-      title: 'Mexican Salad',
-      description: 'Spicy mixed greens with corn, beans, and zesty lime dressing',
-      price: 379,
-      image: '/src/assets/mexican-salad.jpg',
-      category: 'Mexican',
-      isActive: true
-    },
-    {
-      id: '5',
-      title: 'Sprout Salad',
-      description: 'Healthy mix of fresh sprouts with light seasoning',
-      price: 199,
-      image: '/src/assets/sprout-salad.jpg',
-      category: 'Healthy',
-      isActive: true
-    },
-    {
-      id: '6',
-      title: 'Chaat Salad',
-      description: 'Indian style salad with tangy chaat masala and chutneys',
-      price: 249,
-      image: '/src/assets/chaat-salad.jpg',
-      category: 'Indian',
-      isActive: true
-    },
-    {
-      id: '7',
-      title: 'Dry Fruits Salad',
-      description: 'Premium mix of nuts and dried fruits with honey dressing',
-      price: 449,
-      image: '/src/assets/dry-fruits-salad.jpg',
-      category: 'Premium',
-      isActive: true
-    },
-    {
-      id: '8',
-      title: 'Boiled Salad',
-      description: 'Nutritious boiled vegetables with light olive oil dressing',
-      price: 229,
-      image: '/src/assets/boiled-salad.jpg',
-      category: 'Diet',
-      isActive: true
-    }
-  ]);
-
+  const [salads, setSalads] = useState<Salad[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -106,8 +40,26 @@ const AdminSalads: React.FC = () => {
 
   const categories = ['Classic', 'Mediterranean', 'Italian', 'Mexican', 'Healthy', 'Indian', 'Premium', 'Diet'];
 
+  useEffect(() => {
+    fetchSalads();
+  }, []);
+
+  const fetchSalads = async () => {
+    try {
+      const response = await axios.get('http://localhost:3030/salads/all');
+      if (response.data.success) {
+        setSalads(response.data.salads);
+      }
+    } catch (error) {
+      console.error('Error fetching salads:', error);
+      alert('Failed to fetch salads');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const filteredSalads = salads.filter(salad => {
-    const matchesSearch = salad.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = salad.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          salad.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = !filterCategory || salad.category === filterCategory;
     return matchesSearch && matchesCategory;
@@ -121,10 +73,14 @@ const AdminSalads: React.FC = () => {
     } else {
       setSelectedSalad(null);
       setFormData({
-        title: '',
+        name: '',
         description: '',
         price: 0,
-        image: '',
+        originalPrice: 0,
+        image: '/src/assets/vegetable-salad.jpg',
+        rating: 5,
+        reviews: 0,
+        badge: '',
         category: categories[0],
         isActive: true
       });
@@ -138,42 +94,66 @@ const AdminSalads: React.FC = () => {
     setFormData({});
   };
 
-  const handleSave = () => {
-    if (modalType === 'add') {
-      const newSalad: Salad = {
-        id: String(salads.length + 1),
-        title: formData.title || '',
-        description: formData.description || '',
-        price: formData.price || 0,
-        image: formData.image || '/src/assets/vegetable-salad.jpg',
-        category: formData.category || categories[0],
-        isActive: formData.isActive !== false
-      };
-      setSalads([...salads, newSalad]);
-    } else if (modalType === 'edit' && selectedSalad) {
-      setSalads(salads.map(salad => 
-        salad.id === selectedSalad.id ? { ...salad, ...formData } : salad
-      ));
+  const handleSave = async () => {
+    try {
+      if (modalType === 'add') {
+        const response = await axios.post('http://localhost:3030/salads/create', formData);
+        if (response.data.success) {
+          alert('Salad added successfully!');
+          fetchSalads();
+        }
+      } else if (modalType === 'edit' && selectedSalad) {
+        const response = await axios.put(`http://localhost:3030/salads/update/${selectedSalad._id}`, formData);
+        if (response.data.success) {
+          alert('Salad updated successfully!');
+          fetchSalads();
+        }
+      }
+      closeModal();
+    } catch (error) {
+      console.error('Error saving salad:', error);
+      alert('Failed to save salad');
     }
-    closeModal();
   };
 
-  const deleteSalad = (id: string) => {
+  const deleteSalad = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this salad?')) {
-      setSalads(salads.filter(salad => salad.id !== id));
+      try {
+        const response = await axios.delete(`http://localhost:3030/salads/delete/${id}`);
+        if (response.data.success) {
+          alert('Salad deleted successfully!');
+          fetchSalads();
+        }
+      } catch (error) {
+        console.error('Error deleting salad:', error);
+        alert('Failed to delete salad');
+      }
     }
   };
 
-  const toggleSaladStatus = (id: string) => {
-    setSalads(salads.map(salad => 
-      salad.id === id ? { ...salad, isActive: !salad.isActive } : salad
-    ));
+  const toggleSaladStatus = async (id: string) => {
+    try {
+      const response = await axios.put(`http://localhost:3030/salads/toggle-status/${id}`);
+      if (response.data.success) {
+        fetchSalads();
+      }
+    } catch (error) {
+      console.error('Error toggling status:', error);
+      alert('Failed to toggle status');
+    }
   };
 
   return (
     <AdminLayout currentPage="salads">
       <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
+          {/* Loading State */}
+          {loading && (
+            <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-blue-800">Loading salads from database...</p>
+            </div>
+          )}
+          
           {/* Header Section */}
           <div className="mb-8">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Salad Management</h1>
@@ -269,19 +249,28 @@ const AdminSalads: React.FC = () => {
 
           {/* Salads Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredSalads.map((salad) => (
-              <div key={salad.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
+            {loading ? (
+              <div className="col-span-full text-center py-12 text-gray-500">
+                Loading salads...
+              </div>
+            ) : filteredSalads.length === 0 ? (
+              <div className="col-span-full text-center py-12 text-gray-500">
+                No salads found
+              </div>
+            ) : (
+              filteredSalads.map((salad) => (
+              <div key={salad._id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
                 <div className="relative">
                   <img
                     src={salad.image}
-                    alt={salad.title}
+                    alt={salad.name}
                     className="w-full h-48 object-cover"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.src = '/src/assets/hero-salad.jpg';
                     }}
                   />
-                  <div className="absolute top-3 right-3">
+                  <div className="absolute top-3 right-3 flex flex-col gap-1">
                     <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                       salad.isActive 
                         ? 'bg-green-100 text-green-800' 
@@ -289,17 +278,37 @@ const AdminSalads: React.FC = () => {
                     }`}>
                       {salad.isActive ? 'Active' : 'Inactive'}
                     </span>
+                    {salad.badge && (
+                      <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                        {salad.badge}
+                      </span>
+                    )}
                   </div>
                 </div>
                 
                 <div className="p-4">
                   <div className="mb-3">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">{salad.title}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-1">{salad.name}</h3>
                     <p className="text-sm text-gray-600 line-clamp-2">{salad.description}</p>
+                  </div>
+
+                  {/* Rating and Reviews */}
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="flex text-yellow-400">
+                      {[...Array(5)].map((_, i) => (
+                        <span key={i}>{i < salad.rating ? '★' : '☆'}</span>
+                      ))}
+                    </div>
+                    <span className="text-sm text-gray-500">({salad.reviews || 0} reviews)</span>
                   </div>
                   
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-xl font-bold text-green-600">₹{salad.price}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl font-bold text-green-600">₹{salad.price}</span>
+                      {salad.originalPrice && salad.originalPrice > salad.price && (
+                        <span className="text-sm text-gray-500 line-through">₹{salad.originalPrice}</span>
+                      )}
+                    </div>
                     <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
                       {salad.category}
                     </span>
@@ -314,7 +323,7 @@ const AdminSalads: React.FC = () => {
                       Edit
                     </button>
                     <button
-                      onClick={() => toggleSaladStatus(salad.id)}
+                      onClick={() => toggleSaladStatus(salad._id)}
                       className={`flex-1 px-3 py-2 rounded-lg flex items-center justify-center transition-colors duration-200 ${
                         salad.isActive
                           ? 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100'
@@ -325,7 +334,7 @@ const AdminSalads: React.FC = () => {
                       {salad.isActive ? 'Hide' : 'Show'}
                     </button>
                     <button
-                      onClick={() => deleteSalad(salad.id)}
+                      onClick={() => deleteSalad(salad._id)}
                       className="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors duration-200"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -333,10 +342,11 @@ const AdminSalads: React.FC = () => {
                   </div>
                 </div>
               </div>
-            ))}
+              ))
+            )}
           </div>
 
-          {filteredSalads.length === 0 && (
+          {!loading && filteredSalads.length === 0 && searchTerm && (
             <div className="text-center py-12">
               <div className="text-gray-400 mb-4">
                 <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto flex items-center justify-center">
@@ -370,8 +380,8 @@ const AdminSalads: React.FC = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Salad Name</label>
                     <input
                       type="text"
-                      value={formData.title || ''}
-                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                      value={formData.name || ''}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                       placeholder="Enter salad name"
                     />
@@ -398,17 +408,70 @@ const AdminSalads: React.FC = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Original Price (₹)</label>
+                      <input
+                        type="number"
+                        value={formData.originalPrice || ''}
+                        onChange={(e) => setFormData({ ...formData, originalPrice: parseInt(e.target.value) || 0 })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        placeholder="0 (optional for offers)"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Rating</label>
                       <select
-                        value={formData.category || ''}
-                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                        value={formData.rating || 5}
+                        onChange={(e) => setFormData({ ...formData, rating: parseInt(e.target.value) })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                       >
-                        {categories.map(category => (
-                          <option key={category} value={category}>{category}</option>
-                        ))}
+                        <option value={5}>5 Stars</option>
+                        <option value={4}>4 Stars</option>
+                        <option value={3}>3 Stars</option>
+                        <option value={2}>2 Stars</option>
+                        <option value={1}>1 Star</option>
                       </select>
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Reviews Count</label>
+                      <input
+                        type="number"
+                        value={formData.reviews || ''}
+                        onChange={(e) => setFormData({ ...formData, reviews: parseInt(e.target.value) || 0 })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        placeholder="0"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Badge</label>
+                      <select
+                        value={formData.badge || ''}
+                        onChange={(e) => setFormData({ ...formData, badge: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      >
+                        <option value="">No Badge</option>
+                        <option value="Popular">Popular</option>
+                        <option value="Premium">Premium</option>
+                        <option value="Spicy">Spicy</option>
+                        <option value="Healthy">Healthy</option>
+                        <option value="Classic">Classic</option>
+                        <option value="Tangy">Tangy</option>
+                        <option value="Protein Rich">Protein Rich</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                    <select
+                      value={formData.category || ''}
+                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    >
+                      {categories.map(category => (
+                        <option key={category} value={category}>{category}</option>
+                      ))}
+                    </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>

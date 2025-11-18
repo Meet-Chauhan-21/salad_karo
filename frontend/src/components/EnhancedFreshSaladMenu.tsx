@@ -2,22 +2,23 @@ import React, { useState, useMemo } from 'react';
 import { Plus, Heart, Star, Filter } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { useLikes } from '../contexts/LikesContext';
-import { PRODUCTS } from '../lib/products';
+import { useSalads } from '../hooks/useSalads';
 
 const categories = ['Italian', 'Paneer Salad', 'Low Fiber', 'High Protein', 'Healthy', 'Spicy', 'Premium'];
 
 const EnhancedFreshSaladMenu = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const { products, loading, error } = useSalads();
   const { addToCart } = useCart();
   const { isLiked, toggleLike } = useLikes();
 
   // Filter products based on selected category
   const filteredProducts = useMemo(() => {
     if (selectedCategory === 'All') {
-      return PRODUCTS;
+      return products;
     }
-    return PRODUCTS.filter(product => product.badge === selectedCategory);
-  }, [selectedCategory]);
+    return products.filter(product => product.badge === selectedCategory);
+  }, [products, selectedCategory]);
 
   const handleAddToCart = (product: any) => {
     addToCart(product);
