@@ -1,4 +1,5 @@
 const OrderModel = require("../model/Order");
+const UserModel = require("../model/User");
 
 const createOrder = async (req, res) => {
     try {
@@ -74,10 +75,22 @@ const getAllOrders = async (req, res) => {
     try {
         const orders = await OrderModel.find().sort({ orderDate: -1 });
 
+        // Populate user data for each order
+        const ordersWithUserData = await Promise.all(
+            orders.map(async (order) => {
+                const user = await UserModel.findOne({ email: order.userEmail });
+                return {
+                    ...order.toObject(),
+                    userName: user ? user.name : 'N/A',
+                    userPhone: user ? user.phone : 'N/A'
+                };
+            })
+        );
+
         res.status(200).json({
             message: "All orders fetched successfully",
             success: true,
-            orders
+            orders: ordersWithUserData
         });
     } catch (err) {
         console.error("Fetch all orders error:", err);
@@ -88,8 +101,57 @@ const getAllOrders = async (req, res) => {
     }
 };
 
+const updateOrderStatus = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const { status } = req.body;
+
+        if (!orderId || !status) {
+            return res.status(400).json({
+                message: "Order ID and status are required",
+                success: false
+            });
+        }
+
+        // Validate status value
+        const validStatuses = ['Processing', 'Delivered', 'Cancelled'];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({
+                message: "Invalid status value",
+                success: false
+            });
+        }
+
+        const updatedOrder = await OrderModel.findByIdAndUpdate(
+            orderId,
+            { status },
+            { new: true }
+        );
+
+        if (!updatedOrder) {
+            return res.status(404).json({
+                message: "Order not found",
+                success: false
+            });
+        }
+
+        res.status(200).json({
+            message: "Order status updated successfully",
+            success: true,
+            order: updatedOrder
+        });
+    } catch (err) {
+        console.error("Update order status error:", err);
+        res.status(500).json({
+            message: "Internal server error",
+            success: false
+        });
+    }
+};
+
 module.exports = {
     createOrder,
     getUserOrders,
-    getAllOrders
+    getAllOrders,
+    updateOrderStatus
 };

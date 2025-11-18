@@ -1,133 +1,81 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../components/AdminLayout';
+import axios from 'axios';
 import { 
   Search, 
-  Filter, 
-  Eye, 
-  Edit,
+  Eye,
   Check,
   X,
   Clock,
-  Truck,
   Package,
-  Phone,
   Mail,
-  MapPin
+  Phone,
+  Truck
 } from 'lucide-react';
 
 interface Order {
-  id: string;
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
+  _id: string;
+  userEmail: string;
+  userName?: string;
+  userPhone?: string;
   items: Array<{
     name: string;
     quantity: number;
     price: number;
   }>;
   total: number;
-  status: 'Pending' | 'Processing' | 'Delivered' | 'Cancelled';
+  status: 'Processing' | 'Delivered' | 'Cancelled';
   orderDate: string;
-  deliveryAddress: string;
-  paymentMethod: string;
+  deliveryDate: string;
 }
 
 const AdminOrders: React.FC = () => {
-  const [orders, setOrders] = useState<Order[]>([
-    {
-      id: 'ORD-001',
-      customerName: 'John Doe',
-      customerEmail: 'john@example.com',
-      customerPhone: '+91 9876543210',
-      items: [
-        { name: 'Caesar Salad', quantity: 2, price: 299 },
-        { name: 'Greek Salad', quantity: 1, price: 349 }
-      ],
-      total: 947,
-      status: 'Pending',
-      orderDate: '2025-09-19T10:30:00',
-      deliveryAddress: '123 Main St, Mumbai, Maharashtra 400001',
-      paymentMethod: 'Online Payment'
-    },
-    {
-      id: 'ORD-002',
-      customerName: 'Jane Smith',
-      customerEmail: 'jane@example.com',
-      customerPhone: '+91 9876543211',
-      items: [
-        { name: 'Italian Salad', quantity: 1, price: 399 }
-      ],
-      total: 399,
-      status: 'Processing',
-      orderDate: '2025-09-19T09:15:00',
-      deliveryAddress: '456 Oak Ave, Delhi, Delhi 110001',
-      paymentMethod: 'Cash on Delivery'
-    },
-    {
-      id: 'ORD-003',
-      customerName: 'Mike Johnson',
-      customerEmail: 'mike@example.com',
-      customerPhone: '+91 9876543212',
-      items: [
-        { name: 'Vegetable Salad', quantity: 2, price: 249 },
-        { name: 'Sprout Salad', quantity: 1, price: 199 }
-      ],
-      total: 697,
-      status: 'Delivered',
-      orderDate: '2025-09-18T14:20:00',
-      deliveryAddress: '789 Pine St, Bangalore, Karnataka 560001',
-      paymentMethod: 'Online Payment'
-    },
-    {
-      id: 'ORD-004',
-      customerName: 'Sarah Wilson',
-      customerEmail: 'sarah@example.com',
-      customerPhone: '+91 9876543213',
-      items: [
-        { name: 'Mexican Salad', quantity: 1, price: 379 },
-        { name: 'Chaat Salad', quantity: 2, price: 249 }
-      ],
-      total: 877,
-      status: 'Processing',
-      orderDate: '2025-09-19T11:45:00',
-      deliveryAddress: '321 Garden Road, Pune, Maharashtra 411001',
-      paymentMethod: 'Online Payment'
-    },
-    {
-      id: 'ORD-005',
-      customerName: 'David Lee',
-      customerEmail: 'david@example.com',
-      customerPhone: '+91 9876543214',
-      items: [
-        { name: 'Dry Fruits Salad', quantity: 1, price: 449 }
-      ],
-      total: 449,
-      status: 'Cancelled',
-      orderDate: '2025-09-18T16:30:00',
-      deliveryAddress: '555 Tech Park, Hyderabad, Telangana 500001',
-      paymentMethod: 'Cash on Delivery'
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [changedOrders, setChangedOrders] = useState<Map<string, string>>(new Map());
+
+  useEffect(() => {
+    console.log('AdminOrders component mounted');
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    try {
+      console.log('Fetching orders from API...');
+      const response = await axios.get('http://localhost:3030/orders/all');
+      console.log('Orders API response:', response.data);
+      if (response.data.success) {
+        console.log('Orders fetched:', response.data.orders.length);
+        setOrders(response.data.orders);
+      } else {
+        console.error('API returned success:false');
+      }
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      alert('Failed to fetch orders: ' + (error as any).message);
+    } finally {
+      console.log('Setting loading to false');
+      setLoading(false);
     }
-  ]);
+  };
 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const statusOptions = ['Pending', 'Processing', 'Delivered', 'Cancelled'];
+  const statusOptions = ['Processing', 'Delivered', 'Cancelled'];
 
   const filteredOrders = orders.filter(order => {
     const matchesSearch = 
-      order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.customerEmail.toLowerCase().includes(searchTerm.toLowerCase());
+      order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.userEmail.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = !statusFilter || order.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'Pending': return <Clock className="h-4 w-4" />;
       case 'Processing': return <Package className="h-4 w-4" />;
       case 'Delivered': return <Check className="h-4 w-4" />;
       case 'Cancelled': return <X className="h-4 w-4" />;
@@ -137,7 +85,6 @@ const AdminOrders: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
       case 'Processing': return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'Delivered': return 'bg-green-100 text-green-800 border-green-200';
       case 'Cancelled': return 'bg-red-100 text-red-800 border-red-200';
@@ -146,9 +93,36 @@ const AdminOrders: React.FC = () => {
   };
 
   const updateOrderStatus = (orderId: string, newStatus: string) => {
+    // Update locally first
     setOrders(orders.map(order => 
-      order.id === orderId ? { ...order, status: newStatus as Order['status'] } : order
+      order._id === orderId ? { ...order, status: newStatus as Order['status'] } : order
     ));
+    // Track the change
+    setChangedOrders(prev => new Map(prev).set(orderId, newStatus));
+  };
+
+  const saveOrderStatus = async (orderId: string) => {
+    try {
+      const newStatus = changedOrders.get(orderId);
+      if (!newStatus) return;
+
+      const response = await axios.put(`http://localhost:3030/orders/update-status/${orderId}`, {
+        status: newStatus
+      });
+
+      if (response.data.success) {
+        // Remove from changed orders after successful save
+        setChangedOrders(prev => {
+          const newMap = new Map(prev);
+          newMap.delete(orderId);
+          return newMap;
+        });
+        alert('Order status updated successfully!');
+      }
+    } catch (error) {
+      console.error('Error saving order status:', error);
+      alert('Failed to update order status');
+    }
   };
 
   const viewOrderDetails = (order: Order) => {
@@ -166,10 +140,23 @@ const AdminOrders: React.FC = () => {
     <AdminLayout currentPage="orders">
       <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
+          {/* Debug Info */}
+          {loading && (
+            <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-blue-800">Loading orders from database...</p>
+            </div>
+          )}
+          {!loading && orders.length === 0 && (
+            <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-yellow-800">No orders found in database. Please place some orders first.</p>
+            </div>
+          )}
+          
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Order Management</h1>
             <p className="text-gray-600">View and manage customer orders</p>
+            <p className="text-sm text-gray-500 mt-1">Total Orders: {orders.length}</p>
           </div>
 
           {/* Stats Cards */}
@@ -182,7 +169,7 @@ const AdminOrders: React.FC = () => {
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Pending Orders</p>
                   <p className="text-2xl font-bold text-gray-900">
-                    {orders.filter(o => o.status === 'Pending').length}
+                    {orders.filter(o => o.status === 'Processing').length}
                   </p>
                 </div>
               </div>
@@ -282,77 +269,97 @@ const AdminOrders: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredOrders.map((order) => (
-                    <tr key={order.id} className="hover:bg-gray-50 transition-colors duration-150">
-                      <td className="px-6 py-4">
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">{order.id}</div>
-                          <div className="text-sm text-gray-500">{formatDate(order.orderDate)}</div>
-                          <div className="text-xs text-gray-400 mt-1">{order.paymentMethod}</div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div>
-                          <div className="text-sm font-medium text-gray-900 mb-1">{order.customerName}</div>
-                          <div className="flex items-center text-sm text-gray-500 mb-1">
-                            <Mail className="h-3 w-3 mr-1" />
-                            {order.customerEmail}
-                          </div>
-                          <div className="flex items-center text-sm text-gray-500">
-                            <Phone className="h-3 w-3 mr-1" />
-                            {order.customerPhone}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div>
-                          <div className="text-sm text-gray-900 mb-2">
-                            {order.items.map((item, index) => (
-                              <div key={index} className="flex justify-between">
-                                <span>{item.name} x{item.quantity}</span>
-                                <span>₹{item.price * item.quantity}</span>
-                              </div>
-                            ))}
-                          </div>
-                          <div className="text-sm font-semibold text-gray-900 pt-2 border-t border-gray-200">
-                            Total: ₹{order.total}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="space-y-2">
-                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
-                            {getStatusIcon(order.status)}
-                            <span className="ml-1">{order.status}</span>
-                          </span>
-                          <select
-                            value={order.status}
-                            onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                            className="block w-full text-xs border border-gray-300 rounded-md px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                          >
-                            {statusOptions.map(status => (
-                              <option key={status} value={status}>{status}</option>
-                            ))}
-                          </select>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <button
-                          onClick={() => viewOrderDetails(order)}
-                          className="inline-flex items-center px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors duration-200"
-                        >
-                          <Eye className="h-4 w-4 mr-1" />
-                          View Details
-                        </button>
+                  {loading ? (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                        Loading orders...
                       </td>
                     </tr>
-                  ))}
+                  ) : filteredOrders.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                        No orders found
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredOrders.map((order) => (
+                      <tr key={order._id} className="hover:bg-gray-50 transition-colors duration-150">
+                        <td className="px-6 py-4">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{order.userName || 'N/A'}</div>
+                            <div className="text-sm text-gray-500">{formatDate(order.orderDate)}</div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="space-y-1">
+                            <div className="flex items-center text-sm text-gray-900">
+                              <Mail className="h-3 w-3 mr-1 text-gray-400" />
+                              {order.userEmail}
+                            </div>
+                            <div className="flex items-center text-sm text-gray-500">
+                              <Phone className="h-3 w-3 mr-1 text-gray-400" />
+                              {order.userPhone || 'N/A'}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div>
+                            <div className="text-sm text-gray-900 mb-2">
+                              {order.items.map((item, index) => (
+                                <div key={index} className="flex justify-between">
+                                  <span>{item.name} x{item.quantity}</span>
+                                  <span>₹{item.price * item.quantity}</span>
+                                </div>
+                              ))}
+                            </div>
+                            <div className="text-sm font-semibold text-gray-900 pt-2 border-t border-gray-200">
+                              Total: ₹{order.total}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="space-y-2">
+                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
+                              {getStatusIcon(order.status)}
+                              <span className="ml-1">{order.status}</span>
+                            </span>
+                            <select
+                              value={order.status}
+                              onChange={(e) => updateOrderStatus(order._id, e.target.value)}
+                              className="block w-full text-xs border border-gray-300 rounded-md px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                            >
+                              {statusOptions.map(status => (
+                                <option key={status} value={status}>{status}</option>
+                              ))}
+                            </select>
+                            {changedOrders.has(order._id) && (
+                              <button
+                                onClick={() => saveOrderStatus(order._id)}
+                                className="w-full px-2 py-1 bg-green-600 text-white text-xs rounded-md hover:bg-green-700 transition-colors duration-200 font-medium"
+                              >
+                                Save
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <button
+                            onClick={() => viewOrderDetails(order)}
+                            className="inline-flex items-center px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors duration-200"
+                          >
+                            <Eye className="h-4 w-4 mr-1" />
+                            View Details
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
 
-          {filteredOrders.length === 0 && (
+          {filteredOrders.length === 0 && !loading && (
             <div className="text-center py-12">
               <div className="text-gray-400 mb-4">
                 <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto flex items-center justify-center">
@@ -386,35 +393,31 @@ const AdminOrders: React.FC = () => {
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
+                      <h4 className="font-semibold text-gray-900 mb-3">Customer Information</h4>
+                      <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                        <div>
+                          <span className="font-medium">Name:</span> {selectedOrder.userName || 'N/A'}
+                        </div>
+                        <div className="flex items-center">
+                          <Mail className="h-4 w-4 mr-2 text-gray-400" />
+                          <span>{selectedOrder.userEmail}</span>
+                        </div>
+                        <div>
+                          <span className="font-medium">Phone:</span> {selectedOrder.userPhone || 'N/A'}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
                       <h4 className="font-semibold text-gray-900 mb-3">Order Information</h4>
                       <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-                        <div><span className="font-medium">Order ID:</span> {selectedOrder.id}</div>
-                        <div><span className="font-medium">Date:</span> {formatDate(selectedOrder.orderDate)}</div>
+                        <div><span className="font-medium">Order Date:</span> {formatDate(selectedOrder.orderDate)}</div>
+                        <div><span className="font-medium">Delivery Date:</span> {formatDate(selectedOrder.deliveryDate)}</div>
                         <div><span className="font-medium">Status:</span> 
                           <span className={`ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedOrder.status)}`}>
                             {getStatusIcon(selectedOrder.status)}
                             <span className="ml-1">{selectedOrder.status}</span>
                           </span>
-                        </div>
-                        <div><span className="font-medium">Payment:</span> {selectedOrder.paymentMethod}</div>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-3">Customer Information</h4>
-                      <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-                        <div><span className="font-medium">Name:</span> {selectedOrder.customerName}</div>
-                        <div className="flex items-center">
-                          <Mail className="h-4 w-4 mr-2 text-gray-400" />
-                          <span>{selectedOrder.customerEmail}</span>
-                        </div>
-                        <div className="flex items-center">
-                          <Phone className="h-4 w-4 mr-2 text-gray-400" />
-                          <span>{selectedOrder.customerPhone}</span>
-                        </div>
-                        <div className="flex items-start">
-                          <MapPin className="h-4 w-4 mr-2 text-gray-400 mt-0.5" />
-                          <span className="text-sm">{selectedOrder.deliveryAddress}</span>
                         </div>
                       </div>
                     </div>

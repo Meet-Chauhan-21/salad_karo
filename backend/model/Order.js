@@ -21,6 +21,14 @@ const OrderSchema = new Schema({
         type: String,
         required: true
     },
+    userName: {
+        type: String,
+        default: ''
+    },
+    userPhone: {
+        type: String,
+        default: ''
+    },
     items: [OrderItemSchema],
     subtotal: {
         type: Number,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { 
   Users, 
   ShoppingCart, 
@@ -19,6 +19,7 @@ interface AdminLayoutProps {
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [adminUser, setAdminUser] = useState<any>(null);
 
@@ -43,7 +44,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage }) => {
     const adminData = localStorage.getItem('adminUser');
     
     if (!isAdmin || isAdmin !== 'true') {
-      window.location.href = '/login';
+      navigate('/login');
       return;
     }
     
@@ -65,7 +66,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage }) => {
     localStorage.removeItem('adminUser');
     // Dispatch custom event to notify other components
     window.dispatchEvent(new Event('admin-logout'));
-    window.location.href = '/login';
+    navigate('/login');
   };
 
   if (!adminUser) {
@@ -107,18 +108,19 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage }) => {
               const Icon = item.icon;
               const isActive = activePageKey === item.key;
               return (
-                <a
+                <Link
                   key={item.key}
-                  href={item.path}
+                  to={item.path}
                   className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                     isActive
                       ? 'bg-green-600 text-white hover:bg-green-700'
                       : 'text-gray-700 hover:bg-green-50 hover:text-green-600'
                   }`}
+                  onClick={() => setIsSidebarOpen(false)}
                 >
                   <Icon className="h-5 w-5" />
                   <span>{item.label}</span>
-                </a>
+                </Link>
               );
             })}
             
@@ -134,13 +136,13 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage }) => {
                 </div>
               </div>
               <div className="space-y-2">
-                <a
-                  href="/"
+                <Link
+                  to="/"
                   className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                 >
                   <Home className="h-4 w-4" />
                   <span>View Website</span>
-                </a>
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
