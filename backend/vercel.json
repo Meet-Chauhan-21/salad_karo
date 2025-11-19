@@ -13,8 +13,8 @@
     }
   ],
   "env": {
-    "MONGODB_URL": "@mongodb_url",
-    "JWT_SECRET": "@jwt_secret",
+    "MONGODB_URL": "mongodb+srv://meetchauhan9915_db_user:saladkaro_123@cluster0.tp8heca.mongodb.net/saladkaro",
+    "JWT_SECRET": "saladkaro@9915",
     "PORT": "3030"
   }
 }
