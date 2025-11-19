@@ -32,11 +32,8 @@ import AdminMemberships from "./pages/AdminMembershipsFixed";
 import AdminSettings from "./pages/AdminSettingsFixed";
 import AdminUsers from "./pages/AdminUsersFixed";
 import AdminRoute from "./components/AdminRoute";
-import TestAdminPage from "./pages/TestAdminPage";
-import DebugPage from "./pages/DebugPage";
 import SaladDetailMobile from "./pages/SaladDetailMobile";
 import SaladDetailDesktop from "./pages/SaladDetailDesktop";
-import SaladDetailTest from "./pages/SaladDetailTest";
 
 const queryClient = new QueryClient();
 
@@ -67,8 +64,6 @@ const App = () => (
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/profile" element={<Profile />} />
-                <Route path="/debug" element={<DebugPage />} />
-                <Route path="/salad-detail-test" element={<SaladDetailTest />} />
                 
                 {/* Salad Detail Routes */}
                 <Route path="/salad-detail-mobile" element={<SaladDetailMobile />} />
