@@ -37,8 +37,6 @@ import DebugPage from "./pages/DebugPage";
 import SaladDetailMobile from "./pages/SaladDetailMobile";
 import SaladDetailDesktop from "./pages/SaladDetailDesktop";
 import SaladDetailTest from "./pages/SaladDetailTest";
-import SimpleTest from "./components/SimpleTest";
-import FallbackHome from "./components/FallbackHome";
 
 const queryClient = new QueryClient();
 
@@ -55,10 +53,7 @@ const App = () => (
               <Toaster />
               <Sonner />
               <Routes>
-                <Route path="/test" element={<SimpleTest />} />
-                <Route path="/fallback" element={<FallbackHome />} />
-                <Route path="/" element={<FallbackHome />} />
-                <Route path="/full" element={<ModernIndex />} />
+                <Route path="/" element={<ModernIndex />} />
                 <Route path="/classic" element={<Index />} />
                 <Route path="/menu" element={<SaladMenu />} />
                 <Route path="/membership" element={<Membership />} />

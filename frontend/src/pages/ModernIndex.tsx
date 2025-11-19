@@ -8,7 +8,6 @@ import CustomisedPlan from '../components/CustomisedPlan';
 import NewsletterSignup from '../components/NewsletterSignup';
 import ModernFooter from '../components/ModernFooter';
 import FloatingControls from '../components/FloatingControls';
-import DebugInfo from '../components/DebugInfo';
 import AdminAccessButton from '../components/AdminAccessButton';
 
 const ModernIndex = () => {
