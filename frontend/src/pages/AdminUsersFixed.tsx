@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../components/AdminLayout';
-import axios from 'axios';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
@@ -45,12 +45,10 @@ const AdminUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      console.log('Fetching users from API...');
-      const response = await axios.get(buildApiUrl(API_ENDPOINTS.USERS));
-      console.log('Users API response:', response.data);
-      if (response.data.success) {
-        console.log('Users fetched:', response.data.users.length);
-        setUsers(response.data.users);
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.USERS));
+      const data = await response.json();
+      if (data.success) {
+        setUsers(data.users);
       } else {
         console.error('API returned success:false');
       }

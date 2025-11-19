@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../components/AdminLayout';
-import axios from 'axios';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 import { 
   Search, 
   Eye,
@@ -41,12 +41,10 @@ const AdminOrders: React.FC = () => {
 
   const fetchOrders = async () => {
     try {
-      console.log('Fetching orders from API...');
-      const response = await axios.get(buildApiUrl(API_ENDPOINTS.GET_ALL_ORDERS));
-      console.log('Orders API response:', response.data);
-      if (response.data.success) {
-        console.log('Orders fetched:', response.data.orders.length);
-        setOrders(response.data.orders);
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.GET_ALL_ORDERS));
+      const data = await response.json();
+      if (data.success) {
+        setOrders(data.orders);
       } else {
         console.error('API returned success:false');
       }
@@ -54,7 +52,6 @@ const AdminOrders: React.FC = () => {
       console.error('Error fetching orders:', error);
       alert('Failed to fetch orders: ' + (error as any).message);
     } finally {
-      console.log('Setting loading to false');
       setLoading(false);
     }
   };
@@ -106,11 +103,18 @@ const AdminOrders: React.FC = () => {
       const newStatus = changedOrders.get(orderId);
       if (!newStatus) return;
 
-      const response = await axios.put(buildApiUrl(`${API_ENDPOINTS.UPDATE_ORDER_STATUS}/${orderId}`), {
-        status: newStatus
+      const response = await fetch(buildApiUrl(`${API_ENDPOINTS.UPDATE_ORDER_STATUS}/${orderId}`), {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          status: newStatus
+        })
       });
+      const data = await response.json();
 
-      if (response.data.success) {
+      if (data.success) {
         // Remove from changed orders after successful save
         setChangedOrders(prev => {
           const newMap = new Map(prev);

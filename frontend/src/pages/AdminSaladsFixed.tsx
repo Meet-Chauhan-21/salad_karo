@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../components/AdminLayout';
-import axios from 'axios';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 import { 
   Plus, 
   Edit, 
@@ -46,9 +46,10 @@ const AdminSalads: React.FC = () => {
 
   const fetchSalads = async () => {
     try {
-      const response = await axios.get(buildApiUrl(API_ENDPOINTS.GET_ALL_SALADS));
-      if (response.data.success) {
-        setSalads(response.data.salads);
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.GET_ALL_SALADS));
+      const data = await response.json();
+      if (data.success) {
+        setSalads(data.salads);
       }
     } catch (error) {
       console.error('Error fetching salads:', error);
@@ -97,14 +98,28 @@ const AdminSalads: React.FC = () => {
   const handleSave = async () => {
     try {
       if (modalType === 'add') {
-        const response = await axios.post(buildApiUrl(API_ENDPOINTS.CREATE_SALAD), formData);
-        if (response.data.success) {
+        const response = await fetch(buildApiUrl(API_ENDPOINTS.CREATE_SALAD), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+        const data = await response.json();
+        if (data.success) {
           alert('Salad added successfully!');
           fetchSalads();
         }
       } else if (modalType === 'edit' && selectedSalad) {
-        const response = await axios.put(buildApiUrl(`${API_ENDPOINTS.UPDATE_SALAD}/${selectedSalad._id}`), formData);
-        if (response.data.success) {
+        const response = await fetch(buildApiUrl(`${API_ENDPOINTS.UPDATE_SALAD}/${selectedSalad._id}`), {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+        const data = await response.json();
+        if (data.success) {
           alert('Salad updated successfully!');
           fetchSalads();
         }
@@ -119,8 +134,11 @@ const AdminSalads: React.FC = () => {
   const deleteSalad = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this salad?')) {
       try {
-                const response = await axios.delete(buildApiUrl(`${API_ENDPOINTS.DELETE_SALAD}/${id}`));
-        if (response.data.success) {
+                const response = await fetch(buildApiUrl(`${API_ENDPOINTS.DELETE_SALAD}/${id}`), {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+        if (data.success) {
           alert('Salad deleted successfully!');
           fetchSalads();
         }
@@ -133,8 +151,11 @@ const AdminSalads: React.FC = () => {
 
   const toggleSaladStatus = async (id: string) => {
     try {
-                  const response = await axios.put(buildApiUrl(`${API_ENDPOINTS.TOGGLE_SALAD_STATUS}/${id}`));
-      if (response.data.success) {
+                  const response = await fetch(buildApiUrl(`${API_ENDPOINTS.TOGGLE_SALAD_STATUS}/${id}`), {
+                      method: 'PUT'
+                  });
+                  const data = await response.json();
+      if (data.success) {
         fetchSalads();
       }
     } catch (error) {
