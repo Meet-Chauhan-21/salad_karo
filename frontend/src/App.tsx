@@ -34,7 +34,6 @@ import AdminUsers from "./pages/AdminUsersFixed";
 import AdminRoute from "./components/AdminRoute";
 import SaladDetailMobile from "./pages/SaladDetailMobile";
 import SaladDetailDesktop from "./pages/SaladDetailDesktop";
-import AdminTest from "./components/AdminTest";
 
 const queryClient = new QueryClient();
 
@@ -65,7 +64,6 @@ const App = () => (
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/profile" element={<Profile />} />
-                <Route path="/admin-test" element={<AdminTest />} />
                 
                 {/* Salad Detail Routes */}
                 <Route path="/salad-detail-mobile" element={<SaladDetailMobile />} />
