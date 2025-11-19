@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 
 export interface AuthUser {
   email: string;
@@ -79,7 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = useCallback(async (email: string, password: string): Promise<AuthResult> => {
     try {
-      const response = await fetch('http://localhost:3030/auth/login', {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.LOGIN), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

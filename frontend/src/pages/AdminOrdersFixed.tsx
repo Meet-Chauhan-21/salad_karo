@@ -42,7 +42,7 @@ const AdminOrders: React.FC = () => {
   const fetchOrders = async () => {
     try {
       console.log('Fetching orders from API...');
-      const response = await axios.get('http://localhost:3030/orders/all');
+      const response = await axios.get(buildApiUrl(API_ENDPOINTS.GET_ALL_ORDERS));
       console.log('Orders API response:', response.data);
       if (response.data.success) {
         console.log('Orders fetched:', response.data.orders.length);
@@ -106,7 +106,7 @@ const AdminOrders: React.FC = () => {
       const newStatus = changedOrders.get(orderId);
       if (!newStatus) return;
 
-      const response = await axios.put(`http://localhost:3030/orders/update-status/${orderId}`, {
+      const response = await axios.put(buildApiUrl(`${API_ENDPOINTS.UPDATE_ORDER_STATUS}/${orderId}`), {
         status: newStatus
       });
 

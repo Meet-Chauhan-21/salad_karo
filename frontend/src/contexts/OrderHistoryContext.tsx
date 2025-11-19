@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import axios from 'axios';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 
 export interface OrderItem {
   name: string;
@@ -55,7 +56,7 @@ export const OrderHistoryProvider: React.FC<{ children: ReactNode }> = ({ childr
 
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:3030/orders/user/${user.email}`);
+      const response = await axios.get(buildApiUrl(API_ENDPOINTS.GET_USER_ORDERS(user.email)));
       if (response.data.success) {
         setOrders(response.data.orders);
       } else {
@@ -74,7 +75,7 @@ export const OrderHistoryProvider: React.FC<{ children: ReactNode }> = ({ childr
     if (!user?.email) return;
 
     try {
-      const response = await axios.post('http://localhost:3030/orders/create', {
+      const response = await axios.post(buildApiUrl(API_ENDPOINTS.CREATE_ORDER), {
         userEmail: user.email,
         ...orderData
       });

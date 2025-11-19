@@ -5,6 +5,7 @@ import { useOrderHistory } from '../contexts/OrderHistoryContext';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from '@/components/ui/sonner';
 import axios from 'axios';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 import Header from '../components/Header';
 import ModernFooter from '../components/ModernFooter';
 import QuickOrderTopBar from '../components/QuickOrderTopBar';
@@ -71,7 +72,7 @@ const EnhancedCart: React.FC = () => {
       console.log('Sending order data:', orderData);
 
       // Save order to database
-      const response = await axios.post('http://localhost:3030/orders/create', orderData);
+      const response = await axios.post(buildApiUrl(API_ENDPOINTS.CREATE_ORDER), orderData);
 
       console.log('Order response:', response.data);
 

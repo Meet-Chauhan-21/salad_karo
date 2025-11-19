@@ -7,6 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useOrderHistory } from '../contexts/OrderHistoryContext';
 import { toast } from '@/components/ui/sonner';
 import axios from 'axios';
+import { buildApiUrl } from '../config/api';
 import { 
   User, 
   Mail, 
@@ -72,7 +73,7 @@ const Profile: React.FC = () => {
       if (result.ok) {
         // Also update in backend database
         try {
-          await axios.put('http://localhost:3030/auth/update-profile', {
+          await axios.put(buildApiUrl('/auth/update-profile'), {
             email: user?.email,
             name: editForm.name.trim(),
             city: editForm.city.trim(),

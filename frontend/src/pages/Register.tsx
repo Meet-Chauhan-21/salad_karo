@@ -6,6 +6,7 @@ import { toast } from "@/components/ui/sonner";
 import { useNavigate } from "react-router-dom";
 import { Leaf, Heart, Star } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
+import { buildApiUrl, API_ENDPOINTS } from "../config/api";
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ const Register: React.FC = () => {
       // helpful to inspect request in console during dev
       console.log('Sending signup:', { name, email, phone, city, address, password });
 
-      const response = await axios.post("http://localhost:3030/auth/signup", {
+      const response = await axios.post(buildApiUrl(API_ENDPOINTS.SIGNUP), {
         name : name,
         phone : phone,
         city : city,

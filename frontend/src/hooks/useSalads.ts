@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 
 export interface Product {
   id: string; // Changed to string to accommodate MongoDB _id
@@ -23,7 +24,7 @@ export const useSalads = () => {
   const fetchSalads = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:3030/salads/all');
+      const response = await axios.get(buildApiUrl(API_ENDPOINTS.GET_ALL_SALADS));
       if (response.data.success) {
         // Transform the database salads to match the Product interface
         const transformedProducts = response.data.salads

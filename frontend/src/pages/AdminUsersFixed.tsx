@@ -46,7 +46,7 @@ const AdminUsers = () => {
   const fetchUsers = async () => {
     try {
       console.log('Fetching users from API...');
-      const response = await axios.get('http://localhost:3030/auth/users');
+      const response = await axios.get(buildApiUrl(API_ENDPOINTS.USERS));
       console.log('Users API response:', response.data);
       if (response.data.success) {
         console.log('Users fetched:', response.data.users.length);

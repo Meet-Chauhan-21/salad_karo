@@ -46,7 +46,7 @@ const AdminSalads: React.FC = () => {
 
   const fetchSalads = async () => {
     try {
-      const response = await axios.get('http://localhost:3030/salads/all');
+      const response = await axios.get(buildApiUrl(API_ENDPOINTS.GET_ALL_SALADS));
       if (response.data.success) {
         setSalads(response.data.salads);
       }
@@ -97,13 +97,13 @@ const AdminSalads: React.FC = () => {
   const handleSave = async () => {
     try {
       if (modalType === 'add') {
-        const response = await axios.post('http://localhost:3030/salads/create', formData);
+        const response = await axios.post(buildApiUrl(API_ENDPOINTS.CREATE_SALAD), formData);
         if (response.data.success) {
           alert('Salad added successfully!');
           fetchSalads();
         }
       } else if (modalType === 'edit' && selectedSalad) {
-        const response = await axios.put(`http://localhost:3030/salads/update/${selectedSalad._id}`, formData);
+        const response = await axios.put(buildApiUrl(`${API_ENDPOINTS.UPDATE_SALAD}/${selectedSalad._id}`), formData);
         if (response.data.success) {
           alert('Salad updated successfully!');
           fetchSalads();
@@ -119,7 +119,7 @@ const AdminSalads: React.FC = () => {
   const deleteSalad = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this salad?')) {
       try {
-        const response = await axios.delete(`http://localhost:3030/salads/delete/${id}`);
+                const response = await axios.delete(buildApiUrl(`${API_ENDPOINTS.DELETE_SALAD}/${id}`));
         if (response.data.success) {
           alert('Salad deleted successfully!');
           fetchSalads();
@@ -133,7 +133,7 @@ const AdminSalads: React.FC = () => {
 
   const toggleSaladStatus = async (id: string) => {
     try {
-      const response = await axios.put(`http://localhost:3030/salads/toggle-status/${id}`);
+                  const response = await axios.put(buildApiUrl(`${API_ENDPOINTS.TOGGLE_SALAD_STATUS}/${id}`));
       if (response.data.success) {
         fetchSalads();
       }
