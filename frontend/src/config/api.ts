@@ -7,7 +7,7 @@ const getApiBaseUrl = (): string => {
   
   // Fallback for different environments
   if (import.meta.env.PROD) {
-    return 'https://your-backend-domain.vercel.app'; // Replace with your actual backend URL
+    return 'https://salad-karo.vercel.app'; // Production backend URL
   }
   
   return 'http://localhost:3030'; // Development default
