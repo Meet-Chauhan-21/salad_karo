@@ -32,6 +32,11 @@ const SaladMenu = () => {
   const [selectedSalad, setSelectedSalad] = useState<ExtendedProduct | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
+  // Detect if device is mobile
+  const isMobile = () => {
+    return window.innerWidth <= 768; // Mobile breakpoint
+  };
+
   // Overlay open only if not clicking like/add to cart
   const handleSaladClick = (salad: ExtendedProduct, e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
@@ -44,9 +49,15 @@ const SaladMenu = () => {
     ) {
       return;
     }
-    setSelectedSalad(salad);
-    setIsDetailOpen(true);
-    setIsSaladDetailOpen(true);
+
+    // Navigate to mobile page on mobile devices, show overlay on desktop
+    if (isMobile()) {
+      navigate(`/salad/${salad.id}`, { state: { product: salad } });
+    } else {
+      setSelectedSalad(salad);
+      setIsDetailOpen(true);
+      setIsSaladDetailOpen(true);
+    }
   };
 
   const closeDetailOverlay = () => {

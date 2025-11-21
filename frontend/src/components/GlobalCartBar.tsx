@@ -17,7 +17,7 @@ const HIDE_ON_PATHS = [
 
 export default function GlobalCartBar() {
   const { cart } = useCart();
-  const { isSaladDetailOpen } = useOverlay();
+  const { isSaladDetailOpen, isCartBarHidden } = useOverlay();
   const location = useLocation();
   const navigate = useNavigate();
   const itemCount = cart.items.reduce((total, item) => total + item.quantity, 0);
@@ -31,11 +31,15 @@ export default function GlobalCartBar() {
     if (HIDE_ON_PATHS.some((p) => path.startsWith(p))) return true;
     // Hide on salad detail overlay (e.g. /menu/123, /likes/123)
     if (/^\/menu\/[0-9]+$/.test(path) || /^\/likes\/[0-9]+$/.test(path)) return true;
+    // Hide on mobile salad detail page (/salad/:id)
+    if (/^\/salad\/[0-9A-Za-z]+$/.test(path)) return true;
     // Hide when salad detail overlay is open - but only if explicitly set to true
     // This prevents false positives from uninitialized state
     if (isSaladDetailOpen === true) return true;
+    // Hide when explicitly requested (e.g., from mobile salad detail page)
+    if (isCartBarHidden === true) return true;
     return false;
-  }, [location.pathname, isSaladDetailOpen]);
+  }, [location.pathname, isSaladDetailOpen, isCartBarHidden]);
 
   // Handle showing/hiding with animation
   useEffect(() => {

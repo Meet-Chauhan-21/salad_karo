@@ -3,6 +3,7 @@ import { Plus, Heart, Star, Filter } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { useLikes } from '../contexts/LikesContext';
 import { useSalads } from '../hooks/useSalads';
+import { useNavigate } from 'react-router-dom';
 
 const categories = ['Italian', 'Paneer Salad', 'Low Fiber', 'High Protein', 'Healthy', 'Spicy', 'Premium'];
 
@@ -11,6 +12,15 @@ const EnhancedFreshSaladMenu = () => {
   const { products, loading, error } = useSalads();
   const { addToCart } = useCart();
   const { isLiked, toggleLike } = useLikes();
+  const navigate = useNavigate();
+
+  // Mobile click handler
+  const handleProductClick = (product: any) => {
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+      navigate(`/salad/${product.id}`, { state: { product } });
+    }
+  };
 
   // Filter products based on selected category
   const filteredProducts = useMemo(() => {
@@ -96,8 +106,16 @@ const EnhancedFreshSaladMenu = () => {
           {filteredProducts.map((product, index) => (
             <div
               key={product.id}
-              className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden animate-fade-in-up"
+              className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden animate-fade-in-up cursor-pointer"
               style={{ animationDelay: `${index * 100}ms` }}
+              onClick={(e) => {
+                // Prevent click if user clicked on button
+                const target = e.target as HTMLElement;
+                if (target.closest('button') || target.closest('[role="button"]')) {
+                  return;
+                }
+                handleProductClick(product);
+              }}
             >
               {/* Product Image */}
               <div className="relative overflow-hidden">

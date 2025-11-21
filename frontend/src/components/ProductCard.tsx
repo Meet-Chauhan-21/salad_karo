@@ -17,7 +17,12 @@ interface Product {
   badge?: string;
 }
 
-const ProductCard = ({ product }: { product: Product }) => {
+interface ProductCardProps {
+  product: Product;
+  onProductClick?: (product: Product) => void;
+}
+
+const ProductCard = ({ product, onProductClick }: ProductCardProps) => {
   const { addToCart, cart, updateQuantity, removeFromCart } = useCart();
   const { isLoggedIn } = useAuth();
   const { isLiked, toggleLike } = useLikes();
@@ -69,8 +74,25 @@ const ProductCard = ({ product }: { product: Product }) => {
     }
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    // Prevent click if clicking on buttons or interactive elements
+    if (
+      target.closest('button') ||
+      target.closest('.like-btn') ||
+      target.closest('.add-btn') ||
+      target.closest('.qty-control')
+    ) {
+      return;
+    }
+    onProductClick?.(product);
+  };
+
   return (
-    <div className="card-product group">
+    <div 
+      className="card-product group cursor-pointer"
+      onClick={handleCardClick}
+    >
       {/* Image Container */}
       <div className="relative overflow-hidden rounded-t-xl sm:rounded-t-2xl">
         <img 

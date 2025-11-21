@@ -8,25 +8,36 @@ import { useAuth } from '../contexts/AuthContext';
 import { useSalads } from '../hooks/useSalads';
 import { Leaf, Heart, Star } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
+import { useNavigate } from 'react-router-dom';
 
 const Likes: React.FC = () => {
   const { likedProductIds, clearAllLikes } = useLikes();
   const { isLoggedIn } = useAuth();
   const { cart } = useCart();
   const { products, loading, error } = useSalads();
+  const navigate = useNavigate();
   const likedList = products.filter(p => likedProductIds.has(p.id));
   const [selectedProduct, setSelectedProduct] = React.useState<any>(null);
   const [isDetailOpen, setIsDetailOpen] = React.useState(false);
+
+  // Detect if device is mobile
+  const isMobile = () => {
+    return window.innerWidth <= 768;
+  };
+
+  const handleProductClick = (product: any) => {
+    if (isMobile()) {
+      navigate(`/salad/${product.id}`, { state: { product } });
+    } else {
+      setSelectedProduct(product);
+      setIsDetailOpen(true);
+    }
+  };
 
   // Get quantity of a product in cart
   const getProductQuantity = (productId: string): number => {
     const cartItem = cart.items.find(item => item.id === productId);
     return cartItem ? cartItem.quantity : 0;
-  };
-
-  const handleProductClick = (product: any) => {
-    setSelectedProduct(product);
-    setIsDetailOpen(true);
   };
 
   const handleCloseDetail = () => {
@@ -117,7 +128,10 @@ const Likes: React.FC = () => {
                   handleProductClick(product);
                 }}
               >
-                <ProductCard product={product} />
+                <ProductCard 
+                  product={product} 
+                  onProductClick={handleProductClick}
+                />
               </div>
             ))}
           </div>

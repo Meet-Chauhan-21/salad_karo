@@ -3,6 +3,7 @@ import { Plus, Heart, Star, Filter, Utensils, Leaf, Zap, Salad, Pizza, Dumbbell,
 import { useCart } from '../contexts/CartContext';
 import { useLikes } from '../contexts/LikesContext';
 import { useSalads } from '../hooks/useSalads';
+import { useNavigate } from 'react-router-dom';
 import SaladDetailOverlay from './SaladDetailOverlay';
 
 const PremiumSaladMenu = () => {
@@ -12,6 +13,7 @@ const PremiumSaladMenu = () => {
   const { addToCart, cart, updateQuantity, removeFromCart } = useCart();
   const { isLiked, toggleLike } = useLikes();
   const { products, loading, error } = useSalads();
+  const navigate = useNavigate();
 
   // Get quantity of a product in cart
   const getProductQuantity = (productId: string): number => {
@@ -58,8 +60,21 @@ const PremiumSaladMenu = () => {
   };
 
   const handleProductClick = (product: any) => {
-    setSelectedProduct(product);
-    setIsOverlayOpen(true);
+    // Detect if device is mobile
+    const isMobile = window.innerWidth <= 768;
+    
+    console.log('Product clicked:', product.name, 'isMobile:', isMobile, 'width:', window.innerWidth);
+    
+    if (isMobile) {
+      // Navigate to mobile detail page
+      console.log('Navigating to mobile page for product:', product.id);
+      navigate(`/salad/${product.id}`, { state: { product } });
+    } else {
+      console.log('Opening overlay for desktop');
+      // Open overlay for desktop
+      setSelectedProduct(product);
+      setIsOverlayOpen(true);
+    }
   };
 
   const handleCloseOverlay = () => {

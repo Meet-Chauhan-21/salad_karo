@@ -111,11 +111,22 @@ const SaladDetailOverlay: React.FC<SaladDetailOverlayProps> = ({ product, isOpen
   const handleAddToCart = async () => {
     if (isItemInCart) {
       // Update existing item to the new quantity
-      updateCartQuantity(product.id, quantity);
+      updateCartQuantity(product.id, cartQuantity + quantity);
     } else {
-      // Add new item with specified quantity
-      for (let i = 0; i < quantity; i++) {
-        await addToCart(product);
+      // Add new item - addToCart adds 1 quantity, then update to desired quantity
+      const productForCart = {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        description: product.description,
+        rating: product.rating,
+        reviews: product.reviews,
+        badge: product.badge
+      };
+      await addToCart(productForCart);
+      if (quantity > 1) {
+        updateCartQuantity(product.id, quantity);
       }
     }
     

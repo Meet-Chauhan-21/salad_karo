@@ -33,6 +33,7 @@ import AdminSettings from "./pages/AdminSettingsFixed";
 import AdminUsers from "./pages/AdminUsersFixed";
 import AdminRoute from "./components/AdminRoute";
 import SaladDetailMobile from "./pages/SaladDetailMobile";
+import SaladDetailMobilePage from "./pages/SaladDetailMobilePage";
 import SaladDetailDesktop from "./pages/SaladDetailDesktop";
 
 const queryClient = new QueryClient();
@@ -66,6 +67,7 @@ const App = () => (
                 <Route path="/profile" element={<Profile />} />
                 
                 {/* Salad Detail Routes */}
+                <Route path="/salad/:id" element={<SaladDetailMobilePage />} />
                 <Route path="/salad-detail-mobile" element={<SaladDetailMobile />} />
                 <Route path="/salad-detail-desktop" element={<SaladDetailDesktop />} />
                 

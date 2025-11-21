@@ -2,9 +2,23 @@ import React from 'react';
 import ProductCard from './ProductCard';
 import { Product } from '@/lib/products';
 import { useSalads } from '@/hooks/useSalads';
+import { useNavigate } from 'react-router-dom';
 
 const ProductGrid = () => {
   const { products, loading, error } = useSalads();
+  const navigate = useNavigate();
+
+  // Detect if device is mobile
+  const isMobile = () => {
+    return window.innerWidth <= 768; // Mobile breakpoint
+  };
+
+  const handleProductClick = (product: Product) => {
+    if (isMobile()) {
+      navigate(`/salad/${product.id}`, { state: { product } });
+    }
+    // On desktop, we can add overlay functionality later if needed
+  };
 
   if (loading) {
     return (
@@ -55,7 +69,10 @@ const ProductGrid = () => {
               className="animate-fade-in-up"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <ProductCard product={product} />
+              <ProductCard 
+                product={product} 
+                onProductClick={handleProductClick}
+              />
             </div>
           ))}
         </div>
