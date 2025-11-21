@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { buildApiUrl, API_ENDPOINTS } from '../config/api';
+import { getImageUrl } from '../utils/imageUtils';
 
 export interface Product {
   id: string; // Changed to string to accommodate MongoDB _id
@@ -24,10 +24,11 @@ export const useSalads = () => {
   const fetchSalads = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(buildApiUrl(API_ENDPOINTS.GET_ALL_SALADS));
-      if (response.data.success) {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.GET_ALL_SALADS));
+      const data = await response.json();
+      if (data.success) {
         // Transform the database salads to match the Product interface
-        const transformedProducts = response.data.salads
+        const transformedProducts = data.salads
           .filter((salad: any) => salad.isActive) // Only show active salads
           .map((salad: any) => ({
             id: salad._id, // Use MongoDB _id instead of generating sequential IDs
@@ -35,7 +36,7 @@ export const useSalads = () => {
             description: salad.description,
             price: salad.price,
             originalPrice: salad.originalPrice,
-            image: salad.image,
+            image: getImageUrl(salad.image),
             rating: salad.rating || 5,
             reviews: salad.reviews || 0,
             badge: salad.badge,

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import { buildApiUrl, API_ENDPOINTS } from '../config/api';
+import { getImageUrl, getAvailableImages } from '../utils/imageUtils';
+import vegetableSaladImg from '../assets/vegetable-salad.jpg';
+import heroSaladImg from '../assets/hero-salad.jpg';
 import { 
   Plus, 
   Edit, 
@@ -78,7 +81,7 @@ const AdminSalads: React.FC = () => {
         description: '',
         price: 0,
         originalPrice: 0,
-        image: '/src/assets/vegetable-salad.jpg',
+        image: '/images/vegetable-salad.jpg',
         rating: 5,
         reviews: 0,
         badge: '',
@@ -283,12 +286,12 @@ const AdminSalads: React.FC = () => {
               <div key={salad._id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
                 <div className="relative">
                   <img
-                    src={salad.image}
+                    src={getImageUrl(salad.image)}
                     alt={salad.name}
                     className="w-full h-48 object-cover"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
-                      target.src = '/src/assets/hero-salad.jpg';
+                      target.src = getImageUrl('/images/hero-salad.jpg');
                     }}
                   />
                   <div className="absolute top-3 right-3 flex flex-col gap-1">
@@ -495,14 +498,32 @@ const AdminSalads: React.FC = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                    <input
-                      type="text"
-                      value={formData.image || ''}
-                      onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                      placeholder="/src/assets/salad-image.jpg"
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Image</label>
+                    <div className="space-y-2">
+                      <input
+                        type="text"
+                        value={formData.image || ''}
+                        onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        placeholder="/images/vegetable-salad.jpg"
+                      />
+                      <div className="grid grid-cols-4 gap-2">
+                        {getAvailableImages().map((img) => (
+                          <button
+                            key={img.filename}
+                            type="button"
+                            onClick={() => setFormData({ ...formData, image: img.url })}
+                            className="relative aspect-square rounded-lg overflow-hidden border-2 hover:border-green-500 transition-colors"
+                          >
+                            <img 
+                              src={img.importedUrl} 
+                              alt={img.filename}
+                              className="w-full h-full object-cover"
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                   <div className="flex items-center">
                     <input
