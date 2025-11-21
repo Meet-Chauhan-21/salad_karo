@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Header from "../components/Header";
 import ModernFooter from "../components/ModernFooter";
-import axios from "axios";
 import { toast } from "@/components/ui/sonner";
 import { useNavigate } from "react-router-dom";
 import { Leaf, Heart, Star } from "lucide-react";
@@ -44,59 +43,54 @@ const Register: React.FC = () => {
       // helpful to inspect request in console during dev
       console.log('Sending signup:', { name, email, phone, city, address, password });
 
-      const response = await axios.post(buildApiUrl(API_ENDPOINTS.SIGNUP), {
-        name : name,
-        phone : phone,
-        city : city,
-        address : address,
-        email : email,
-        password : password
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.SIGNUP), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: name,
+          phone: phone,
+          city: city,
+          address: address,
+          email: email,
+          password: password
+        }),
       });
 
-      console.log('Signup response:', response);
-      // be defensive — some servers wrap message differently
-      const msg = response.data?.message || response.statusText;
+      const data = await response.json();
+      console.log('Signup response:', response, data);
 
-      if (response.status === 201 && response.data.success) {
-        // Store auth token
-        if (response.data.jwtToken) {
-          localStorage.setItem('authToken', response.data.jwtToken);
-        }
+      if (response.ok && data.success) {
+        // Store auth token and user data in localStorage
+        localStorage.setItem('authToken', data.jwtToken);
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('userEmail', data.email);
+        localStorage.setItem('userName', data.name);
         
         // Register user in AuthContext using backend response data
         const authResult = registerUser({
-          email: response.data.email,
+          email: data.email,
           password: password,
-          name: response.data.name,
-          phone: response.data.phone,
-          city: response.data.city,
-          address: response.data.address
+          name: data.name,
+          phone: data.phone,
+          city: data.city,
+          address: data.address
         });
         
         if (authResult.ok) {
-          toast.success('Account created successfully! Welcome ' + response.data.name + '!');
+          toast.success('Account created successfully! Welcome ' + data.name + '!');
           navigate('/');
         } else {
           toast.error('Registration successful but login failed. Please login manually.');
           navigate('/login');
         }
       } else {
-        toast.error(msg || 'Registration failed');
+        toast.error(data.message || 'Registration failed');
       }
     } catch (err: any) {
       console.error('Signup error:', err);
-      // If server responded with JSON:
-      if (err.response) {
-        console.error('Server Response:', err.response.status, err.response.data);
-        toast.error(err.response.data?.message || `Server error ${err.response.status}`);
-      } else if (err.request) {
-        // request sent but no response
-        console.error('No response received:', err.request);
-        toast.error('No response from server. Is the backend running?');
-      } else {
-        // something happened setting up request
-        toast.error(err.message || 'Registration error');
-      }
+      toast.error('Network error. Please try again.');
     }
   };
 

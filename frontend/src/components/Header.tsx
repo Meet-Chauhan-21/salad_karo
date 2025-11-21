@@ -50,10 +50,21 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center space-x-1 sm:space-x-2">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-primary-glow rounded-full flex items-center justify-center animate-pulse-glow">
+            <img 
+              src="/images/saladkaro-logo.jpg" 
+              alt="SaladKaro Logo" 
+              className="w-8 h-8 sm:w-10 sm:h-10 object-cover rounded-full"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                const fallback = target.nextElementSibling as HTMLElement;
+                if (fallback) fallback.style.display = 'flex';
+              }}
+            />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-primary-glow rounded-full items-center justify-center animate-pulse-glow" style={{display: 'none'}}>
               <span className="text-primary-foreground font-bold text-base sm:text-lg">🥗</span>
             </div>
-            <h1 className="text-lg sm:text-2xl font-bold text-gradient">Salad Karo</h1>
+            <h1 className="text-lg sm:text-2xl font-bold text-gradient">SaladKaro</h1>
           </div>
 
           {/* Desktop Navigation */}
@@ -198,6 +209,15 @@ const Header = () => {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden mt-4 py-4 border-t border-border animate-fade-in-up">
+            {/* Mobile Menu Header */}
+            <div className="flex items-center justify-center mb-4 pb-4 border-b border-border">
+              <img 
+                src="/images/saladkaro-logo.jpg" 
+                alt="SaladKaro Logo" 
+                className="w-12 h-12 mr-3 object-cover rounded-full"
+              />
+              <h2 className="text-xl font-bold text-gradient">SaladKaro</h2>
+            </div>
             <nav className="flex flex-col space-y-3">
               <NavLink to="/" className={({ isActive }) => `${navLinkClass(isActive && location.hash !== '#shop')} py-2 text-base`} onClick={() => setIsMenuOpen(false)}>Home</NavLink>
               <NavLink to="/menu" className={({ isActive }) => `${navLinkClass(isActive)} py-2 text-base`} onClick={() => setIsMenuOpen(false)}>Salad Menu</NavLink>

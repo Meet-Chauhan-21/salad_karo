@@ -1,0 +1,69 @@
+<!-- Round SaladKaro Logo SVG -->
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Circular background -->
+  <circle cx="32" cy="32" r="32" fill="#ffffff"/>
+  
+  <!-- Circular clipping mask -->
+  <defs>
+    <clipPath id="roundClip">
+      <circle cx="32" cy="32" r="30"/>
+    </clipPath>
+  </defs>
+  
+  <!-- Logo content within circle -->
+  <g clip-path="url(#roundClip)">
+    <!-- Bowl Base Shadow -->
+    <ellipse cx="32" cy="45" rx="22" ry="5" fill="#8FBC8F" opacity="0.3"/>
+    
+    <!-- Bowl -->
+    <path d="M10 35 Q10 28 16 24 Q22 20 32 20 Q42 20 48 24 Q54 28 54 35" 
+          fill="none" 
+          stroke="#7CB342" 
+          stroke-width="2.5" 
+          stroke-linecap="round"/>
+    <path d="M10 35 Q32 50 54 35" 
+          fill="#E8F5E8" 
+          stroke="#7CB342" 
+          stroke-width="1.5"/>
+    
+    <!-- Vegetables in salad -->
+    <!-- Large lettuce leaves -->
+    <ellipse cx="28" cy="30" rx="6" ry="4" fill="#4CAF50" transform="rotate(-20 28 30)"/>
+    <ellipse cx="36" cy="32" rx="5" ry="3" fill="#66BB6A" transform="rotate(15 36 32)"/>
+    <ellipse cx="26" cy="35" rx="4" ry="3" fill="#81C784" transform="rotate(-45 26 35)"/>
+    
+    <!-- Tomatoes -->
+    <circle cx="34" cy="29" r="3" fill="#F44336"/>
+    <circle cx="38" cy="34" r="2.5" fill="#E53935"/>
+    
+    <!-- Cucumber slices -->
+    <ellipse cx="24" cy="32" rx="2.5" ry="1.5" fill="#66BB6A" stroke="#4CAF50" stroke-width="0.5"/>
+    <ellipse cx="40" cy="30" rx="2.5" ry="1.5" fill="#66BB6A" stroke="#4CAF50" stroke-width="0.5"/>
+    
+    <!-- Carrot pieces -->
+    <ellipse cx="30" cy="34" rx="1.5" ry="2.5" fill="#FF9800" transform="rotate(30 30 34)"/>
+    <ellipse cx="36" cy="35" rx="1.5" ry="2.5" fill="#F57C00" transform="rotate(-15 36 35)"/>
+    
+    <!-- Purple onion -->
+    <circle cx="27" cy="30" r="2" fill="#9C27B0"/>
+    <circle cx="38" cy="32" r="1.5" fill="#8E24AA"/>
+    
+    <!-- Yellow bell pepper -->
+    <ellipse cx="31" cy="31" rx="2.5" ry="1.5" fill="#FFEB3B" transform="rotate(45 31 31)"/>
+    
+    <!-- Small garnish herbs -->
+    <circle cx="29" cy="29" r="0.8" fill="#4CAF50"/>
+    <circle cx="35" cy="30" r="0.8" fill="#66BB6A"/>
+    <circle cx="32" cy="34" r="0.8" fill="#81C784"/>
+    
+    <!-- Bowl rim highlight -->
+    <path d="M10 35 Q32 32 54 35" 
+          fill="none" 
+          stroke="#A5D6A7" 
+          stroke-width="1" 
+          opacity="0.7"/>
+  </g>
+  
+  <!-- Circular border -->
+  <circle cx="32" cy="32" r="31" fill="none" stroke="#E0E0E0" stroke-width="1"/>
+</svg>

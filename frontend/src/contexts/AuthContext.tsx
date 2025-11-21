@@ -99,8 +99,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           address: data.address
         };
         setUser(userData);
-        // Store token in localStorage for API requests
+        // Store user data and token in localStorage
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(userData));
         localStorage.setItem('authToken', data.jwtToken);
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('userEmail', data.email);
+        localStorage.setItem('userName', data.name);
         return { ok: true };
       } else {
         return { ok: false, error: data.message || 'Login failed' };
@@ -112,9 +116,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const register = useCallback((params: { email: string; password: string; name?: string; phone?: string; city?: string; address?: string }): AuthResult => {
-    // This function is now only used to set user state after successful backend registration
+    // This function sets user state after successful backend registration
     const { email, name, phone, city, address } = params;
-    setUser({ email, name, phone, city, address });
+    const userData = { email, name, phone, city, address };
+    setUser(userData);
+    
+    // Store user data in localStorage
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(userData));
+    
     return { ok: true };
   }, []);
 
@@ -134,8 +143,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = useCallback(() => {
     setUser(null);
-    // Clear auth token and admin-related localStorage items on logout
+    // Clear all user-related localStorage data
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
     localStorage.removeItem('authToken');
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userName');
     localStorage.removeItem('isAdmin');
     localStorage.removeItem('adminUser');
     // Dispatch custom event to notify other components (like AdminAccessButton)
