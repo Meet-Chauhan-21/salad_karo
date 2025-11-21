@@ -164,7 +164,7 @@ const SaladMenu = () => {
         case 'rating':
           return b.rating - a.rating;
         case 'newest':
-          return b.id - a.id;
+          return Number(b.id) - Number(a.id);
         case 'popularity':
         default:
           return b.reviews - a.reviews;

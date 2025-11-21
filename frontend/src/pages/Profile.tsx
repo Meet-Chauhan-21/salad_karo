@@ -63,6 +63,12 @@ const Profile: React.FC = () => {
 
   const handleSaveProfile = async () => {
     try {
+      // Validate form data
+      if (!editForm.name.trim()) {
+        toast.error('Name is required');
+        return;
+      }
+
       // Update in local context
       const result = updateProfile({
         name: editForm.name.trim() || undefined,
