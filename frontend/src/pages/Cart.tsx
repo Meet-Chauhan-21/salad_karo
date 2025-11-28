@@ -102,25 +102,10 @@ const Cart: React.FC = () => {
         description: 'Your order has been placed. Opening WhatsApp...',
         duration: 5000
       });
-      
       // Open WhatsApp
       setTimeout(() => {
         window.open(whatsappURL, '_blank');
       }, 500);
-        
-        // Show success message
-        toast.success('🎉 Order Successfully Confirmed!', {
-          description: 'Your order has been placed. Opening WhatsApp...',
-          duration: 5000
-        });
-        
-        // Open WhatsApp
-        setTimeout(() => {
-          window.open(whatsappURL, '_blank');
-        }, 500);
-      } else {
-        toast.error('Failed to create order. Please try again.');
-      }
     } catch (error: any) {
       console.error('Order creation error:', error);
       console.error('Error response:', error.response?.data);

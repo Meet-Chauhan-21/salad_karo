@@ -57,7 +57,7 @@ const Login: React.FC = () => {
               const nextErrors: { email?: string; password?: string } = {};
               
               // Check for admin credentials first (before validation)
-              if (email.trim() === 'admin@123' && password === '123') {
+              if (email.trim() === 'admin@saladkaro.pvt.in' && password === 'saladKaro@9915/sk') {
                 console.log('Admin credentials matched, setting localStorage');
                 localStorage.setItem('isAdmin', 'true');
                 localStorage.setItem('adminUser', JSON.stringify({
