@@ -34,10 +34,12 @@ import AdminUsers from "./pages/AdminUsersFixed";
 import AdminRoute from "./components/AdminRoute";
 import SaladDetailMobilePage from "./pages/SaladDetailMobilePage";
 
+import ScrollToTop from "./components/ScrollToTop";
+
 const queryClient = new QueryClient();
 
 const App = () => (
-  
+
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <OrderHistoryProvider>
@@ -46,44 +48,45 @@ const App = () => (
             <OverlayProvider>
               <ToastProvider>
                 <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <Routes>
-                <Route path="/" element={<ModernIndex />} />
-                <Route path="/classic" element={<Index />} />
-                <Route path="/menu" element={<SaladMenu />} />
-                <Route path="/membership" element={<Membership />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/return-policy" element={<ReturnPolicy />} />
-                <Route path="/refund-policy" element={<RefundPolicy />} />
-                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                <Route path="/disclaimer" element={<Disclaimer />} />
-                <Route path="/likes" element={<Likes />} />
-                <Route path="/cart" element={<EnhancedCart />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/profile" element={<Profile />} />
-                
-                {/* Salad Detail Routes */}
-                <Route path="/salad/:id" element={<SaladDetailMobilePage />} />
-                
-                {/* Admin Routes */}
-                <Route path="/admin" element={<Navigate to="/admin/orders" replace />} />
-                <Route path="/admin/orders" element={<AdminRoute><AdminOrders /></AdminRoute>} />
-                <Route path="/admin/salads" element={<AdminRoute><AdminSalads /></AdminRoute>} />
-                <Route path="/admin/memberships" element={<AdminRoute><AdminMemberships /></AdminRoute>} />
-                <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
-                <Route path="/admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
-                
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              <GlobalCartBar />
-              </TooltipProvider>
-            </ToastProvider>
-          </OverlayProvider>
-        </LikesProvider>
-      </CartProvider>
+                  <ScrollToTop />
+                  <Toaster />
+                  <Sonner />
+                  <Routes>
+                    <Route path="/" element={<ModernIndex />} />
+                    <Route path="/classic" element={<Index />} />
+                    <Route path="/menu" element={<SaladMenu />} />
+                    <Route path="/membership" element={<Membership />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/return-policy" element={<ReturnPolicy />} />
+                    <Route path="/refund-policy" element={<RefundPolicy />} />
+                    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                    <Route path="/disclaimer" element={<Disclaimer />} />
+                    <Route path="/likes" element={<Likes />} />
+                    <Route path="/cart" element={<EnhancedCart />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/profile" element={<Profile />} />
+
+                    {/* Salad Detail Routes */}
+                    <Route path="/salad/:id" element={<SaladDetailMobilePage />} />
+
+                    {/* Admin Routes */}
+                    <Route path="/admin" element={<Navigate to="/admin/orders" replace />} />
+                    <Route path="/admin/orders" element={<AdminRoute><AdminOrders /></AdminRoute>} />
+                    <Route path="/admin/salads" element={<AdminRoute><AdminSalads /></AdminRoute>} />
+                    <Route path="/admin/memberships" element={<AdminRoute><AdminMemberships /></AdminRoute>} />
+                    <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
+                    <Route path="/admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
+
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                  <GlobalCartBar />
+                </TooltipProvider>
+              </ToastProvider>
+            </OverlayProvider>
+          </LikesProvider>
+        </CartProvider>
       </OrderHistoryProvider>
     </AuthProvider>
   </QueryClientProvider>

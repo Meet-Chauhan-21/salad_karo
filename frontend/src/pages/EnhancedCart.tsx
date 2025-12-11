@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Leaf, Heart, Star, Minus, Plus, Trash2, ShoppingBag, ArrowRight } from 'lucide-react';
+import { Leaf, Heart, Star, Minus, Plus, Trash2, ShoppingBag, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { useOrderHistory } from '../contexts/OrderHistoryContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -10,26 +10,18 @@ import Header from '../components/Header';
 import ModernFooter from '../components/ModernFooter';
 import QuickOrderTopBar from '../components/QuickOrderTopBar';
 import { useOrderNavigation } from '../hooks/use-order-navigation';
-import SaladDetailOverlay from '../components/SaladDetailOverlay';
 import AdminAccessButton from '../components/AdminAccessButton';
+import { useNavigate } from 'react-router-dom';
 
 const EnhancedCart: React.FC = () => {
   const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
   const { addOrder } = useOrderHistory();
   const { user } = useAuth();
   const { handleOrderNow } = useOrderNavigation();
-  const [selectedProduct, setSelectedProduct] = useState<any>(null);
-  const [isOverlayOpen, setIsOverlayOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleProductClick = (product: any) => {
-    console.log('Product clicked:', product);
-    setSelectedProduct(product);
-    setIsOverlayOpen(true);
-  };
-
-  const handleCloseOverlay = () => {
-    setIsOverlayOpen(false);
-    setSelectedProduct(null);
+    navigate(`/salad/${product.id}`, { state: { product } });
   };
 
   const calculateSubtotal = () => {
@@ -84,14 +76,14 @@ const EnhancedCart: React.FC = () => {
         let message = "🥗 *New Order from Salad Karo*\n\n";
         message += "📦 *Order Details:*\n";
         message += "━━━━━━━━━━━━━━━━\n\n";
-        
+
         cart.items.forEach((item, index) => {
           message += `${index + 1}. *${item.name}*\n`;
           message += `   Quantity: ${item.quantity}\n`;
           message += `   Price: ₹${item.price} each\n`;
           message += `   Subtotal: ₹${item.price * item.quantity}\n\n`;
         });
-        
+
         message += "━━━━━━━━━━━━━━━━\n";
         message += `💰 *Subtotal:* ₹${calculateSubtotal()}\n`;
         message += `📊 *Tax (5%):* ₹${calculateTax().toFixed(2)}\n`;
@@ -100,20 +92,20 @@ const EnhancedCart: React.FC = () => {
         message += `✅ *Total Amount:* ₹${calculateTotal().toFixed(2)}\n\n`;
         message += `👤 *Customer:* ${user.name || user.email}\n`;
         message += "Thank you for your order! 🙏";
-        
+
         const phoneNumber = '919265379915';
         const encodedMessage = encodeURIComponent(message);
         const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-        
+
         // Clear cart
         clearCart();
-        
+
         // Show success message
         toast.success('🎉 Order Successfully Confirmed!', {
           description: 'Your order has been placed. Opening WhatsApp...',
           duration: 5000
         });
-        
+
         // Open WhatsApp
         setTimeout(() => {
           window.open(whatsappURL, '_blank');
@@ -132,9 +124,15 @@ const EnhancedCart: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <QuickOrderTopBar />
       <Header />
-      
+
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
         <div className="flex items-center gap-3 mb-8">
+          <button
+            onClick={() => navigate(-1)}
+            className="p-2 rounded-full hover:bg-gray-200 transition-colors"
+          >
+            <ArrowLeft className="w-6 h-6 text-gray-700" />
+          </button>
           <ShoppingBag className="w-8 h-8 text-green-600" />
           <h1 className="text-4xl font-bold text-gray-900">Your Cart</h1>
           {cart.items.length > 0 && (
@@ -163,7 +161,7 @@ const EnhancedCart: React.FC = () => {
             </div>
 
             <div className="pointer-events-none absolute z-0 w-64 h-64 rounded-full bg-gradient-to-br from-green-100 to-blue-100 blur-3xl" />
-            
+
             <div className="relative z-10">
               <div className="text-6xl mb-6">🛒</div>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Your cart is empty</h2>
@@ -197,32 +195,32 @@ const EnhancedCart: React.FC = () => {
                     </button>
                   </div>
                 </div>
-                
+
                 <div className="divide-y divide-gray-200">
                   {cart.items.map(item => (
-                    <div 
-                      key={item.id} 
+                    <div
+                      key={item.id}
                       className="p-6 hover:bg-gray-50 transition-colors cursor-pointer"
                       onClick={() => handleProductClick(item)}
                     >
                       <div className="flex items-center gap-6">
                         <div className="relative group">
-                          <img 
-                            src={item.image} 
-                            alt={item.name} 
+                          <img
+                            src={item.image}
+                            alt={item.name}
                             className="w-20 h-20 object-cover rounded-xl shadow-md hover:scale-105 transition-transform border-2 border-transparent hover:border-green-300"
                           />
                           <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-xl transition-all duration-200 flex items-center justify-center pointer-events-none">
                             <div className="text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity bg-black bg-opacity-50 px-2 py-1 rounded">👁️ View Details</div>
                           </div>
                         </div>
-                        
+
                         <div className="flex-1">
                           <h3 className="text-lg font-semibold text-gray-900 mb-1 hover:text-green-600 transition-colors">
                             {item.name}
                           </h3>
-                          <p className="text-gray-600 text-sm mb-3 line-clamp-2">{item.description}</p>
-                          
+                          <p className="text-gray-600 text-sm mb-3 line-clamp-2 hidden sm:block">{item.description}</p>
+
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
                               <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
@@ -246,7 +244,7 @@ const EnhancedCart: React.FC = () => {
                                   <Plus className="w-4 h-4" />
                                 </button>
                               </div>
-                              
+
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -257,7 +255,7 @@ const EnhancedCart: React.FC = () => {
                                 <Trash2 className="w-4 h-4" />
                               </button>
                             </div>
-                            
+
                             <div className="text-right">
                               <div className="text-xl font-bold text-green-700">₹{item.price * item.quantity}</div>
                               <div className="text-sm text-gray-500">₹{item.price} each</div>
@@ -275,7 +273,7 @@ const EnhancedCart: React.FC = () => {
             <div className="lg:col-span-1">
               <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Order Summary</h2>
-                
+
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between text-gray-600">
                     <span>Subtotal</span>
@@ -295,24 +293,24 @@ const EnhancedCart: React.FC = () => {
                     </div>
                   )}
                 </div>
-                
+
                 <div className="border-t border-gray-200 pt-4 mb-6">
                   <div className="flex justify-between text-xl font-bold text-gray-900">
                     <span>Total</span>
                     <span>₹{calculateTotal().toFixed(2)}</span>
                   </div>
                 </div>
-                
-                <button 
+
+                <button
                   onClick={handleCheckout}
                   className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-4 rounded-xl font-semibold text-lg hover:shadow-lg hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
                 >
                   Proceed to Checkout
                   <ArrowRight className="w-5 h-5" />
                 </button>
-                
+
                 <div className="mt-4 text-center">
-                  <button 
+                  <button
                     onClick={handleOrderNow}
                     className="text-green-600 hover:text-green-700 font-medium inline-flex items-center gap-2"
                   >
@@ -325,18 +323,10 @@ const EnhancedCart: React.FC = () => {
           </div>
         )}
       </main>
-      
+
       <ModernFooter />
 
-      {/* Salad Detail Overlay */}
-      {selectedProduct && (
-        <SaladDetailOverlay
-          product={selectedProduct}
-          isOpen={isOverlayOpen}
-          onClose={handleCloseOverlay}
-          initialQuantity={selectedProduct.quantity}
-        />
-      )}
+      {/* Salad Detail Overlay - Removed as using redirect */}
       <AdminAccessButton />
     </div>
   );

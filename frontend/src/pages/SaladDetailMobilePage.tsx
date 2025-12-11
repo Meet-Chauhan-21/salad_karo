@@ -14,32 +14,65 @@ const SaladDetailMobilePage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const params = useParams();
-  const { addToCart, cart, updateQuantity: updateCartQuantity } = useCart();
+  const { addToCart, cart, updateQuantity: updateCartQuantity, removeFromCart } = useCart();
   const { isLiked, toggleLike } = useLikes();
   const { isLoggedIn } = useAuth();
   const { setIsCartBarHidden } = useOverlay();
-  
+
   const [product, setProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  // Hide cart bar when component mounts, show when unmounts
+  // Ensure cart bar is visible when component mounts
   useEffect(() => {
-    setIsCartBarHidden(true);
-    return () => {
-      setIsCartBarHidden(false);
-    };
+    setIsCartBarHidden(false);
   }, [setIsCartBarHidden]);
+
+  // ... (keep useEffect for product loading)
+
+  // ... (keep helper checks like existingItem, isItemInCart)
+
+  // Modified handle logic to support the new UI
+  const handleInitialAdd = () => {
+    const productForCart = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      description: product.description,
+      rating: product.rating,
+      reviews: product.reviews,
+      badge: product.badge
+    };
+    addToCart(productForCart);
+    // Remove toast
+  };
+
+  const handleIncrement = () => {
+    updateCartQuantity(product.id, cartQuantity + 1);
+  };
+
+  const handleDecrement = () => {
+    if (cartQuantity > 1) {
+      updateCartQuantity(product.id, cartQuantity - 1);
+    } else {
+      removeFromCart(product.id);
+    }
+  };
+
+  // ... (Render loop)
+
+
 
   // Get product from location state, URL params, or find by ID
   useEffect(() => {
     console.log('SaladDetailMobilePage mounted');
-    
+
     const productData = location.state?.product;
     const productId = params.id || new URLSearchParams(location.search).get('id');
-    
+
     console.log('productId:', productId);
-    
+
     if (productData) {
       console.log('Using product from state');
       setProduct(productData);
@@ -74,15 +107,14 @@ const SaladDetailMobilePage: React.FC = () => {
   const isItemInCart = !!existingItem;
   const cartQuantity = existingItem ? existingItem.quantity : 0;
 
-  const totalPrice = product.price * quantity;
+  const totalPrice = product.price;
   const isProductLiked = isLiked(product.id);
 
   const handleAddToCart = () => {
     if (isItemInCart) {
-      updateCartQuantity(product.id, cartQuantity + quantity);
-      toast.success(`Updated ${product.name} quantity in cart!`);
+      updateCartQuantity(product.id, cartQuantity + 1);
     } else {
-      // Add new item - addToCart adds 1 quantity, then update to desired quantity
+      // Add new item - addToCart adds 1 quantity
       const productForCart = {
         id: product.id,
         name: product.name,
@@ -94,10 +126,6 @@ const SaladDetailMobilePage: React.FC = () => {
         badge: product.badge
       };
       addToCart(productForCart);
-      if (quantity > 1) {
-        updateCartQuantity(product.id, quantity);
-      }
-      toast.success(`Added ${product.name} to cart!`);
     }
   };
 
@@ -149,11 +177,11 @@ const SaladDetailMobilePage: React.FC = () => {
           >
             <ArrowLeft className="w-6 h-6 text-gray-700" />
           </button>
-          
+
           <h1 className="font-semibold text-lg text-gray-900 truncate mx-4 flex-1">
             {product.name}
           </h1>
-          
+
           <div className="flex items-center space-x-2">
             <button
               onClick={handleShare}
@@ -165,10 +193,9 @@ const SaladDetailMobilePage: React.FC = () => {
               onClick={handleLikeToggle}
               className="p-2 rounded-full hover:bg-gray-100 transition-colors"
             >
-              <Heart 
-                className={`w-5 h-5 transition-colors ${
-                  isProductLiked ? 'fill-red-500 text-red-500' : 'text-gray-600'
-                }`} 
+              <Heart
+                className={`w-5 h-5 transition-colors ${isProductLiked ? 'fill-red-500 text-red-500' : 'text-gray-600'
+                  }`}
               />
             </button>
           </div>
@@ -181,9 +208,8 @@ const SaladDetailMobilePage: React.FC = () => {
           <img
             src={getImageUrl(product.image)}
             alt={product.name}
-            className={`w-full h-full object-cover transition-opacity duration-500 ${
-              imageLoaded ? 'opacity-100' : 'opacity-0'
-            }`}
+            className={`w-full h-full object-cover transition-opacity duration-500 ${imageLoaded ? 'opacity-100' : 'opacity-0'
+              }`}
             onLoad={() => setImageLoaded(true)}
           />
           {!imageLoaded && (
@@ -192,7 +218,7 @@ const SaladDetailMobilePage: React.FC = () => {
             </div>
           )}
         </div>
-        
+
         {/* Price Badge */}
         <div className="absolute top-4 right-4">
           <div className="bg-white px-3 py-2 rounded-full shadow-lg border border-gray-100">
@@ -219,18 +245,18 @@ const SaladDetailMobilePage: React.FC = () => {
         {/* Title & Quick Info */}
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-3">{product.name}</h1>
-          
+
           <div className="flex items-center space-x-4 mb-4">
             <div className="flex items-center space-x-1 text-gray-600">
               <Clock className="w-4 h-4" />
               <span className="text-sm">10-15 min</span>
             </div>
-            
+
             <div className="flex items-center space-x-1 text-gray-600">
               <Award className="w-4 h-4" />
               <span className="text-sm">Serves 1-2</span>
             </div>
-            
+
             <div className="flex items-center space-x-1 text-green-600">
               <Leaf className="w-4 h-4" />
               <span className="text-sm font-medium">Fresh</span>
@@ -246,11 +272,10 @@ const SaladDetailMobilePage: React.FC = () => {
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
-                  className={`w-4 h-4 ${
-                    i < Math.floor(product.rating)
-                      ? 'fill-yellow-400 text-yellow-400'
-                      : 'text-gray-300'
-                  }`}
+                  className={`w-4 h-4 ${i < Math.floor(product.rating)
+                    ? 'fill-yellow-400 text-yellow-400'
+                    : 'text-gray-300'
+                    }`}
                 />
               ))}
             </div>
@@ -271,6 +296,42 @@ const SaladDetailMobilePage: React.FC = () => {
           </div>
         </div>
 
+        {/* Dynamic Action Section (Amazon Style) */}
+        <div className="bg-white border-t border-b border-gray-100 py-4 mb-6">
+          <div className="flex items-center justify-start"> {/* Left Aligned */}
+            {!isItemInCart ? (
+              /* State 1: Small Add to Cart Button */
+              <button
+                onClick={handleInitialAdd}
+                className="bg-green-600 text-white text-base font-bold py-3 px-8 rounded-full shadow-md hover:bg-green-700 active:scale-95 transition-all flex items-center gap-2"
+              >
+                Add to cart
+              </button>
+            ) : (
+              /* State 2: Quantity Controls (Replaces Add Button - Swiggy/Zepto Style) */
+              <div className="flex items-center bg-green-50 rounded-full border border-green-200 shadow-sm overflow-hidden animate-in fade-in zoom-in duration-200">
+                <button
+                  onClick={handleDecrement}
+                  className="p-4 text-green-700 hover:bg-green-100 transition-colors active:bg-green-200"
+                  aria-label="Decrease quantity"
+                >
+                  <Minus className="w-5 h-5" />
+                </button>
+                <span className="w-12 text-center font-bold text-green-800 text-lg">
+                  {cartQuantity}
+                </span>
+                <button
+                  onClick={handleIncrement}
+                  className="p-4 text-green-700 hover:bg-green-100 transition-colors active:bg-green-200"
+                  aria-label="Increase quantity"
+                >
+                  <Plus className="w-5 h-5" />
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Content Sections */}
         <div className="space-y-6">
           {/* Description Section */}
@@ -278,7 +339,7 @@ const SaladDetailMobilePage: React.FC = () => {
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Description</h3>
             <div className="space-y-4">
               <p className="text-gray-700 leading-relaxed">{product.description}</p>
-              
+
               {/* Benefits */}
               <div>
                 <h4 className="font-semibold text-gray-900 mb-2">Health Benefits:</h4>
@@ -313,7 +374,7 @@ const SaladDetailMobilePage: React.FC = () => {
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     'Fresh Lettuce',
-                    'Cherry Tomatoes', 
+                    'Cherry Tomatoes',
                     'Cucumber',
                     'Red Onion',
                     'Bell Peppers',
@@ -330,7 +391,7 @@ const SaladDetailMobilePage: React.FC = () => {
                   ))}
                 </div>
               </div>
-              
+
               <div className="bg-green-50 p-3 rounded-lg">
                 <p className="text-sm text-green-700">
                   <strong>Note:</strong> All ingredients are fresh, organic when possible, and sourced from trusted suppliers.
@@ -359,7 +420,7 @@ const SaladDetailMobilePage: React.FC = () => {
                   </div>
                 ))}
               </div>
-              
+
               <div className="space-y-2">
                 <h4 className="font-semibold text-gray-900">Rich in Vitamins:</h4>
                 <div className="flex flex-wrap gap-1">
@@ -412,11 +473,10 @@ const SaladDetailMobilePage: React.FC = () => {
                           {[...Array(5)].map((_, i) => (
                             <Star
                               key={i}
-                              className={`w-3 h-3 ${
-                                i < review.rating
-                                  ? 'fill-yellow-400 text-yellow-400'
-                                  : 'text-gray-300'
-                              }`}
+                              className={`w-3 h-3 ${i < review.rating
+                                ? 'fill-yellow-400 text-yellow-400'
+                                : 'text-gray-300'
+                                }`}
                             />
                           ))}
                         </div>
@@ -427,7 +487,7 @@ const SaladDetailMobilePage: React.FC = () => {
                   <p className="text-sm text-gray-700">{review.comment}</p>
                 </div>
               ))}
-              
+
               <div className="text-center pt-2">
                 <span className="text-sm text-gray-500">Showing latest 3 reviews</span>
               </div>
@@ -436,54 +496,7 @@ const SaladDetailMobilePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Sticky Bottom Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 safe-area-pb">
-        <div className="flex items-center space-x-4">
-          {/* Quantity Selector */}
-          <div className="flex items-center bg-gray-100 rounded-lg">
-            <button
-              onClick={() => handleQuantityChange(-1)}
-              disabled={quantity <= 1}
-              className="p-3 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-l-lg"
-            >
-              <Minus className="w-4 h-4 text-gray-600" />
-            </button>
-            <span className="px-4 py-3 font-semibold text-gray-900 min-w-[3rem] text-center">
-              {quantity}
-            </span>
-            <button
-              onClick={() => handleQuantityChange(1)}
-              disabled={quantity >= 10}
-              className="p-3 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-r-lg"
-            >
-              <Plus className="w-4 h-4 text-gray-600" />
-            </button>
-          </div>
 
-          {/* Add to Cart Button */}
-          <button
-            onClick={handleAddToCart}
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2"
-          >
-            <ShoppingCart className="w-5 h-5" />
-            <span>
-              {isItemInCart ? 'Update Cart' : 'Add to Cart'} • ₹{totalPrice}
-            </span>
-          </button>
-        </div>
-
-        {/* Cart notification */}
-        {isItemInCart && (
-          <div className="mt-3 text-center">
-            <span className="text-sm text-green-600 font-medium">
-              {cartQuantity} item{cartQuantity > 1 ? 's' : ''} in cart
-            </span>
-          </div>
-        )}
-      </div>
-
-      {/* Safe area padding for mobile devices */}
-      <div className="h-24"></div>
     </div>
   );
 };
