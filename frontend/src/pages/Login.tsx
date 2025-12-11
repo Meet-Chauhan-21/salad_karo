@@ -55,13 +55,13 @@ const Login: React.FC = () => {
             className="w-full bg-primary text-primary-foreground py-2 rounded-md font-medium hover:bg-primary-glow hover:shadow-[var(--shadow-button)] active:scale-95 transition-[var(--transition-smooth)]"
             onClick={async () => {
               const nextErrors: { email?: string; password?: string } = {};
-              
+
               // Check for admin credentials first (before validation)
               if (email.trim() === 'admin@saladkaro.pvt.in' && password === 'saladKaro@9915/sk') {
                 console.log('Admin credentials matched, setting localStorage');
                 localStorage.setItem('isAdmin', 'true');
                 localStorage.setItem('adminUser', JSON.stringify({
-                  email: 'admin@123',
+                  email: 'admin@saladkaro.pvt.in',
                   name: 'Admin',
                   role: 'admin'
                 }));
@@ -87,7 +87,7 @@ const Login: React.FC = () => {
                 setErrors({ password: 'Password must be at least 6 characters' });
                 return;
               }
-              
+
               try {
                 const res = await login(email.trim(), password);
                 if (!res.ok) {

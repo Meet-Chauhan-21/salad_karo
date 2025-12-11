@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
-import { 
-  Users, 
-  ShoppingCart, 
-  Crown, 
-  Salad, 
-  Settings, 
-  LogOut, 
-  Menu, 
+import {
+  Users,
+  ShoppingCart,
+  Crown,
+  Salad,
+  Settings,
+  LogOut,
+  Menu,
   X,
   Home
 } from 'lucide-react';
@@ -26,7 +26,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage }) => {
   // Auto-detect current page from URL if not provided
   const getCurrentPage = () => {
     if (currentPage) return currentPage;
-    
+
     const path = location.pathname;
     if (path === '/admin' || path.includes('/admin/orders')) return 'orders';
     if (path.includes('/admin/memberships')) return 'memberships';
@@ -42,12 +42,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage }) => {
     // Check if user is admin
     const isAdmin = localStorage.getItem('isAdmin');
     const adminData = localStorage.getItem('adminUser');
-    
+
     if (!isAdmin || isAdmin !== 'true') {
       navigate('/login');
       return;
     }
-    
+
     if (adminData) {
       setAdminUser(JSON.parse(adminData));
     }
@@ -81,14 +81,14 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage }) => {
     <div className="min-h-screen bg-gray-50 flex">
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
-      
+
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 sm:w-72 lg:w-64 bg-white shadow-lg transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0`}>
+      <div className={`fixed inset-y-0 left-0 z-50 w-64 sm:w-72 lg:w-64 bg-white shadow-lg transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen flex flex-col`}>
         <div className="flex items-center justify-between h-14 sm:h-16 px-4 sm:px-6 border-b border-gray-200">
           <div className="flex items-center space-x-2">
             <Salad className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
@@ -101,9 +101,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage }) => {
             <X className="h-5 w-5 sm:h-6 sm:w-6" />
           </button>
         </div>
-        
-        <div className="flex flex-col h-full">
-          <nav className="flex-1 px-3 sm:px-4 py-4 sm:py-6 space-y-1 sm:space-y-2">
+
+        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+          <nav className="flex-1 px-3 sm:px-4 py-4 sm:py-6 space-y-1 sm:space-y-2 overflow-y-auto">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = activePageKey === item.key;
@@ -111,11 +111,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage }) => {
                 <Link
                   key={item.key}
                   to={item.path}
-                  className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'bg-green-600 text-white hover:bg-green-700'
-                      : 'text-gray-700 hover:bg-green-50 hover:text-green-600'
-                  }`}
+                  className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive
+                    ? 'bg-green-600 text-white hover:bg-green-700'
+                    : 'text-gray-700 hover:bg-green-50 hover:text-green-600'
+                    }`}
                   onClick={() => setIsSidebarOpen(false)}
                 >
                   <Icon className="h-5 w-5" />
@@ -123,36 +122,37 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage }) => {
                 </Link>
               );
             })}
-            
-            {/* Admin Profile and Actions Section - Now after Settings */}
-            <div className="pt-4 mt-4 border-t border-gray-200">
-              <div className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 mb-2">
-                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                  <span className="text-white font-medium">A</span>
-                </div>
-                <div>
-                  <div className="font-medium">{adminUser.name}</div>
-                  <div className="text-xs text-gray-500">{adminUser.email}</div>
-                </div>
+
+            {/* Admin Profile and Actions Section moved outside nav */}
+          </nav>            <div className="p-4 pb-6 border-t border-gray-200 bg-gray-50/50 flex-shrink-0">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center shadow-sm">
+                <span className="text-white font-bold text-lg">{adminUser.name.charAt(0).toUpperCase()}</span>
               </div>
-              <div className="space-y-2">
-                <Link
-                  to="/"
-                  className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <Home className="h-4 w-4" />
-                  <span>View Website</span>
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span>Logout</span>
-                </button>
+              <div className="overflow-hidden">
+                <h3 className="font-semibold text-gray-900 truncate">{adminUser.name || 'Admin'}</h3>
+                <p className="text-xs text-gray-500 truncate" title={adminUser.email || 'admin@saladkaro.pvt.in'}>{adminUser.email || 'admin@saladkaro.pvt.in'}</p>
               </div>
             </div>
-          </nav>
+
+            <div className="grid gap-2">
+              <Link
+                to="/"
+                className="flex items-center justify-center space-x-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 hover:text-green-600 rounded-lg transition-all duration-200 shadow-sm"
+              >
+                <Home className="h-4 w-4" />
+                <span>View Website</span>
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="flex items-center justify-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-all duration-200 shadow-sm"
+              >
+                <LogOut className="h-4 w-4" />
+                <span>Logout</span>
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -179,7 +179,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage }) => {
         </main>
       </div>
 
-    </div>
+    </div >
   );
 };
 

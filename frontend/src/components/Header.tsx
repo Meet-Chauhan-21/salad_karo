@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ShoppingCart, Menu, X, User, Heart, LogOut, ChevronDown, FileText, Shield, Scale, RotateCcw } from 'lucide-react';
+import { ShoppingCart, Menu, X, User, Heart, LogOut, ChevronDown, FileText, Shield, Scale, RotateCcw, Settings } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { useLikes } from '../contexts/LikesContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -19,8 +19,26 @@ const Header = () => {
   const { handleOrderNow } = useOrderNavigation();
   const [emailInput, setEmailInput] = useState('');
   const [showLogin, setShowLogin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAdminStatus = () => {
+      const adminStatus = localStorage.getItem('isAdmin');
+      const adminUser = localStorage.getItem('adminUser');
+      setIsAdmin(adminStatus === 'true' && !!adminUser);
+    };
+
+    checkAdminStatus();
+    window.addEventListener('storage', checkAdminStatus);
+    window.addEventListener('admin-logout', checkAdminStatus); // Custom event
+
+    return () => {
+      window.removeEventListener('storage', checkAdminStatus);
+      window.removeEventListener('admin-logout', checkAdminStatus);
+    };
+  }, []);
 
   const isPolicyPageActive = ['/return-policy', '/refund-policy', '/privacy-policy', '/disclaimer'].includes(location.pathname);
 
@@ -50,9 +68,9 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center space-x-1 sm:space-x-2">
-            <img 
-              src="/images/saladkaro-logo.jpg" 
-              alt="SaladKaro Logo" 
+            <img
+              src="/images/saladkaro-logo.jpg"
+              alt="SaladKaro Logo"
               className="w-8 h-8 sm:w-10 sm:h-10 object-cover rounded-full"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
@@ -61,7 +79,7 @@ const Header = () => {
                 if (fallback) fallback.style.display = 'flex';
               }}
             />
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-primary-glow rounded-full items-center justify-center animate-pulse-glow" style={{display: 'none'}}>
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-primary-glow rounded-full items-center justify-center animate-pulse-glow" style={{ display: 'none' }}>
               <span className="text-primary-foreground font-bold text-base sm:text-lg">🥗</span>
             </div>
             <h1 className="text-lg sm:text-2xl font-bold text-gradient">SaladKaro</h1>
@@ -73,7 +91,7 @@ const Header = () => {
             <NavLink to="/menu" className={({ isActive }) => navLinkClass(isActive)}>Salad Menu</NavLink>
             <NavLink to="/membership" className={({ isActive }) => navLinkClass(isActive)}>Subscription Plan</NavLink>
             <NavLink to="/about" className={({ isActive }) => navLinkClass(isActive)}>About</NavLink>
-            
+
             {/* Policy Dropdown */}
             <div className="relative" ref={dropdownRef}>
               <button
@@ -83,7 +101,7 @@ const Header = () => {
                 Other
                 <ChevronDown className={`w-4 h-4 transition-transform ${isPolicyDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
-              
+
               {isPolicyDropdownOpen && (
                 <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 animate-fade-in-up">
                   <div className="py-2">
@@ -127,6 +145,17 @@ const Header = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-2 lg:space-x-4">
+            {isAdmin && (
+              <a
+                href="/admin/orders"
+                className="group relative flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-3 py-1.5 lg:px-5 lg:py-2 rounded-full transition-all duration-300 font-semibold hover:shadow-lg hover:shadow-purple-500/25 hover:scale-105 text-sm lg:text-base mr-2"
+              >
+                <div className="flex items-center justify-center w-6 h-6 bg-white/20 rounded-full group-hover:bg-white/30 transition-colors">
+                  <Settings className="w-3.5 h-3.5 text-white" />
+                </div>
+                <span>Admin Panel</span>
+              </a>
+            )}
             <a href="/likes" className="relative p-2 hover:bg-secondary rounded-full transition-[var(--transition-smooth)]">
               <Heart className={`w-4 h-4 lg:w-5 lg:h-5 transition-[var(--transition-smooth)] ${likesCount > 0 ? 'text-red-500 fill-red-500' : 'text-muted-foreground hover:text-red-500'}`} />
               {likesCount > 0 && (
@@ -179,6 +208,12 @@ const Header = () => {
 
           {/* Mobile Actions & Menu Button */}
           <div className="md:hidden flex items-center space-x-2">
+            {/* Admin Icon for Mobile */}
+            {isAdmin && (
+              <a href="/admin/orders" className="relative p-2 hover:bg-secondary rounded-full transition-[var(--transition-smooth)]">
+                <Settings className="w-5 h-5 text-purple-600" />
+              </a>
+            )}
             {/* Mobile Cart & Likes */}
             <a href="/likes" className="relative p-2 hover:bg-secondary rounded-full transition-[var(--transition-smooth)]">
               <Heart className={`w-5 h-5 transition-[var(--transition-smooth)] ${likesCount > 0 ? 'text-red-500 fill-red-500' : 'text-muted-foreground hover:text-red-500'}`} />
@@ -197,7 +232,7 @@ const Header = () => {
               )}
             </a>
             {/* Mobile Menu Button */}
-            <button 
+            <button
               onClick={toggleMenu}
               className="p-2 hover:bg-secondary rounded-full transition-[var(--transition-smooth)]"
             >
@@ -211,9 +246,9 @@ const Header = () => {
           <div className="md:hidden mt-4 py-4 border-t border-border animate-fade-in-up">
             {/* Mobile Menu Header */}
             <div className="flex items-center justify-center mb-4 pb-4 border-b border-border">
-              <img 
-                src="/images/saladkaro-logo.jpg" 
-                alt="SaladKaro Logo" 
+              <img
+                src="/images/saladkaro-logo.jpg"
+                alt="SaladKaro Logo"
                 className="w-12 h-12 mr-3 object-cover rounded-full"
               />
               <h2 className="text-xl font-bold text-gradient">SaladKaro</h2>
@@ -223,7 +258,7 @@ const Header = () => {
               <NavLink to="/menu" className={({ isActive }) => `${navLinkClass(isActive)} py-2 text-base`} onClick={() => setIsMenuOpen(false)}>Salad Menu</NavLink>
               <NavLink to="/membership" className={({ isActive }) => `${navLinkClass(isActive)} py-2 text-base`} onClick={() => setIsMenuOpen(false)}>Subscription Plan</NavLink>
               <NavLink to="/about" className={({ isActive }) => `${navLinkClass(isActive)} py-2 text-base`} onClick={() => setIsMenuOpen(false)}>About</NavLink>
-              
+
               {/* Mobile Policy Links */}
               <div className="pt-3 border-t border-border">
                 <div className="text-sm font-semibold text-muted-foreground mb-3 px-2">Other</div>
@@ -246,9 +281,24 @@ const Header = () => {
                   </NavLink>
                 </div>
               </div>
-              
+
+              {/* Admin Panel Button for Mobile */}
+              {isAdmin && (
+                <div className="pt-4 border-t border-border">
+                  <a
+                    href="/admin/orders"
+                    className="flex items-center gap-3 px-6 py-2 text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-colors rounded-lg mx-2 mb-2"
+                  >
+                    <div className="flex items-center justify-center w-8 h-8 bg-purple-100 text-purple-600 rounded-full">
+                      <Settings className="w-4 h-4" />
+                    </div>
+                    <span className="font-semibold">Admin Panel</span>
+                  </a>
+                </div>
+              )}
+
               {/* Order Now Button for Mobile */}
-              <div className="pt-4 border-t border-border">
+              <div className="pt-2 border-t border-border">
                 <button
                   onClick={() => {
                     handleOrderNow();
@@ -260,11 +310,11 @@ const Header = () => {
                   Order Now
                 </button>
               </div>
-              
+
               <div className="flex items-center justify-center pt-3 border-t border-border">
                 {isLoggedIn ? (
-                  <a 
-                    href="/profile" 
+                  <a
+                    href="/profile"
                     className="group relative overflow-hidden bg-secondary text-foreground px-6 py-2.5 rounded-full font-medium flex items-center gap-2 hover:bg-secondary/80 transition-[var(--transition-smooth)]"
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -274,8 +324,8 @@ const Header = () => {
                     {user?.name || user?.email.split('@')[0] || 'Profile'}
                   </a>
                 ) : (
-                  <a 
-                    href="/login" 
+                  <a
+                    href="/login"
                     className="group relative overflow-hidden bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-2.5 rounded-full font-semibold hover:shadow-lg hover:shadow-green-500/25 hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-green-300"
                     onClick={() => setIsMenuOpen(false)}
                   >

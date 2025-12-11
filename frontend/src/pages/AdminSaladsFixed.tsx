@@ -4,18 +4,49 @@ import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 import { getImageUrl, getAvailableImages } from '../utils/imageUtils';
 import vegetableSaladImg from '../assets/vegetable-salad.jpg';
 import heroSaladImg from '../assets/hero-salad.jpg';
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Search, 
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Search,
   Filter,
   Eye,
   Save,
   X,
   Power,
-  PowerOff
+  PowerOff,
+  MoreHorizontal
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
+import { Input } from "../components/ui/input";
+import { Button } from "../components/ui/button";
+import { Card, CardContent } from "../components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "../components/ui/dialog";
+import { Label } from "../components/ui/label";
+import { Textarea } from "../components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+import { Badge } from "../components/ui/badge";
 
 interface Salad {
   _id: string;
@@ -64,8 +95,8 @@ const AdminSalads: React.FC = () => {
 
   const filteredSalads = salads.filter(salad => {
     const matchesSearch = salad.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         salad.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = !filterCategory || salad.category === filterCategory;
+      salad.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = !filterCategory || filterCategory === 'All Categories' || salad.category === filterCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -137,10 +168,10 @@ const AdminSalads: React.FC = () => {
   const deleteSalad = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this salad?')) {
       try {
-                const response = await fetch(buildApiUrl(`${API_ENDPOINTS.DELETE_SALAD}/${id}`), {
-                    method: 'DELETE'
-                });
-                const data = await response.json();
+        const response = await fetch(buildApiUrl(`${API_ENDPOINTS.DELETE_SALAD}/${id}`), {
+          method: 'DELETE'
+        });
+        const data = await response.json();
         if (data.success) {
           alert('Salad deleted successfully!');
           fetchSalads();
@@ -154,10 +185,10 @@ const AdminSalads: React.FC = () => {
 
   const toggleSaladStatus = async (id: string) => {
     try {
-                  const response = await fetch(buildApiUrl(`${API_ENDPOINTS.TOGGLE_SALAD_STATUS}/${id}`), {
-                      method: 'PUT'
-                  });
-                  const data = await response.json();
+      const response = await fetch(buildApiUrl(`${API_ENDPOINTS.TOGGLE_SALAD_STATUS}/${id}`), {
+        method: 'PUT'
+      });
+      const data = await response.json();
       if (data.success) {
         fetchSalads();
       }
@@ -177,7 +208,7 @@ const AdminSalads: React.FC = () => {
               <p className="text-blue-800">Loading salads from database...</p>
             </div>
           )}
-          
+
           {/* Header Section */}
           <div className="mb-8">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Salad Management</h1>
@@ -239,34 +270,32 @@ const AdminSalads: React.FC = () => {
                 <div className="flex-1">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <input
+                    <Input
                       type="text"
                       placeholder="Search salads by name or description..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      className="pl-10"
                     />
                   </div>
                 </div>
                 <div className="sm:w-48">
-                  <select
-                    value={filterCategory}
-                    onChange={(e) => setFilterCategory(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  >
-                    <option value="">All Categories</option>
-                    {categories.map(category => (
-                      <option key={category} value={category}>{category}</option>
-                    ))}
-                  </select>
+                  <Select value={filterCategory} onValueChange={setFilterCategory}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="All Categories" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="All Categories">All Categories</SelectItem>
+                      {categories.map(category => (
+                        <SelectItem key={category} value={category}>{category}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-                <button
-                  onClick={() => openModal('add')}
-                  className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center justify-center transition-colors duration-200"
-                >
+                <Button onClick={() => openModal('add')} className="bg-green-600 hover:bg-green-700">
                   <Plus className="h-4 w-4 mr-2" />
                   Add Salad
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -283,89 +312,85 @@ const AdminSalads: React.FC = () => {
               </div>
             ) : (
               filteredSalads.map((salad) => (
-              <div key={salad._id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
-                <div className="relative">
-                  <img
-                    src={getImageUrl(salad.image)}
-                    alt={salad.name}
-                    className="w-full h-48 object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = getImageUrl('/images/hero-salad.jpg');
-                    }}
-                  />
-                  <div className="absolute top-3 right-3 flex flex-col gap-1">
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                      salad.isActive 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {salad.isActive ? 'Active' : 'Inactive'}
-                    </span>
-                    {salad.badge && (
-                      <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
-                        {salad.badge}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="p-4">
-                  <div className="mb-3">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">{salad.name}</h3>
-                    <p className="text-sm text-gray-600 line-clamp-2">{salad.description}</p>
-                  </div>
-
-                  {/* Rating and Reviews */}
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="flex text-yellow-400">
-                      {[...Array(5)].map((_, i) => (
-                        <span key={i}>{i < salad.rating ? '★' : '☆'}</span>
-                      ))}
-                    </div>
-                    <span className="text-sm text-gray-500">({salad.reviews || 0} reviews)</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl font-bold text-green-600">₹{salad.price}</span>
-                      {salad.originalPrice && salad.originalPrice > salad.price && (
-                        <span className="text-sm text-gray-500 line-through">₹{salad.originalPrice}</span>
+                <div key={salad._id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-[1.02] hover:border-green-200">
+                  <div className="relative">
+                    <img
+                      src={getImageUrl(salad.image)}
+                      alt={salad.name}
+                      className="w-full h-48 object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = getImageUrl('/images/hero-salad.jpg');
+                      }}
+                    />
+                    <div className="absolute top-3 right-3 flex flex-col gap-1">
+                      {salad.badge && (
+                        <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                          {salad.badge}
+                        </span>
                       )}
                     </div>
-                    <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
-                      {salad.category}
-                    </span>
                   </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => openModal('edit', salad)}
-                      className="flex-1 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 flex items-center justify-center transition-colors duration-200"
-                    >
-                      <Edit className="h-4 w-4 mr-1" />
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => toggleSaladStatus(salad._id)}
-                      className={`flex-1 px-3 py-2 rounded-lg flex items-center justify-center transition-colors duration-200 ${
-                        salad.isActive
-                          ? 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100'
-                          : 'bg-green-50 text-green-600 hover:bg-green-100'
-                      }`}
-                    >
-                      <Eye className="h-4 w-4 mr-1" />
-                      {salad.isActive ? 'Hide' : 'Show'}
-                    </button>
-                    <button
-                      onClick={() => deleteSalad(salad._id)}
-                      className="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors duration-200"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+
+                  <div className="p-4">
+                    <div className="mb-3">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-1">{salad.name}</h3>
+                      <p className="text-sm text-gray-600 line-clamp-2">{salad.description}</p>
+                    </div>
+
+                    {/* Rating and Reviews */}
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="flex text-yellow-400">
+                        {[...Array(5)].map((_, i) => (
+                          <span key={i}>{i < salad.rating ? '★' : '☆'}</span>
+                        ))}
+                      </div>
+                      <span className="text-sm text-gray-500">({salad.reviews || 0} reviews)</span>
+                    </div>
+
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl font-bold text-green-600">₹{salad.price}</span>
+                        {salad.originalPrice && salad.originalPrice > salad.price && (
+                          <span className="text-sm text-gray-500 line-through">₹{salad.originalPrice}</span>
+                        )}
+                      </div>
+                      <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
+                        {salad.category}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between mt-4 border-t pt-4">
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${salad.isActive
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
+                        }`}>
+                        {salad.isActive ? 'Active' : 'Inactive'}
+                      </span>
+
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                            <MoreHorizontal className="h-5 w-5 text-gray-500" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuItem onClick={() => openModal('edit', salad)}>
+                            <Edit className="h-4 w-4 mr-2" /> Edit Details
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => toggleSaladStatus(salad._id)}>
+                            <Power className="h-4 w-4 mr-2" /> {salad.isActive ? 'Deactivate' : 'Activate'}
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => deleteSalad(salad._id)} className="text-red-600 focus:text-red-600">
+                            <Trash2 className="h-4 w-4 mr-2" /> Delete Salad
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
                 </div>
-              </div>
               ))
             )}
           </div>
@@ -384,177 +409,167 @@ const AdminSalads: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal for Add/Edit Salad */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
-            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-medium text-gray-900">
-                    {modalType === 'add' ? 'Add New Salad' : 'Edit Salad'}
-                  </h3>
-                  <button onClick={closeModal} className="text-gray-400 hover:text-gray-600">
-                    <X className="h-6 w-6" />
-                  </button>
-                </div>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Salad Name</label>
-                    <input
-                      type="text"
-                      value={formData.name || ''}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                      placeholder="Enter salad name"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                    <textarea
-                      value={formData.description || ''}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                      placeholder="Enter description"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
-                      <input
-                        type="number"
-                        value={formData.price || ''}
-                        onChange={(e) => setFormData({ ...formData, price: parseInt(e.target.value) || 0 })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                        placeholder="0"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Original Price (₹)</label>
-                      <input
-                        type="number"
-                        value={formData.originalPrice || ''}
-                        onChange={(e) => setFormData({ ...formData, originalPrice: parseInt(e.target.value) || 0 })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                        placeholder="0 (optional for offers)"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Rating</label>
-                      <select
-                        value={formData.rating || 5}
-                        onChange={(e) => setFormData({ ...formData, rating: parseInt(e.target.value) })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                      >
-                        <option value={5}>5 Stars</option>
-                        <option value={4}>4 Stars</option>
-                        <option value={3}>3 Stars</option>
-                        <option value={2}>2 Stars</option>
-                        <option value={1}>1 Star</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Reviews Count</label>
-                      <input
-                        type="number"
-                        value={formData.reviews || ''}
-                        onChange={(e) => setFormData({ ...formData, reviews: parseInt(e.target.value) || 0 })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                        placeholder="0"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Badge</label>
-                      <select
-                        value={formData.badge || ''}
-                        onChange={(e) => setFormData({ ...formData, badge: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                      >
-                        <option value="">No Badge</option>
-                        <option value="Popular">Popular</option>
-                        <option value="Premium">Premium</option>
-                        <option value="Spicy">Spicy</option>
-                        <option value="Healthy">Healthy</option>
-                        <option value="Classic">Classic</option>
-                        <option value="Tangy">Tangy</option>
-                        <option value="Protein Rich">Protein Rich</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                    <select
-                      value={formData.category || ''}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    >
-                      {categories.map(category => (
-                        <option key={category} value={category}>{category}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Image</label>
-                    <div className="space-y-2">
-                      <input
-                        type="text"
-                        value={formData.image || ''}
-                        onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                        placeholder="/images/vegetable-salad.jpg"
-                      />
-                      <div className="grid grid-cols-4 gap-2">
-                        {getAvailableImages().map((img) => (
-                          <button
-                            key={img.filename}
-                            type="button"
-                            onClick={() => setFormData({ ...formData, image: img.url })}
-                            className="relative aspect-square rounded-lg overflow-hidden border-2 hover:border-green-500 transition-colors"
-                          >
-                            <img 
-                              src={img.importedUrl} 
-                              alt={img.filename}
-                              className="w-full h-full object-cover"
-                            />
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={formData.isActive !== false}
-                      onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                      className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                    />
-                    <label className="ml-2 block text-sm text-gray-900">Active (visible to customers)</label>
-                  </div>
-                </div>
+      {/* Dialog for Add/Edit Salad */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{modalType === 'add' ? 'Add New Salad' : 'Edit Salad'}</DialogTitle>
+            <DialogDescription>
+              Fill in the details below to {modalType === 'add' ? 'create a new' : 'update the'} salad.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-6 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="name">Salad Name</Label>
+              <Input
+                id="name"
+                value={formData.name || ''}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="Enter salad name"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={formData.description || ''}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="Enter description"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="price">Price (₹)</Label>
+                <Input
+                  id="price"
+                  type="number"
+                  value={formData.price || ''}
+                  onChange={(e) => setFormData({ ...formData, price: parseInt(e.target.value) || 0 })}
+                  placeholder="0"
+                />
               </div>
-              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                <button
-                  onClick={handleSave}
-                  className="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
-                >
-                  <Save className="h-4 w-4 mr-2" />
-                  {modalType === 'add' ? 'Add Salad' : 'Save Changes'}
-                </button>
-                <button
-                  onClick={closeModal}
-                  className="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                >
-                  Cancel
-                </button>
+              <div className="grid gap-2">
+                <Label htmlFor="originalPrice">Original Price (₹)</Label>
+                <Input
+                  id="originalPrice"
+                  type="number"
+                  value={formData.originalPrice || ''}
+                  onChange={(e) => setFormData({ ...formData, originalPrice: parseInt(e.target.value) || 0 })}
+                  placeholder="Optional"
+                />
               </div>
             </div>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="grid gap-2">
+                <Label>Rating</Label>
+                <Select
+                  value={String(formData.rating || 5)}
+                  onValueChange={(val) => setFormData({ ...formData, rating: parseInt(val) })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[5, 4, 3, 2, 1].map(num => (
+                      <SelectItem key={num} value={String(num)}>{num} Stars</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="reviews">Reviews</Label>
+                <Input
+                  id="reviews"
+                  type="number"
+                  value={formData.reviews || ''}
+                  onChange={(e) => setFormData({ ...formData, reviews: parseInt(e.target.value) || 0 })}
+                  placeholder="0"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Badge</Label>
+                <Select
+                  value={formData.badge || "none"}
+                  onValueChange={(val) => setFormData({ ...formData, badge: val === "none" ? "" : val })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="None" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">No Badge</SelectItem>
+                    <SelectItem value="Popular">Popular</SelectItem>
+                    <SelectItem value="Premium">Premium</SelectItem>
+                    <SelectItem value="Spicy">Spicy</SelectItem>
+                    <SelectItem value="Healthy">Healthy</SelectItem>
+                    <SelectItem value="Classic">Classic</SelectItem>
+                    <SelectItem value="Tangy">Tangy</SelectItem>
+                    <SelectItem value="Protein Rich">Protein Rich</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid gap-2">
+              <Label>Category</Label>
+              <Select
+                value={formData.category || ""}
+                onValueChange={(val) => setFormData({ ...formData, category: val })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map(cat => (
+                    <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-2">
+              <Label>Image URL & Preview</Label>
+              <div className="space-y-4">
+                <Input
+                  value={formData.image || ''}
+                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                  placeholder="/images/vegetable-salad.jpg"
+                />
+                <div className="grid grid-cols-4 gap-2">
+                  {getAvailableImages().map((img) => (
+                    <button
+                      key={img.filename}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, image: img.url })}
+                      className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${formData.image === img.url ? 'border-green-500 ring-2 ring-green-200' : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                    >
+                      <img
+                        src={img.importedUrl}
+                        alt={img.filename}
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="isActive"
+                checked={formData.isActive !== false}
+                onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
+              />
+              <Label htmlFor="isActive" className="cursor-pointer">Active (visible to customers)</Label>
+            </div>
           </div>
-        </div>
-      )}
+          <DialogFooter>
+            <Button variant="outline" onClick={closeModal}>Cancel</Button>
+            <Button onClick={handleSave} className="bg-green-600 hover:bg-green-700">
+              {modalType === 'add' ? 'Add Salad' : 'Save Changes'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 };

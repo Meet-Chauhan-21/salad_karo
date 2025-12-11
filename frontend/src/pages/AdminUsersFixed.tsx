@@ -5,9 +5,9 @@ import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { Badge } from '../components/ui/badge';
-import { 
-  Users, 
-  Search, 
+import {
+  Users,
+  Search,
   Mail,
   Phone,
   Calendar,
@@ -15,8 +15,26 @@ import {
   CheckCircle,
   AlertCircle,
   X,
-  ShoppingBag
+  ShoppingBag,
+  MoreHorizontal
 } from 'lucide-react';
+import { Button } from "../components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "../components/ui/pagination";
 
 interface User {
   _id: string;
@@ -37,6 +55,10 @@ const AdminUsers = () => {
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     console.log('AdminUsers component mounted');
@@ -63,11 +85,17 @@ const AdminUsers = () => {
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.phone.includes(searchTerm);
-    
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.phone.includes(searchTerm);
+
     return matchesSearch;
   });
+
+  // Calculate Pagination
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
 
   const getStatusBadge = (status: User['status']) => {
     switch (status) {
@@ -105,7 +133,7 @@ const AdminUsers = () => {
             <p className="text-yellow-800">No users found in database.</p>
           </div>
         )}
-        
+
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -153,7 +181,7 @@ const AdminUsers = () => {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -189,7 +217,7 @@ const AdminUsers = () => {
                 />
               </div>
 
-              <div className="rounded-md border">
+              <div className="rounded-md border hidden md:block">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -199,27 +227,27 @@ const AdminUsers = () => {
                       <TableHead>Stats</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Joined</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {loading ? (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                        <TableCell colSpan={7} className="text-center py-8 text-gray-500">
                           Loading users...
                         </TableCell>
                       </TableRow>
                     ) : filteredUsers.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                        <TableCell colSpan={7} className="text-center py-8 text-gray-500">
                           No users found
                         </TableCell>
                       </TableRow>
                     ) : (
-                      filteredUsers.map((user) => (
-                        <TableRow 
-                          key={user._id} 
-                          onClick={() => handleUserClick(user)}
-                          className="cursor-pointer hover:bg-gray-100"
+                      currentUsers.map((user) => (
+                        <TableRow
+                          key={user._id}
+                          className="hover:bg-gray-50"
                         >
                           <TableCell>
                             <div className="flex items-center gap-3">
@@ -272,12 +300,138 @@ const AdminUsers = () => {
                               {new Date(user.joinDate).toLocaleDateString()}
                             </div>
                           </TableCell>
+                          <TableCell className="text-right">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                  <span className="sr-only">Open menu</span>
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <DropdownMenuItem onClick={() => handleUserClick(user)}>
+                                  <Users className="mr-2 h-4 w-4" /> View Profile
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem className="text-red-600">
+                                  Ban User
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
                         </TableRow>
                       ))
                     )}
                   </TableBody>
                 </Table>
               </div>
+
+              {/* Users List - Mobile View */}
+              <div className="space-y-4 md:hidden">
+                {loading ? (
+                  <div className="text-center py-8 text-gray-500 bg-white rounded-xl border border-gray-200">
+                    Loading users...
+                  </div>
+                ) : currentUsers.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500 bg-white rounded-xl border border-gray-200">
+                    No users found
+                  </div>
+                ) : (
+                  currentUsers.map((user) => (
+                    <div key={user._id} className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold flex-shrink-0">
+                            {user.name.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900">{user.name}</p>
+                            <p className="text-xs text-gray-500">{user.email}</p>
+                          </div>
+                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={() => handleUserClick(user)}>
+                              <Users className="mr-2 h-4 w-4" /> View Profile
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem className="text-red-600">
+                              Ban User
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3 py-3 border-y border-gray-100">
+                        <div>
+                          <p className="text-xs text-gray-500 mb-1">Status</p>
+                          {getStatusBadge(user.status)}
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500 mb-1">Joined</p>
+                          <div className="flex items-center gap-1 text-sm text-gray-700">
+                            <Calendar className="h-3 w-3" />
+                            {new Date(user.joinDate).toLocaleDateString()}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3 pt-3">
+                        <div className="bg-blue-50 p-2 rounded text-center">
+                          <p className="text-xs text-blue-600 font-medium">Orders</p>
+                          <p className="text-lg font-bold text-blue-700">{user.totalOrders}</p>
+                        </div>
+                        <div className="bg-green-50 p-2 rounded text-center">
+                          <p className="text-xs text-green-600 font-medium">Spent</p>
+                          <p className="text-lg font-bold text-green-700">₹{user.totalSpent.toFixed(0)}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Pagination Controls */}
+              {filteredUsers.length > 0 && (
+                <div className="py-2">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                          className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                        />
+                      </PaginationItem>
+
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                        <PaginationItem key={page}>
+                          <PaginationLink
+                            onClick={() => setCurrentPage(page)}
+                            isActive={currentPage === page}
+                            className="cursor-pointer"
+                          >
+                            {page}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
+
+                      <PaginationItem>
+                        <PaginationNext
+                          onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                          className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -299,7 +453,7 @@ const AdminUsers = () => {
                     <X className="h-6 w-6" />
                   </button>
                 </div>
-                
+
                 <div className="space-y-6">
                   {/* User Avatar and Basic Info */}
                   <div className="flex items-center gap-4 pb-6 border-b border-gray-200">
@@ -327,7 +481,7 @@ const AdminUsers = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     {/* Location Information */}
                     <div>
                       <h4 className="font-semibold text-gray-900 mb-3">Location</h4>
