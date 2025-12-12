@@ -201,39 +201,42 @@ const Login: React.FC = () => {
           </div>
 
           <div className="w-full">
-            <GoogleLogin
-              onSuccess={async (credentialResponse) => {
-                if (credentialResponse.credential) {
-                  try {
-                    const token = credentialResponse.credential;
-                    const res = await googleLogin(token);
+            <div className="w-full [&>div]:w-full [&_iframe]:w-full">
+              <GoogleLogin
+                onSuccess={async (credentialResponse) => {
+                  if (credentialResponse.credential) {
+                    try {
+                      const token = credentialResponse.credential;
+                      const res = await googleLogin(token);
 
-                    if (res.ok) {
-                      toast.success('Logged in successfully!');
-                      navigate('/');
-                    } else if ((res as any).requiresInfo) {
-                      setGoogleTempData({
-                        ...((res as any).googleData),
-                        currentData: (res as any).currentData,
-                        token: token
-                      });
-                      setShowGoogleModal(true);
-                    } else {
-                      toast.error((res as any).error || 'Login failed');
+                      if (res.ok) {
+                        toast.success('Logged in successfully!');
+                        navigate('/');
+                      } else if ((res as any).requiresInfo) {
+                        setGoogleTempData({
+                          ...((res as any).googleData),
+                          currentData: (res as any).currentData,
+                          token: token
+                        });
+                        setShowGoogleModal(true);
+                      } else {
+                        toast.error((res as any).error || 'Login failed');
+                      }
+                    } catch (error) {
+                      console.error('Google Auth Error', error);
+                      toast.error('Failed to process Google Login');
                     }
-                  } catch (error) {
-                    console.error('Google Auth Error', error);
-                    toast.error('Failed to process Google Login');
                   }
-                }
-              }}
-              onError={() => {
-                console.error('Google Login Failed');
-                toast.error('Google connection failed');
-              }}
-              useOneTap
-              width="100%"
-            />
+                }}
+                onError={() => {
+                  console.error('Google Login Failed');
+                  toast.error('Google connection failed');
+                }}
+                useOneTap
+                width="100%"
+                size="large"
+              />
+            </div>
           </div>
           <div className="text-sm text-muted-foreground">Don't have an account? <a href="/register" className="text-primary underline">Register</a></div>
         </div>
