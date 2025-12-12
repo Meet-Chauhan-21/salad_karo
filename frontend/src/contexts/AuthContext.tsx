@@ -23,6 +23,7 @@ interface AuthContextValue {
   register: (params: { email: string; password: string; name?: string; phone?: string; city?: string; address?: string }) => AuthResult;
   logout: () => void;
   updateProfile: (updates: { name?: string; city?: string; address?: string }) => AuthResult;
+  loginWithGoogle: (userData: { email: string; name: string; picture?: string; token: string }) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -115,25 +116,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
+  const loginWithGoogle = useCallback((userData: { email: string; name: string; picture?: string; token: string }) => {
+    const newUser: AuthUser = {
+      email: userData.email,
+      name: userData.name,
+    };
+    setUser(newUser);
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newUser));
+    localStorage.setItem('authToken', userData.token);
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('userEmail', userData.email);
+    localStorage.setItem('userName', userData.name);
+  }, []);
+
   const register = useCallback((params: { email: string; password: string; name?: string; phone?: string; city?: string; address?: string }): AuthResult => {
     // This function sets user state after successful backend registration
     const { email, name, phone, city, address } = params;
     const userData = { email, name, phone, city, address };
     setUser(userData);
-    
+
     // Store user data in localStorage
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(userData));
-    
+
     return { ok: true };
   }, []);
 
   const updateProfile = useCallback((updates: { name?: string; city?: string; address?: string }): AuthResult => {
     if (!user) return { ok: false, error: 'Not authenticated' };
-    
+
     const users = readUsers();
     const key = user.email.toLowerCase();
     const current = users[key];
-    
+
     if (!current) {
       // If user data not found, create it from current user state with a default password
       // In a real app, this would require re-authentication or backend verification
@@ -147,15 +161,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
       users[key] = newUserData;
     }
-    
+
     // Update with new data
-    const next: StoredUser = { 
-      ...users[key], 
-      name: updates.name ?? users[key].name, 
-      city: updates.city ?? users[key].city, 
-      address: updates.address ?? users[key].address 
+    const next: StoredUser = {
+      ...users[key],
+      name: updates.name ?? users[key].name,
+      city: updates.city ?? users[key].city,
+      address: updates.address ?? users[key].address
     };
-    
+
     users[key] = next;
     writeUsers(users);
     setUser({ email: next.email, name: next.name, phone: next.phone, city: next.city, address: next.address });
@@ -177,8 +191,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const value = useMemo<AuthContextValue>(
-    () => ({ user, isLoggedIn: !!user, isHydrated, login, register, logout, updateProfile }),
-    [user, isHydrated, login, register, logout, updateProfile]
+    () => ({ user, isLoggedIn: !!user, isHydrated, login, register, logout, updateProfile, loginWithGoogle }),
+    [user, isHydrated, login, register, logout, updateProfile, loginWithGoogle]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

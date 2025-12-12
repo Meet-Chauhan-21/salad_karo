@@ -5,9 +5,11 @@ import ModernFooter from '../components/ModernFooter';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from '@/components/ui/sonner';
 import { Leaf, Heart, Star } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
 
 const Login: React.FC = () => {
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -107,6 +109,46 @@ const Login: React.FC = () => {
           >
             Continue
           </button>
+
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border"></span>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+            </div>
+          </div>
+
+          <div className="flex justify-center">
+            <GoogleLogin
+              onSuccess={credentialResponse => {
+                if (credentialResponse.credential) {
+                  try {
+                    const decoded: any = jwtDecode(credentialResponse.credential);
+                    console.log('Google Login Success', decoded);
+
+                    loginWithGoogle({
+                      email: decoded.email,
+                      name: decoded.name,
+                      picture: decoded.picture,
+                      token: credentialResponse.credential
+                    });
+
+                    toast.success(`Welcome ${decoded.name}!`);
+                    navigate('/');
+                  } catch (error) {
+                    console.error('Error decoding Google token', error);
+                    toast.error('Failed to process Google Login');
+                  }
+                }
+              }}
+              onError={() => {
+                console.error('Google Login Failed');
+                toast.error('Google connection failed');
+              }}
+              useOneTap
+            />
+          </div>
           <div className="text-sm text-muted-foreground">Don't have an account? <a href="/register" className="text-primary underline">Register</a></div>
         </div>
       </main>
