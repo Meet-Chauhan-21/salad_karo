@@ -13,7 +13,9 @@ interface StoredUser extends AuthUser {
   password: string; // Demo only; in real apps use a backend + hashing
 }
 
-type AuthResult = { ok: true } | { ok: false; error: string };
+type AuthResult =
+  | { ok: true }
+  | { ok: false; error: string; requiresInfo?: boolean; googleData?: any; currentData?: any };
 
 interface AuthContextValue {
   user: AuthUser | null;
@@ -23,7 +25,9 @@ interface AuthContextValue {
   register: (params: { email: string; password: string; name?: string; phone?: string; city?: string; address?: string }) => AuthResult;
   logout: () => void;
   updateProfile: (updates: { name?: string; city?: string; address?: string }) => AuthResult;
-  loginWithGoogle: (userData: { email: string; name: string; picture?: string; token: string }) => void;
+  googleLogin: (token: string) => Promise<AuthResult>;
+  googleRegister: (data: { email: string; name: string; picture?: string; phone: string; city: string; address: string; token: string }) => Promise<AuthResult>;
+  setUser: (user: AuthUser | null) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -116,17 +120,76 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  const loginWithGoogle = useCallback((userData: { email: string; name: string; picture?: string; token: string }) => {
-    const newUser: AuthUser = {
-      email: userData.email,
-      name: userData.name,
-    };
-    setUser(newUser);
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newUser));
-    localStorage.setItem('authToken', userData.token);
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('userEmail', userData.email);
-    localStorage.setItem('userName', userData.name);
+  // Google Login (Step 1: Verify & Check Status)
+  const googleLogin = useCallback(async (token: string): Promise<AuthResult> => {
+    try {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.GOOGLE_LOGIN), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
+      });
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // User logged in successfully
+        const userData: AuthUser = {
+          email: data.email,
+          name: data.name,
+          phone: data.phone,
+          city: data.city,
+          address: data.address
+        };
+        setUser(userData);
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(userData));
+        localStorage.setItem('authToken', data.jwtToken);
+        localStorage.setItem('isLoggedIn', 'true');
+        return { ok: true };
+      } else if (data.requiresInfo) {
+        // User needs to complete profile
+        return {
+          ok: false,
+          error: 'Profile incomplete',
+          requiresInfo: true,
+          googleData: data.googleData,
+          currentData: data.currentData
+        };
+      }
+      return { ok: false, error: data.message || 'Login failed' };
+    } catch (error) {
+      console.error('Google Login Error:', error);
+      return { ok: false, error: 'Network error' };
+    }
+  }, []);
+
+  // Google Register (Step 2: Complete Profile)
+  const googleRegister = useCallback(async (data: { email: string; name: string; picture?: string; phone: string; city: string; address: string; token: string }): Promise<AuthResult> => {
+    try {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.GOOGLE_REGISTER), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const resData = await response.json();
+
+      if (response.ok && resData.success) {
+        const userData: AuthUser = {
+          email: resData.email,
+          name: resData.name,
+          phone: resData.phone,
+          city: resData.city,
+          address: resData.address
+        };
+        setUser(userData);
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(userData));
+        localStorage.setItem('authToken', resData.jwtToken);
+        localStorage.setItem('isLoggedIn', 'true');
+        return { ok: true };
+      }
+      return { ok: false, error: resData.message || 'Registration failed' };
+    } catch (error) {
+      console.error('Google Register Error:', error);
+      return { ok: false, error: 'Network error' };
+    }
   }, []);
 
   const register = useCallback((params: { email: string; password: string; name?: string; phone?: string; city?: string; address?: string }): AuthResult => {
@@ -191,8 +254,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const value = useMemo<AuthContextValue>(
-    () => ({ user, isLoggedIn: !!user, isHydrated, login, register, logout, updateProfile, loginWithGoogle }),
-    [user, isHydrated, login, register, logout, updateProfile, loginWithGoogle]
+    () => ({ user, isLoggedIn: !!user, isHydrated, login, register, logout, updateProfile, googleLogin, googleRegister, setUser }),
+    [user, isHydrated, login, register, logout, updateProfile, googleLogin, googleRegister]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

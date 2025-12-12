@@ -47,11 +47,11 @@ const apiCall = async (endpoint: string, options: RequestInit = {}) => {
       },
       ...options,
     });
-    
+
     if (!response.ok) {
       throw new Error(`API Error: ${response.status}`);
     }
-    
+
     return await response.json();
   } catch (error) {
     console.warn(`API call failed for ${endpoint}:`, error);
@@ -91,7 +91,7 @@ interface CartContextType {
 
 export const CartContext = createContext<CartContextType | undefined>(undefined);
 
-type CartAction = 
+type CartAction =
   | { type: 'ADD_TO_CART'; payload: Product }
   | { type: 'REMOVE_FROM_CART'; payload: string }
   | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
@@ -102,7 +102,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
   switch (action.type) {
     case 'ADD_TO_CART': {
       const existingItem = state.items.find(item => item.id === action.payload.id);
-      
+
       if (existingItem) {
         // Increment quantity for existing item
         return {
@@ -115,7 +115,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
           total: state.total + action.payload.price
         };
       }
-      
+
       // Add new item to cart
       return {
         ...state,
@@ -138,7 +138,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
       const oldQuantity = item.quantity;
       const newQuantity = action.payload.quantity;
       const quantityDiff = newQuantity - oldQuantity;
-      
+
       if (newQuantity === 0) {
         return {
           ...state,
@@ -146,7 +146,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
           total: state.total - (item.price * oldQuantity)
         };
       }
-      
+
       return {
         ...state,
         items: state.items.map(item =>
@@ -206,7 +206,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const addToCart = async (product: Product) => {
     // Optimistic update - increment quantity if item exists, add new if not
     dispatch({ type: 'ADD_TO_CART', payload: product });
-    
+
     try {
       // Try API call
       await apiCall('/cart', {
@@ -216,27 +216,27 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           quantity: 1
         })
       });
-      
-      notify('Item added to cart!', 'success');
+
+      // notify('Item added to cart!', 'success');
     } catch (error) {
       // API failed, localStorage fallback is already handled by useEffect
       console.log('Using localStorage fallback for cart');
-      notify('Added to cart (offline mode)', 'success');
+      // notify('Added to cart (offline mode)', 'success');
     }
   };
 
   const removeFromCart = async (productId: string) => {
     // Optimistic update
     dispatch({ type: 'REMOVE_FROM_CART', payload: productId });
-    
+
     try {
       // Try API call
       await apiCall('/cart', {
         method: 'DELETE',
         body: JSON.stringify({ productId })
       });
-      
-  notify('Item removed from cart.', 'error');
+
+      notify('Item removed from cart.', 'error');
     } catch (error) {
       // API failed, localStorage fallback is already handled
       console.log('Using localStorage fallback for cart removal');

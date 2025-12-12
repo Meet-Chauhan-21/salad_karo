@@ -12,13 +12,16 @@ import QuickOrderTopBar from '../components/QuickOrderTopBar';
 import { useOrderNavigation } from '../hooks/use-order-navigation';
 import AdminAccessButton from '../components/AdminAccessButton';
 import { useNavigate } from 'react-router-dom';
+import GoogleInfoModal from '../components/GoogleInfoModal';
 
 const EnhancedCart: React.FC = () => {
   const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
   const { addOrder } = useOrderHistory();
-  const { user } = useAuth();
+  const { user, googleRegister } = useAuth();
   const { handleOrderNow } = useOrderNavigation();
   const navigate = useNavigate();
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [attemptedCheckout, setAttemptedCheckout] = useState(false);
 
   const handleProductClick = (product: any) => {
     navigate(`/salad/${product.id}`, { state: { product } });
@@ -45,6 +48,22 @@ const EnhancedCart: React.FC = () => {
       toast.error('Please login to place an order');
       return;
     }
+
+    // Check if profile is complete
+    console.log('User data:', user);
+    console.log('Phone:', user.phone, 'City:', user.city, 'Address:', user.address);
+
+    const isProfileIncomplete = !user.phone || !user.city || !user.address ||
+      user.phone === '' || user.city === '' || user.address === '';
+
+    if (isProfileIncomplete) {
+      console.log('Profile incomplete, showing modal');
+      setAttemptedCheckout(true);
+      setShowProfileModal(true);
+      return;
+    }
+
+    console.log('Profile complete, proceeding with checkout');
 
     try {
       // Prepare order data
@@ -122,6 +141,43 @@ const EnhancedCart: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Profile Completion Modal */}
+      <GoogleInfoModal
+        isOpen={showProfileModal}
+        onClose={() => {
+          if (attemptedCheckout) {
+            // Don't show error, just close
+          }
+          setShowProfileModal(false);
+          setAttemptedCheckout(false);
+        }}
+        onSubmit={async (formData) => {
+          try {
+            const token = localStorage.getItem('authToken') || '';
+            const res = await googleRegister({
+              ...formData,
+              email: user?.email || '',
+              name: user?.name || '',
+              picture: '',
+              token: token
+            });
+            if (res.ok) {
+              setShowProfileModal(false);
+              setAttemptedCheckout(false);
+              // Don't retry checkout - let user click again
+              // The user object will be updated by AuthContext
+            }
+          } catch (e) {
+            console.error('Profile update error:', e);
+          }
+        }}
+        initialData={{
+          phone: user?.phone,
+          city: user?.city,
+          address: user?.address
+        }}
+      />
+
       <QuickOrderTopBar />
       <Header />
 

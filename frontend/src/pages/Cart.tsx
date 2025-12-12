@@ -9,14 +9,17 @@ import ModernFooter from '../components/ModernFooter';
 import QuickOrderTopBar from '../components/QuickOrderTopBar';
 import SaladDetailOverlay from '../components/SaladDetailOverlay';
 import { useOrderNavigation } from '../hooks/use-order-navigation';
+import GoogleInfoModal from '../components/GoogleInfoModal';
 
 const Cart: React.FC = () => {
   const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
   const { addOrder } = useOrderHistory();
-  const { user } = useAuth();
+  const { user, googleRegister } = useAuth();
   const { handleOrderNow } = useOrderNavigation();
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [attemptedCheckout, setAttemptedCheckout] = useState(false);
 
   const handleProductClick = (product: any) => {
     setSelectedProduct(product);
@@ -50,6 +53,22 @@ const Cart: React.FC = () => {
       return;
     }
 
+    // Check if profile is complete
+    console.log('User data:', user);
+    console.log('Phone:', user.phone, 'City:', user.city, 'Address:', user.address);
+
+    const isProfileIncomplete = !user.phone || !user.city || !user.address ||
+      user.phone === '' || user.city === '' || user.address === '';
+
+    if (isProfileIncomplete) {
+      console.log('Profile incomplete, showing modal');
+      setAttemptedCheckout(true);
+      setShowProfileModal(true);
+      return;
+    }
+
+    console.log('Profile complete, proceeding with checkout');
+
     try {
       // Prepare order data
       const orderData = {
@@ -73,14 +92,14 @@ const Cart: React.FC = () => {
       let message = "🥗 *New Order from Salad Karo*\n\n";
       message += "📦 *Order Details:*\n";
       message += "━━━━━━━━━━━━━━━━\n\n";
-      
+
       cart.items.forEach((item, index) => {
         message += `${index + 1}. *${item.name}*\n`;
         message += `   Quantity: ${item.quantity}\n`;
         message += `   Price: ₹${item.price} each\n`;
         message += `   Subtotal: ₹${item.price * item.quantity}\n\n`;
       });
-      
+
       message += "━━━━━━━━━━━━━━━━\n";
       message += `💰 *Subtotal:* ₹${calculateSubtotal()}\n`;
       message += `📊 *Tax (5%):* ₹${calculateTax().toFixed(2)}\n`;
@@ -89,14 +108,14 @@ const Cart: React.FC = () => {
       message += `✅ *Total Amount:* ₹${calculateTotal().toFixed(2)}\n\n`;
       message += `👤 *Customer:* ${user.name || user.email}\n`;
       message += "Thank you for your order! 🙏";
-      
+
       const phoneNumber = '919265379915';
       const encodedMessage = encodeURIComponent(message);
       const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-      
+
       // Clear cart
       clearCart();
-      
+
       // Show success message
       toast.success('🎉 Order Successfully Confirmed!', {
         description: 'Your order has been placed. Opening WhatsApp...',
@@ -115,9 +134,46 @@ const Cart: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Profile Completion Modal */}
+      <GoogleInfoModal
+        isOpen={showProfileModal}
+        onClose={() => {
+          if (attemptedCheckout) {
+            // Don't show error, just close
+          }
+          setShowProfileModal(false);
+          setAttemptedCheckout(false);
+        }}
+        onSubmit={async (formData) => {
+          try {
+            const token = localStorage.getItem('authToken') || '';
+            const res = await googleRegister({
+              ...formData,
+              email: user?.email || '',
+              name: user?.name || '',
+              picture: '',
+              token: token
+            });
+            if (res.ok) {
+              setShowProfileModal(false);
+              setAttemptedCheckout(false);
+              // Don't retry checkout - let user click again
+              // The user object will be updated by AuthContext
+            }
+          } catch (e) {
+            console.error('Profile update error:', e);
+          }
+        }}
+        initialData={{
+          phone: user?.phone,
+          city: user?.city,
+          address: user?.address
+        }}
+      />
+
       <QuickOrderTopBar />
       <Header />
-      
+
       <main className="container mx-auto px-4 py-10">
         <div className="flex items-center gap-3 mb-8">
           <ShoppingBag className="w-8 h-8 text-green-600" />
@@ -148,7 +204,7 @@ const Cart: React.FC = () => {
             </div>
 
             <div className="pointer-events-none absolute z-0 w-64 h-64 rounded-full bg-gradient-to-br from-green-100 to-blue-100 blur-3xl" />
-            
+
             <div className="relative z-10">
               <div className="text-6xl mb-6">🛒</div>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Your cart is empty</h2>
@@ -182,32 +238,32 @@ const Cart: React.FC = () => {
                     </button>
                   </div>
                 </div>
-                
+
                 <div className="divide-y divide-gray-200">
                   {cart.items.map(item => (
                     <div key={item.id} className="p-6 hover:bg-gray-50 transition-colors">
                       <div className="flex items-center gap-6">
-                        <img 
-                          src={item.image} 
-                          alt={item.name} 
-                          className="w-20 h-20 object-cover rounded-xl shadow-md cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105" 
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-20 h-20 object-cover rounded-xl shadow-md cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105"
                           onClick={() => handleProductClick(item)}
                         />
-                        
+
                         <div className="flex-1">
-                          <h3 
+                          <h3
                             className="text-lg font-semibold text-gray-900 mb-1 cursor-pointer hover:text-green-600 transition-colors duration-200"
                             onClick={() => handleProductClick(item)}
                           >
                             {item.name}
                           </h3>
-                          <p 
+                          <p
                             className="text-gray-600 text-sm mb-3 line-clamp-2 cursor-pointer hover:text-gray-800 transition-colors duration-200"
                             onClick={() => handleProductClick(item)}
                           >
                             {item.description}
                           </p>
-                          
+
                           <button
                             onClick={() => handleProductClick(item)}
                             className="text-xs text-green-600 hover:text-green-700 font-medium mb-3 inline-flex items-center gap-1 hover:gap-2 transition-all duration-200"
@@ -215,7 +271,7 @@ const Cart: React.FC = () => {
                             View Details
                             <ArrowRight className="w-3 h-3" />
                           </button>
-                          
+
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
                               <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
@@ -233,7 +289,7 @@ const Cart: React.FC = () => {
                                   <Plus className="w-4 h-4" />
                                 </button>
                               </div>
-                              
+
                               <button
                                 onClick={() => removeFromCart(item.id)}
                                 className="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition-colors"
@@ -241,7 +297,7 @@ const Cart: React.FC = () => {
                                 <Trash2 className="w-4 h-4" />
                               </button>
                             </div>
-                            
+
                             <div className="text-right">
                               <div className="text-xl font-bold text-green-700">₹{item.price * item.quantity}</div>
                               <div className="text-sm text-gray-500">₹{item.price} each</div>
@@ -259,7 +315,7 @@ const Cart: React.FC = () => {
             <div className="lg:col-span-1">
               <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Order Summary</h2>
-                
+
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between text-gray-600">
                     <span>Subtotal</span>
@@ -279,24 +335,24 @@ const Cart: React.FC = () => {
                     </div>
                   )}
                 </div>
-                
+
                 <div className="border-t border-gray-200 pt-4 mb-6">
                   <div className="flex justify-between text-xl font-bold text-gray-900">
                     <span>Total</span>
                     <span>₹{calculateTotal().toFixed(2)}</span>
                   </div>
                 </div>
-                
-                <button 
+
+                <button
                   onClick={handleCheckout}
                   className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-4 rounded-xl font-semibold text-lg hover:shadow-lg hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
                 >
                   Proceed to Checkout
                   <ArrowRight className="w-5 h-5" />
                 </button>
-                
+
                 <div className="mt-4 text-center">
-                  <button 
+                  <button
                     onClick={handleOrderNow}
                     className="text-green-600 hover:text-green-700 font-medium inline-flex items-center gap-2"
                   >
@@ -309,7 +365,7 @@ const Cart: React.FC = () => {
           </div>
         )}
       </main>
-      
+
       <ModernFooter />
 
       {/* Salad Detail Overlay */}

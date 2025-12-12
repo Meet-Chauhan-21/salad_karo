@@ -8,15 +8,96 @@ import { Leaf, Heart, Star } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 
+import GoogleInfoModal from '../components/GoogleInfoModal';
+
 const Login: React.FC = () => {
-  const { login, loginWithGoogle } = useAuth();
+  const { login, googleLogin, googleRegister, setUser } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
+  // Google Flow State
+  const [showGoogleModal, setShowGoogleModal] = useState(false);
+  const [googleTempData, setGoogleTempData] = useState<any>(null);
+
   return (
     <div className="min-h-screen bg-background">
+      {/* Modal for Google Info */}
+      <GoogleInfoModal
+        isOpen={showGoogleModal}
+        onClose={async () => {
+          // Allow skipping - save partial data to database
+          if (googleTempData) {
+            try {
+              // Save to database with empty fields
+              const res = await googleRegister({
+                email: googleTempData.email,
+                name: googleTempData.name,
+                picture: googleTempData.picture || '',
+                phone: '',
+                city: '',
+                address: '',
+                token: googleTempData.token
+              });
+
+              if (res.ok) {
+                toast.success(`Welcome ${googleTempData.name}!`);
+                setShowGoogleModal(false);
+                navigate('/');
+              } else {
+                // Fallback to local storage only
+                const userData: any = {
+                  email: googleTempData.email,
+                  name: googleTempData.name,
+                };
+                setUser(userData);
+                localStorage.setItem('skfb_auth_user_v1', JSON.stringify(userData));
+                localStorage.setItem('authToken', googleTempData.token);
+                localStorage.setItem('isLoggedIn', 'true');
+                toast.success(`Welcome ${googleTempData.name}!`);
+                setShowGoogleModal(false);
+                navigate('/');
+              }
+            } catch (e) {
+              // Fallback to local storage only
+              const userData: any = {
+                email: googleTempData.email,
+                name: googleTempData.name,
+              };
+              setUser(userData);
+              localStorage.setItem('skfb_auth_user_v1', JSON.stringify(userData));
+              localStorage.setItem('authToken', googleTempData.token);
+              localStorage.setItem('isLoggedIn', 'true');
+              toast.success(`Welcome ${googleTempData.name}!`);
+              setShowGoogleModal(false);
+              navigate('/');
+            }
+          }
+        }}
+        onSubmit={async (formData) => {
+          try {
+            const res = await googleRegister({
+              ...formData,
+              email: googleTempData.email,
+              name: googleTempData.name,
+              picture: googleTempData.picture,
+              token: googleTempData.token
+            });
+            if (res.ok) {
+              toast.success(`Welcome ${googleTempData.name}!`);
+              setShowGoogleModal(false);
+              navigate('/');
+            } else {
+              toast.error('Registration failed: ' + (res as any).error);
+            }
+          } catch (e) {
+            toast.error('Something went wrong');
+          }
+        }}
+        initialData={googleTempData?.currentData}
+      />
+
       <Header />
       <main className="relative overflow-hidden container mx-auto px-4 py-10 max-w-md">
         {/* Floating Background Elements */}
@@ -119,25 +200,29 @@ const Login: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex justify-center">
+          <div className="w-full">
             <GoogleLogin
-              onSuccess={credentialResponse => {
+              onSuccess={async (credentialResponse) => {
                 if (credentialResponse.credential) {
                   try {
-                    const decoded: any = jwtDecode(credentialResponse.credential);
-                    console.log('Google Login Success', decoded);
+                    const token = credentialResponse.credential;
+                    const res = await googleLogin(token);
 
-                    loginWithGoogle({
-                      email: decoded.email,
-                      name: decoded.name,
-                      picture: decoded.picture,
-                      token: credentialResponse.credential
-                    });
-
-                    toast.success(`Welcome ${decoded.name}!`);
-                    navigate('/');
+                    if (res.ok) {
+                      toast.success('Logged in successfully!');
+                      navigate('/');
+                    } else if ((res as any).requiresInfo) {
+                      setGoogleTempData({
+                        ...((res as any).googleData),
+                        currentData: (res as any).currentData,
+                        token: token
+                      });
+                      setShowGoogleModal(true);
+                    } else {
+                      toast.error((res as any).error || 'Login failed');
+                    }
                   } catch (error) {
-                    console.error('Error decoding Google token', error);
+                    console.error('Google Auth Error', error);
                     toast.error('Failed to process Google Login');
                   }
                 }
@@ -147,6 +232,7 @@ const Login: React.FC = () => {
                 toast.error('Google connection failed');
               }}
               useOneTap
+              width="100%"
             />
           </div>
           <div className="text-sm text-muted-foreground">Don't have an account? <a href="/register" className="text-primary underline">Register</a></div>

@@ -40,7 +40,7 @@ const ProductCard = ({ product, onProductClick }: ProductCardProps) => {
     if (e) e.stopPropagation();
     const currentQty = getProductQuantity(productId);
     const newQty = currentQty + change;
-    
+
     if (newQty <= 0) {
       removeFromCart(productId);
       toast('Removed from cart', { description: `${product.name} removed from your cart.` });
@@ -53,9 +53,9 @@ const ProductCard = ({ product, onProductClick }: ProductCardProps) => {
     addToCart(product);
     setIsPinging(true);
     setTimeout(() => setIsPinging(false), 600);
-    toast.success('Added to cart', {
-      description: `${product.name} added to your cart.`
-    });
+    // toast.success('Added to cart', {
+    //   description: `${product.name} added to your cart.`
+    // });
   };
 
   const handleToggleLike = () => {
@@ -89,18 +89,18 @@ const ProductCard = ({ product, onProductClick }: ProductCardProps) => {
   };
 
   return (
-    <div 
+    <div
       className="card-product group cursor-pointer"
       onClick={handleCardClick}
     >
       {/* Image Container */}
       <div className="relative overflow-hidden rounded-t-xl sm:rounded-t-2xl">
-        <img 
+        <img
           src={product.image}
           alt={product.name}
           className="w-full h-40 sm:h-44 lg:h-48 object-cover group-hover:scale-110 transition-[var(--transition-smooth)]"
         />
-        
+
         {/* Overlay Actions */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-[var(--transition-smooth)]">
           <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 flex justify-between items-center">
@@ -110,7 +110,7 @@ const ProductCard = ({ product, onProductClick }: ProductCardProps) => {
               )}
               <Heart className={`w-3 h-3 sm:w-4 sm:h-4 ${isLiked(product.id) ? 'fill-accent text-accent' : ''}`} />
             </button>
-            
+
             {getProductQuantity(product.id) > 0 ? (
               <div className="qty-control flex items-center gap-1.5 sm:gap-2 bg-white/90 backdrop-blur-sm rounded-full p-0.5 sm:p-1 shadow-lg scale-in">
                 <button
@@ -130,7 +130,7 @@ const ProductCard = ({ product, onProductClick }: ProductCardProps) => {
                 </button>
               </div>
             ) : (
-              <button 
+              <button
                 onClick={handleAddToCart}
                 className="relative px-3 py-1.5 sm:px-4 sm:py-2 bg-primary text-primary-foreground rounded-full font-medium hover:bg-primary-glow transition-[var(--transition-smooth)] shadow-[var(--shadow-button)] flex items-center gap-1.5 sm:gap-2 active:scale-[0.98] text-xs sm:text-sm"
               >
@@ -168,9 +168,9 @@ const ProductCard = ({ product, onProductClick }: ProductCardProps) => {
         <div className="flex items-center gap-1.5 sm:gap-2">
           <div className="flex">
             {[...Array(5)].map((_, i) => (
-              <Star 
-                key={i} 
-                className={`w-3 h-3 sm:w-4 sm:h-4 ${i < product.rating ? 'fill-accent text-accent' : 'text-muted-foreground'}`} 
+              <Star
+                key={i}
+                className={`w-3 h-3 sm:w-4 sm:h-4 ${i < product.rating ? 'fill-accent text-accent' : 'text-muted-foreground'}`}
               />
             ))}
           </div>
@@ -185,7 +185,7 @@ const ProductCard = ({ product, onProductClick }: ProductCardProps) => {
               <div className="text-xs sm:text-sm text-muted-foreground line-through">₹{product.originalPrice}</div>
             )}
           </div>
-          
+
           {getProductQuantity(product.id) > 0 ? (
             <div className="qty-control flex items-center gap-2 sm:gap-3 bg-green-100 rounded-xl sm:rounded-2xl p-0.5 sm:p-1 scale-in">
               <button
@@ -205,7 +205,7 @@ const ProductCard = ({ product, onProductClick }: ProductCardProps) => {
               </button>
             </div>
           ) : (
-            <button 
+            <button
               onClick={handleAddToCart}
               className="relative p-2.5 sm:p-3 bg-secondary hover:bg-primary hover:text-primary-foreground rounded-full transition-[var(--transition-smooth)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-button)] hover:scale-110 active:scale-95"
               aria-label="Add to cart"
