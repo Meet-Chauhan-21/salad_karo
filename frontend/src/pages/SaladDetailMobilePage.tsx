@@ -8,7 +8,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { useOverlay } from '../contexts/OverlayContext';
 import { PRODUCTS } from '../lib/products';
 import { toast } from '@/components/ui/sonner';
-import { getImageUrl } from '../utils/imageUtils';
 
 const SaladDetailMobilePage: React.FC = () => {
   const location = useLocation();
@@ -206,7 +205,7 @@ const SaladDetailMobilePage: React.FC = () => {
       <div className="relative">
         <div className="aspect-square w-full overflow-hidden bg-gray-100">
           <img
-            src={getImageUrl(product.image)}
+            src={product.image}
             alt={product.name}
             className={`w-full h-full object-cover transition-opacity duration-500 ${imageLoaded ? 'opacity-100' : 'opacity-0'
               }`}
