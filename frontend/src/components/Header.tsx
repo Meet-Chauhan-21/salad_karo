@@ -407,33 +407,39 @@ const Header = () => {
                   </NavLink>
                 </div>
               </div>
-            </nav>
 
-            {/* Sidebar Footer */}
-            <div className="border-t border-gray-200 p-4 bg-gray-50">
-              {isLoggedIn ? (
-                <a
-                  href="/profile"
-                  className="flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-medium transition-colors bg-blue-600 text-white hover:bg-blue-700"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <User className="w-5 h-5" />
-                  <div className="text-left">
-                    <div className="text-sm font-medium">{user?.name || user?.email.split('@')[0]}</div>
-                    <div className="text-xs text-blue-100">Profile</div>
-                  </div>
-                </a>
-              ) : (
-                <a
-                  href="/login"
-                  className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-md text-sm font-semibold transition-colors bg-green-600 text-white hover:bg-green-700"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <User className="w-5 h-5" />
-                  Login
-                </a>
+              {/* Login/Profile Button - Below Policies */}
+              {!isLoggedIn && (
+                <div className="mt-6 pt-4 border-t border-gray-200">
+                  <a
+                    href="/login"
+                    className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-md text-sm font-semibold transition-colors bg-green-600 text-white hover:bg-green-700"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <User className="w-5 h-5" />
+                    Login
+                  </a>
+                </div>
               )}
-            </div>
+              {isLoggedIn && (
+                <div className="mt-6 pt-4 border-t border-gray-200">
+                  <a
+                    href="/profile"
+                    className="flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-medium transition-colors"
+                    style={{ backgroundColor: '#F7F6D3', color: '#374151' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#EFECC5'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#F7F6D3'}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <User className="w-5 h-5" />
+                    <div className="text-left">
+                      <div className="text-sm font-medium">{user?.name || user?.email.split('@')[0]}</div>
+                      <div className="text-xs" style={{ color: '#6B7280' }}>Profile</div>
+                    </div>
+                  </a>
+                </div>
+              )}
+            </nav>
           </div>
         </>
       )}
