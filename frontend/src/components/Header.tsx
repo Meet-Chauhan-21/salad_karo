@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ShoppingCart, Menu, X, User, Heart, LogOut, ChevronDown, FileText, Shield, Scale, RotateCcw, Settings } from 'lucide-react';
+import { ShoppingCart, Menu, X, User, Heart, LogOut, ChevronDown, FileText, Shield, Scale, RotateCcw, Settings, Home, Leaf, Calendar, Info, ShoppingBag } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { useLikes } from '../contexts/LikesContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useOrderNavigation } from '../hooks/use-order-navigation';
+import { useOverlay } from '../contexts/OverlayContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
@@ -22,6 +23,7 @@ const Header = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { setIsCartBarHidden } = useOverlay();
 
   useEffect(() => {
     const checkAdminStatus = () => {
@@ -58,12 +60,29 @@ const Header = () => {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
+  // Lock body scroll when mobile sidebar is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+      // Hide global cart bar while the sidebar is open
+      setIsCartBarHidden(true);
+    } else {
+      document.body.style.overflow = '';
+      setIsCartBarHidden(false);
+    }
+    return () => {
+      document.body.style.overflow = '';
+      setIsCartBarHidden(false);
+    };
+  }, [isMenuOpen]);
+
   const isShopActive = location.pathname === '/' && location.hash === '#shop';
   const navLinkClass = (active: boolean) =>
     `pb-1 border-b-2 transition-[var(--transition-smooth)] ${active ? 'text-primary border-primary' : 'text-foreground border-transparent hover:border-primary'} font-medium`;
 
   return (
-    <header className="bg-card/80 backdrop-blur-md shadow-[var(--shadow-soft)] sticky top-0 z-50 border-b border-border">
+    <>
+    <header className="bg-card/80 backdrop-blur-md shadow-[var(--shadow-soft)] sticky top-0 z-30 border-b border-border">
       <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -195,7 +214,7 @@ const Header = () => {
             ) : (
               <a
                 href="/login"
-                className="group relative overflow-hidden bg-gradient-to-r from-green-600 to-green-700 text-white px-3 py-1.5 lg:px-6 lg:py-2.5 rounded-full transition-all duration-300 font-semibold hover:shadow-lg hover:shadow-green-500/25 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-green-300 text-sm lg:text-base"
+                className="group relative overflow-hidden bg-gradient-to-r from-green-600 to-green-700 text-white px-3 py-2 lg:px-6 lg:py-2.5 rounded-full transition-all duration-300 font-semibold hover:shadow-lg hover:shadow-green-500/25 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-green-300 text-sm lg:text-base"
               >
                 <span className="pointer-events-none absolute -inset-y-10 -left-10 w-20 rotate-45 bg-white/30 blur-md opacity-0 group-hover:opacity-100 group-hover:translate-x-[200%] transition-all duration-500" />
                 <span className="relative flex items-center gap-1 lg:gap-2">
@@ -241,109 +260,168 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden mt-4 py-4 border-t border-border animate-fade-in-up">
-            {/* Mobile Menu Header */}
-            <div className="flex items-center justify-center mb-4 pb-4 border-b border-border">
-              <img
-                src="/images/saladkaro-logo.jpg"
-                alt="SaladKaro Logo"
-                className="w-12 h-12 mr-3 object-cover rounded-full"
-              />
-              <h2 className="text-xl font-bold text-gradient">SaladKaro</h2>
-            </div>
-            <nav className="flex flex-col space-y-3">
-              <NavLink to="/" className={({ isActive }) => `${navLinkClass(isActive && location.hash !== '#shop')} py-2 text-base`} onClick={() => setIsMenuOpen(false)}>Home</NavLink>
-              <NavLink to="/menu" className={({ isActive }) => `${navLinkClass(isActive)} py-2 text-base`} onClick={() => setIsMenuOpen(false)}>Salad Menu</NavLink>
-              <NavLink to="/membership" className={({ isActive }) => `${navLinkClass(isActive)} py-2 text-base`} onClick={() => setIsMenuOpen(false)}>Subscription Plan</NavLink>
-              <NavLink to="/about" className={({ isActive }) => `${navLinkClass(isActive)} py-2 text-base`} onClick={() => setIsMenuOpen(false)}>About</NavLink>
+      </div>
+    </header>
 
-              {/* Mobile Policy Links */}
-              <div className="pt-3 border-t border-border">
-                <div className="text-sm font-semibold text-muted-foreground mb-3 px-2">Other</div>
-                <div className="grid grid-cols-2 gap-2">
-                  <NavLink to="/return-policy" className="flex items-center gap-2 py-2 px-3 text-sm text-gray-600 hover:text-primary hover:bg-secondary/50 rounded-lg transition-colors" onClick={() => setIsMenuOpen(false)}>
-                    <RotateCcw className="w-4 h-4" />
-                    Return Policy
-                  </NavLink>
-                  <NavLink to="/refund-policy" className="flex items-center gap-2 py-2 px-3 text-sm text-gray-600 hover:text-primary hover:bg-secondary/50 rounded-lg transition-colors" onClick={() => setIsMenuOpen(false)}>
-                    <FileText className="w-4 h-4" />
-                    Refund Policy
-                  </NavLink>
-                  <NavLink to="/privacy-policy" className="flex items-center gap-2 py-2 px-3 text-sm text-gray-600 hover:text-primary hover:bg-secondary/50 rounded-lg transition-colors" onClick={() => setIsMenuOpen(false)}>
-                    <Shield className="w-4 h-4" />
-                    Privacy Policy
-                  </NavLink>
-                  <NavLink to="/disclaimer" className="flex items-center gap-2 py-2 px-3 text-sm text-gray-600 hover:text-primary hover:bg-secondary/50 rounded-lg transition-colors" onClick={() => setIsMenuOpen(false)}>
-                    <Scale className="w-4 h-4" />
-                    Disclaimer
-                  </NavLink>
+      {/* Mobile Sidebar Menu - Left Side - Outside header for proper z-index */}
+      {isMenuOpen && (
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm md:hidden z-[60] animate-fade-in"
+            onClick={() => setIsMenuOpen(false)}
+          />
+          
+          {/* Sidebar */}
+          <div className="fixed left-0 top-0 h-screen w-72 bg-white shadow-2xl z-[70] animate-slide-in-left flex flex-col md:hidden" role="dialog" aria-modal="true">
+            {/* Sidebar Header */}
+            <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-white">
+              <div className="flex items-center space-x-3">
+                <img
+                  src="/images/saladkaro-logo.jpg"
+                  alt="SaladKaro Logo"
+                  className="w-9 h-9 object-cover rounded-full"
+                />
+                <div className="flex flex-col">
+                  <h2 className="text-base font-semibold text-gray-900">SaladKaro</h2>
+                  <span className="text-xs text-gray-500">Healthy. Fresh. Daily.</span>
                 </div>
               </div>
+              <button
+                onClick={() => setIsMenuOpen(false)}
+                className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
 
-              {/* Admin Panel Button for Mobile */}
-              {isAdmin && (
-                <div className="pt-4 border-t border-border">
-                  <a
-                    href="/admin/orders"
-                    className="flex items-center gap-3 px-6 py-2 text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-colors rounded-lg mx-2 mb-2"
-                  >
-                    <div className="flex items-center justify-center w-8 h-8 bg-purple-100 text-purple-600 rounded-full">
-                      <Settings className="w-4 h-4" />
-                    </div>
-                    <span className="font-semibold">Admin Panel</span>
-                  </a>
-                </div>
-              )}
+            {/* Sidebar Content */}
+            <nav className="flex-1 overflow-y-auto py-4 px-4">
+              {/* Section: Quick Links */}
+              <div className="px-2 pb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Quick Links</div>
+              <div className="space-y-1">
+                {/* Home */}
+                <NavLink
+                  to="/"
+                  className={({ isActive }) => `flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-medium transition-colors ${
+                    isActive && location.hash !== '#shop'
+                      ? 'bg-green-600 text-white'
+                      : 'text-gray-800 hover:bg-gray-100'
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="inline-flex items-center justify-center w-5 h-5"><Home className="w-5 h-5" /></span>
+                  <span>Home</span>
+                </NavLink>
 
-              {/* Order Now Button for Mobile */}
-              <div className="pt-2 border-t border-border">
+                {/* Salad Menu */}
+                <NavLink
+                  to="/menu"
+                  className={({ isActive }) => `flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'bg-green-600 text-white'
+                      : 'text-gray-800 hover:bg-gray-100'
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="inline-flex items-center justify-center w-5 h-5"><Leaf className="w-5 h-5" /></span>
+                  <span>Salad Menu</span>
+                </NavLink>
+
+                {/* Subscription Plan */}
+                <NavLink
+                  to="/membership"
+                  className={({ isActive }) => `flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'bg-green-600 text-white'
+                      : 'text-gray-800 hover:bg-gray-100'
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="inline-flex items-center justify-center w-5 h-5"><Calendar className="w-5 h-5" /></span>
+                  <span>Subscription Plan</span>
+                </NavLink>
+
+                {/* About */}
+                <NavLink
+                  to="/about"
+                  className={({ isActive }) => `flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'bg-green-600 text-white'
+                      : 'text-gray-800 hover:bg-gray-100'
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="inline-flex items-center justify-center w-5 h-5"><Info className="w-5 h-5" /></span>
+                  <span>About</span>
+                </NavLink>
+
+                {/* Order Now */}
                 <button
                   onClick={() => {
                     handleOrderNow();
                     setIsMenuOpen(false);
                   }}
-                  className="w-full group relative overflow-hidden bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-full transition-[var(--transition-smooth)] font-semibold hover:shadow-[var(--shadow-glow)] hover:scale-105 text-center"
+                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-semibold transition-colors bg-green-600 text-white hover:bg-green-700 mt-1"
                 >
-                  <span className="pointer-events-none absolute -inset-y-10 -left-10 w-20 rotate-45 bg-white/30 blur-md opacity-0 group-hover:opacity-100 group-hover:translate-x-[200%] transition-[var(--transition-smooth)]" />
-                  Order Now
+                  <span className="inline-flex items-center justify-center w-5 h-5"><ShoppingBag className="w-5 h-5" /></span>
+                  <span>Order Now</span>
                 </button>
               </div>
 
-              <div className="flex items-center justify-center pt-3 border-t border-border">
-                {isLoggedIn ? (
-                  <a
-                    href="/profile"
-                    className="group relative overflow-hidden bg-secondary text-foreground px-6 py-2.5 rounded-full font-medium flex items-center gap-2 hover:bg-secondary/80 transition-[var(--transition-smooth)]"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <span className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-r from-primary/10 to-accent/10" />
-                    <span className="pointer-events-none absolute -inset-y-10 -left-10 w-20 rotate-45 bg-white/20 blur-md opacity-0 group-hover:opacity-100 group-hover:translate-x-[200%] transition-[var(--transition-smooth)]" />
-                    <User className="w-4 h-4" />
-                    {user?.name || user?.email.split('@')[0] || 'Profile'}
-                  </a>
-                ) : (
-                  <a
-                    href="/login"
-                    className="group relative overflow-hidden bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-2.5 rounded-full font-semibold hover:shadow-lg hover:shadow-green-500/25 hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-green-300"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <span className="pointer-events-none absolute -inset-y-10 -left-10 w-20 rotate-45 bg-white/30 blur-md opacity-0 group-hover:opacity-100 group-hover:translate-x-[200%] transition-all duration-500" />
-                    <span className="relative flex items-center gap-2">
-                      <User className="w-4 h-4" />
-                      Login
-                    </span>
-                  </a>
-                )}
+              {/* Section: Policies */}
+              <div className="mt-4">
+                <div className="px-2 pb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Policies</div>
+                <div className="grid grid-cols-2 gap-2 px-2">
+                  <NavLink to="/return-policy" className="flex items-center gap-2 py-2 px-3 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
+                    <RotateCcw className="w-4 h-4" />
+                    Return
+                  </NavLink>
+                  <NavLink to="/refund-policy" className="flex items-center gap-2 py-2 px-3 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
+                    <FileText className="w-4 h-4" />
+                    Refund
+                  </NavLink>
+                  <NavLink to="/privacy-policy" className="flex items-center gap-2 py-2 px-3 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
+                    <Shield className="w-4 h-4" />
+                    Privacy
+                  </NavLink>
+                  <NavLink to="/disclaimer" className="flex items-center gap-2 py-2 px-3 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
+                    <Scale className="w-4 h-4" />
+                    Disclaimer
+                  </NavLink>
+                </div>
               </div>
             </nav>
-          </div>
-        )}
-      </div>
 
-      {/* Login Dialog removed; using dedicated pages */}
-    </header>
+            {/* Sidebar Footer */}
+            <div className="border-t border-gray-200 p-4 bg-gray-50">
+              {isLoggedIn ? (
+                <a
+                  href="/profile"
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-medium transition-colors bg-blue-600 text-white hover:bg-blue-700"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <User className="w-5 h-5" />
+                  <div className="text-left">
+                    <div className="text-sm font-medium">{user?.name || user?.email.split('@')[0]}</div>
+                    <div className="text-xs text-blue-100">Profile</div>
+                  </div>
+                </a>
+              ) : (
+                <a
+                  href="/login"
+                  className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-md text-sm font-semibold transition-colors bg-green-600 text-white hover:bg-green-700"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <User className="w-5 h-5" />
+                  Login
+                </a>
+              )}
+            </div>
+          </div>
+        </>
+      )}
+    </>
   );
 };
 
