@@ -185,6 +185,11 @@ const SaladDetailOverlay: React.FC<SaladDetailOverlayProps> = ({ product, isOpen
                 src={productImages[selectedImage]}
                 alt={product.name}
                 className="w-full h-80 object-cover rounded-2xl shadow-lg"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.onerror = null; // Prevent infinite loop
+                  target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="320" viewBox="0 0 400 320"%3E%3Crect width="400" height="320" fill="%23f3f4f6"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="18" fill="%239ca3af"%3E🥗 Image Not Available%3C/text%3E%3C/svg%3E';
+                }}
               />
               
               {/* Like Button */}
@@ -227,6 +232,11 @@ const SaladDetailOverlay: React.FC<SaladDetailOverlayProps> = ({ product, isOpen
                     src={image}
                     alt={`${product.name} ${index + 1}`}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.onerror = null;
+                      target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"%3E%3Crect width="80" height="80" fill="%23f3f4f6"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="24" fill="%239ca3af"%3E🥗%3C/text%3E%3C/svg%3E';
+                    }}
                   />
                 </button>
               ))}
