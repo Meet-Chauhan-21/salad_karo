@@ -303,10 +303,10 @@ const Header = () => {
                 {/* Home */}
                 <NavLink
                   to="/"
-                  className={({ isActive }) => `flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-medium transition-colors ${
+                  className={({ isActive }) => `flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-medium transition-colors border-l-4 ${
                     isActive && location.hash !== '#shop'
-                      ? 'bg-green-600 text-white'
-                      : 'text-gray-800 hover:bg-gray-100'
+                      ? 'border-green-600 text-green-600 bg-green-50'
+                      : 'border-transparent text-gray-800 hover:bg-gray-100'
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -317,10 +317,10 @@ const Header = () => {
                 {/* Salad Menu */}
                 <NavLink
                   to="/menu"
-                  className={({ isActive }) => `flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-medium transition-colors ${
+                  className={({ isActive }) => `flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-medium transition-colors border-l-4 ${
                     isActive
-                      ? 'bg-green-600 text-white'
-                      : 'text-gray-800 hover:bg-gray-100'
+                      ? 'border-green-600 text-green-600 bg-green-50'
+                      : 'border-transparent text-gray-800 hover:bg-gray-100'
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -331,10 +331,10 @@ const Header = () => {
                 {/* Subscription Plan */}
                 <NavLink
                   to="/membership"
-                  className={({ isActive }) => `flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-medium transition-colors ${
+                  className={({ isActive }) => `flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-medium transition-colors border-l-4 ${
                     isActive
-                      ? 'bg-green-600 text-white'
-                      : 'text-gray-800 hover:bg-gray-100'
+                      ? 'border-green-600 text-green-600 bg-green-50'
+                      : 'border-transparent text-gray-800 hover:bg-gray-100'
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -345,10 +345,10 @@ const Header = () => {
                 {/* About */}
                 <NavLink
                   to="/about"
-                  className={({ isActive }) => `flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-medium transition-colors ${
+                  className={({ isActive }) => `flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-medium transition-colors border-l-4 ${
                     isActive
-                      ? 'bg-green-600 text-white'
-                      : 'text-gray-800 hover:bg-gray-100'
+                      ? 'border-green-600 text-green-600 bg-green-50'
+                      : 'border-transparent text-gray-800 hover:bg-gray-100'
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -373,19 +373,35 @@ const Header = () => {
               <div className="mt-4">
                 <div className="px-2 pb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Policies</div>
                 <div className="grid grid-cols-2 gap-2 px-2">
-                  <NavLink to="/return-policy" className="flex items-center gap-2 py-2 px-3 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
+                  <NavLink to="/return-policy" className={({ isActive }) => `flex items-center gap-2 py-2 px-3 text-sm rounded-md transition-colors border-l-4 ${
+                    isActive
+                      ? 'border-green-600 text-green-600 bg-green-50'
+                      : 'border-transparent text-gray-700 hover:bg-gray-100'
+                  }`} onClick={() => setIsMenuOpen(false)}>
                     <RotateCcw className="w-4 h-4" />
                     Return
                   </NavLink>
-                  <NavLink to="/refund-policy" className="flex items-center gap-2 py-2 px-3 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
+                  <NavLink to="/refund-policy" className={({ isActive }) => `flex items-center gap-2 py-2 px-3 text-sm rounded-md transition-colors border-l-4 ${
+                    isActive
+                      ? 'border-green-600 text-green-600 bg-green-50'
+                      : 'border-transparent text-gray-700 hover:bg-gray-100'
+                  }`} onClick={() => setIsMenuOpen(false)}>
                     <FileText className="w-4 h-4" />
                     Refund
                   </NavLink>
-                  <NavLink to="/privacy-policy" className="flex items-center gap-2 py-2 px-3 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
+                  <NavLink to="/privacy-policy" className={({ isActive }) => `flex items-center gap-2 py-2 px-3 text-sm rounded-md transition-colors border-l-4 ${
+                    isActive
+                      ? 'border-green-600 text-green-600 bg-green-50'
+                      : 'border-transparent text-gray-700 hover:bg-gray-100'
+                  }`} onClick={() => setIsMenuOpen(false)}>
                     <Shield className="w-4 h-4" />
                     Privacy
                   </NavLink>
-                  <NavLink to="/disclaimer" className="flex items-center gap-2 py-2 px-3 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors" onClick={() => setIsMenuOpen(false)}>
+                  <NavLink to="/disclaimer" className={({ isActive }) => `flex items-center gap-2 py-2 px-3 text-sm rounded-md transition-colors border-l-4 ${
+                    isActive
+                      ? 'border-green-600 text-green-600 bg-green-50'
+                      : 'border-transparent text-gray-700 hover:bg-gray-100'
+                  }`} onClick={() => setIsMenuOpen(false)}>
                     <Scale className="w-4 h-4" />
                     Disclaimer
                   </NavLink>
