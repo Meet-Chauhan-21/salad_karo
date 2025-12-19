@@ -49,7 +49,7 @@ const EnhancedCart: React.FC = () => {
       navigate('/login');
       return;
     }
-
+    
     // Check if profile is complete
     console.log('User data:', user);
     console.log('Phone:', user.phone, 'City:', user.city, 'Address:', user.address);
