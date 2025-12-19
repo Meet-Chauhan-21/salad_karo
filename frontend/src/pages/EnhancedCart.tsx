@@ -46,6 +46,7 @@ const EnhancedCart: React.FC = () => {
   const handleCheckout = async () => {
     if (!user?.email) {
       toast.error('Please login to place an order');
+      navigate('/login');
       return;
     }
 

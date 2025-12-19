@@ -10,12 +10,14 @@ import QuickOrderTopBar from '../components/QuickOrderTopBar';
 import SaladDetailOverlay from '../components/SaladDetailOverlay';
 import { useOrderNavigation } from '../hooks/use-order-navigation';
 import GoogleInfoModal from '../components/GoogleInfoModal';
+import { useNavigate } from 'react-router-dom';
 
 const Cart: React.FC = () => {
   const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
   const { addOrder } = useOrderHistory();
   const { user, googleRegister } = useAuth();
   const { handleOrderNow } = useOrderNavigation();
+  const navigate = useNavigate();
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -50,6 +52,7 @@ const Cart: React.FC = () => {
   const handleCheckout = async () => {
     if (!user?.email) {
       toast.error('Please login to place an order');
+      navigate('/login');
       return;
     }
 
