@@ -21,8 +21,8 @@ const SaladDetailMobile = () => {
       const foundProduct = PRODUCTS.find(p => p.id.toString() === productId);
       setProduct(foundProduct);
     } else {
-      // No product found, redirect to home
-      navigate('/');
+      // No product found, go back
+      navigate(-1);
     }
   }, [location, navigate]);
 

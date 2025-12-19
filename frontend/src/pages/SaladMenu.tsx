@@ -489,12 +489,11 @@ const SaladMenu = () => {
           </div>
           
           {/* Salad Grid */}
-          <div ref={gridRef} id="shop" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+          <div ref={gridRef} id="shop" className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
             {filteredSalads.map((salad, index) => (
               <div
                 key={salad.id}
-                className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 animate-fade-in-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
                 onClick={(e) => handleSaladClick(salad, e)}
               >
                 {/* Image Container */}
@@ -544,35 +543,41 @@ const SaladMenu = () => {
                   </div>
                 </div>
                 {/* Content */}
-                <div className="p-6">
-                  {/* Rating and Reviews */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-1">
+                <div className="p-3 md:p-6">
+                  {/* Rating */}
+                  <div className="flex items-center gap-1 mb-2">
+                    <div className="flex items-center">
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`w-4 h-4 ${
+                          className={`w-3 h-3 md:w-4 md:h-4 ${
                             i < salad.rating
                               ? 'text-yellow-400 fill-current'
                               : 'text-gray-300'
                           }`}
                         />
                       ))}
-                      <span className="text-sm text-gray-600 ml-2">({salad.reviews})</span>
                     </div>
-                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                      {salad.category}
-                    </span>
+                    <span className="text-xs md:text-sm text-gray-600">({salad.reviews})</span>
                   </div>
-                  {/* Name and Description */}
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-green-600 transition-colors">
+
+                  {/* Name */}
+                  <h3 className="text-sm md:text-xl font-bold text-gray-900 mb-2 group-hover:text-green-600 transition-colors line-clamp-2">
                     {salad.name}
                   </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-2">
+
+                  {/* Category - Desktop Only */}
+                  <span className="hidden md:inline-block text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full mb-2">
+                    {salad.category}
+                  </span>
+
+                  {/* Description - Desktop Only */}
+                  <p className="hidden md:block text-gray-600 text-sm leading-relaxed mb-4 line-clamp-2">
                     {salad.description}
                   </p>
-                  {/* Ingredients Tags */}
-                  <div className="flex flex-wrap gap-1 mb-4">
+
+                  {/* Ingredients Tags - Desktop Only */}
+                  <div className="hidden md:flex flex-wrap gap-1 mb-4">
                     {salad.ingredients.slice(0, 3).map(ingredient => (
                       <span
                         key={ingredient}
@@ -587,37 +592,38 @@ const SaladMenu = () => {
                       </span>
                     )}
                   </div>
+
                   {/* Price and Add to Cart */}
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl font-bold text-green-600">₹{salad.price}</span>
+                    <div className="flex flex-col md:flex-row md:items-center md:gap-2">
+                      <span className="text-lg md:text-2xl font-bold text-green-600">₹{salad.price}</span>
                       {salad.originalPrice && (
-                        <span className="text-sm text-gray-500 line-through">₹{salad.originalPrice}</span>
+                        <span className="text-xs md:text-sm text-red-500 line-through">₹{salad.originalPrice}</span>
                       )}
                     </div>
                     
                     {getProductQuantity(salad.id) > 0 ? (
-                      <div className="qty-control flex items-center gap-3 bg-green-100 rounded-2xl p-1 animate-fade-in scale-in">
+                      <div className="qty-control flex items-center gap-2 md:gap-3 bg-green-100 rounded-xl md:rounded-2xl p-1 animate-fade-in scale-in">
                         <button
                           onClick={(e) => handleQuantityChange(salad.id, -1, e)}
-                          className="w-8 h-8 flex items-center justify-center bg-white text-green-600 rounded-xl hover:bg-green-600 hover:text-white transition-all duration-200 shadow-sm hover:shadow-md active:scale-95"
+                          className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center bg-white text-green-600 rounded-lg md:rounded-xl hover:bg-green-600 hover:text-white transition-all duration-200 shadow-sm hover:shadow-md active:scale-95"
                         >
-                          <Minus className="w-4 h-4" />
+                          <Minus className="w-3 h-3 md:w-4 md:h-4" />
                         </button>
-                        <span className="min-w-[2rem] text-center font-bold text-green-700">
+                        <span className="min-w-[1.5rem] md:min-w-[2rem] text-center text-sm md:text-base font-bold text-green-700">
                           {getProductQuantity(salad.id)}
                         </span>
                         <button
                           onClick={(e) => handleQuantityChange(salad.id, 1, e)}
-                          className="w-8 h-8 flex items-center justify-center bg-white text-green-600 rounded-xl hover:bg-green-600 hover:text-white transition-all duration-200 shadow-sm hover:shadow-md active:scale-95"
+                          className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center bg-white text-green-600 rounded-lg md:rounded-xl hover:bg-green-600 hover:text-white transition-all duration-200 shadow-sm hover:shadow-md active:scale-95"
                         >
-                          <Plus className="w-4 h-4" />
+                          <Plus className="w-3 h-3 md:w-4 md:h-4" />
                         </button>
                       </div>
                     ) : (
                       <button
                         onClick={(e) => { e.stopPropagation(); addToCart(salad); }}
-                        className="group/btn bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl font-medium transition-all duration-200 hover:scale-105 active:scale-95 flex items-center gap-2 shadow-lg hover:shadow-xl add-btn"
+                        className="group/btn bg-green-600 hover:bg-green-700 text-white px-3 py-2 md:px-6 md:py-2 rounded-xl text-sm md:text-base font-medium transition-all duration-200 hover:scale-105 active:scale-95 flex items-center gap-1 md:gap-2 shadow-lg hover:shadow-xl add-btn"
                       >
                         <Plus className="w-4 h-4 group-hover/btn:rotate-90 transition-transform duration-200" />
                         Add

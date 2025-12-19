@@ -8,14 +8,14 @@ const ModernHero = () => {
   
   return (
     <section className="relative min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100 overflow-hidden">
-      {/* Smooth Animated Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-green-400/10 via-transparent to-yellow-300/10 animate-gradient-shift"></div>
+      {/* Smooth Gradient Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-green-400/10 via-transparent to-yellow-300/10"></div>
       
       {/* Subtle Parallax Background Shapes */}
       <div className="absolute inset-0">
-        <div className="absolute top-10 sm:top-20 left-5 sm:left-10 w-32 sm:w-64 h-32 sm:h-64 bg-green-200/20 rounded-full blur-3xl animate-float-slow"></div>
-        <div className="absolute bottom-10 sm:bottom-20 right-5 sm:right-10 w-48 sm:w-96 h-48 sm:h-96 bg-yellow-200/15 rounded-full blur-3xl animate-float-slow-delayed"></div>
-        <div className="absolute top-1/2 left-1/4 sm:left-1/3 w-24 sm:w-48 h-24 sm:h-48 bg-green-300/10 rounded-full blur-2xl animate-float-slower"></div>
+        <div className="absolute top-10 sm:top-20 left-5 sm:left-10 w-32 sm:w-64 h-32 sm:h-64 bg-green-200/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 sm:bottom-20 right-5 sm:right-10 w-48 sm:w-96 h-48 sm:h-96 bg-yellow-200/15 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/4 sm:left-1/3 w-24 sm:w-48 h-24 sm:h-48 bg-green-300/10 rounded-full blur-2xl"></div>
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 lg:pt-12 pb-12 sm:pb-20 lg:pb-24 relative z-10">
@@ -25,8 +25,8 @@ const ModernHero = () => {
           <div className="space-y-6 sm:space-y-8 lg:space-y-12 order-2 lg:order-1 pb-8 sm:pb-16 lg:pb-24">
             
             {/* Small Badge */}
-            <div className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-white/80 backdrop-blur-sm rounded-full text-xs sm:text-sm font-medium text-green-700 shadow-lg animate-fade-in-up">
-              <span className="w-2 h-2 bg-green-500 rounded-full mr-2 sm:mr-3 animate-pulse"></span>
+            <div className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-white/80 backdrop-blur-sm rounded-full text-xs sm:text-sm font-medium text-green-700 shadow-lg">
+              <span className="w-2 h-2 bg-green-500 rounded-full mr-2 sm:mr-3"></span>
               <span className="hidden sm:inline">Fresh • Healthy • Delivered Daily</span>
               <span className="sm:hidden">Fresh • Healthy</span>
             </div>
@@ -34,26 +34,26 @@ const ModernHero = () => {
             {/* Bold Heading */}
             <div className="space-y-4 sm:space-y-6">
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.1] tracking-tight">
-                <span className="block text-gray-900 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
+                <span className="block text-gray-900">
                   Fresh & Healthy
                 </span>
-                <span className="block bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent animate-fade-in-up" style={{animationDelay: '0.2s'}}>
+                <span className="block bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent">
                   Salad Delivered
                 </span>
-                <span className="block text-gray-900 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
+                <span className="block text-gray-900">
                   To Your Door
                 </span>
               </h1>
               
               {/* Subtext */}
-              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 max-w-xl leading-relaxed font-light animate-fade-in-up" style={{animationDelay: '0.4s'}}>
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 max-w-xl leading-relaxed font-light">
                 Premium quality salads made with locally sourced organic ingredients. 
                 <span className="hidden sm:inline"> Start your healthy lifestyle journey today.</span>
               </p>
             </div>
 
             {/* Two Clear CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 animate-fade-in-up" style={{animationDelay: '0.5s'}}>
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
               <button 
                 onClick={handleOrderNow}
                 className="hero-cta-journey group bg-green-600 hover:bg-green-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold text-base sm:text-lg transition-all duration-300 hover:scale-[1.06] active:scale-95 hover:shadow-2xl hover:shadow-green-600/25 flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-green-300"
@@ -75,7 +75,7 @@ const ModernHero = () => {
             </div>
 
             {/* Trust Indicators */}
-            <div className="flex items-center justify-between sm:justify-start sm:gap-8 md:gap-12 pt-6 sm:pt-8 pb-4 sm:pb-8 lg:pb-12 animate-fade-in-up" style={{animationDelay: '0.6s'}}>
+            <div className="flex items-center justify-between sm:justify-start sm:gap-8 md:gap-12 pt-6 sm:pt-8 pb-4 sm:pb-8 lg:pb-12">
               <div className="text-center">
                 <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600 mb-1">1000+</div>
                 <div className="text-xs sm:text-sm text-gray-500 font-medium">Happy Customers</div>
@@ -94,11 +94,11 @@ const ModernHero = () => {
           {/* Hero Image Section */}
           <div className="relative sm:lg:pl-8 order-1 lg:order-2 flex items-center justify-center pb-8 sm:pb-12 lg:pb-20 xl:pb-32">
             
-            {/* Main Image Container with Gentle Floating Animation */}
-            <div className="relative animate-gentle-float w-full max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-none mb-8 sm:mb-12 lg:mb-16 xl:mb-28">
+            {/* Main Image Container */}
+            <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-none mb-8 sm:mb-12 lg:mb-16 xl:mb-28">
               
               {/* Glow Effect Behind Image */}
-              <div className="absolute inset-0 bg-gradient-to-br from-green-400/20 to-yellow-400/20 rounded-2xl sm:rounded-3xl blur-xl sm:blur-2xl scale-110 animate-pulse-slow"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-green-400/20 to-yellow-400/20 rounded-2xl sm:rounded-3xl blur-xl sm:blur-2xl scale-110"></div>
               
               {/* Main Image */}
               <div className="relative bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg sm:shadow-2xl hover:shadow-2xl sm:hover:shadow-3xl transition-all duration-500 hover:scale-105">
@@ -131,11 +131,11 @@ const ModernHero = () => {
               </div>
 
               {/* Decorative Elements */}
-              <div className="absolute -top-2 sm:-top-4 lg:-top-6 -right-2 sm:-right-4 lg:-right-6 w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-yellow-400 rounded-full flex items-center justify-center shadow-md sm:shadow-lg animate-bounce-slow">
+              <div className="absolute -top-2 sm:-top-4 lg:-top-6 -right-2 sm:-right-4 lg:-right-6 w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-yellow-400 rounded-full flex items-center justify-center shadow-md sm:shadow-lg">
                 <span className="text-base sm:text-xl lg:text-2xl">🥗</span>
               </div>
               
-              <div className="absolute -bottom-6 sm:-bottom-8 lg:-bottom-12 xl:-bottom-16 -left-6 sm:-left-8 lg:-left-12 xl:-left-16 w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-green-500 rounded-full flex items-center justify-center shadow-md sm:shadow-lg animate-bounce-slow-delayed">
+              <div className="absolute -bottom-6 sm:-bottom-8 lg:-bottom-12 xl:-bottom-16 -left-6 sm:-left-8 lg:-left-12 xl:-left-16 w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-green-500 rounded-full flex items-center justify-center shadow-md sm:shadow-lg">
                 <span className="text-sm sm:text-lg lg:text-xl">🌿</span>
               </div>
             </div>

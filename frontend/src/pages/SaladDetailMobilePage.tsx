@@ -83,10 +83,10 @@ const SaladDetailMobilePage: React.FC = () => {
         setProduct(foundProduct);
       } else {
         toast.error('Salad not found');
-        navigate('/menu');
+        navigate(-1);
       }
     } else {
-      navigate('/menu');
+      navigate(-1);
     }
   }, [location, params, navigate]);
 

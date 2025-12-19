@@ -6,7 +6,7 @@ import SaladDetailOverlay from '../components/SaladDetailOverlay';
 import { useLikes } from '../contexts/LikesContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useSalads } from '../hooks/useSalads';
-import { Leaf, Heart, Star } from 'lucide-react';
+import { Leaf, Heart, Star, ArrowLeft } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -45,10 +45,23 @@ const Likes: React.FC = () => {
     setTimeout(() => setSelectedProduct(null), 300); // allow animation to finish
   };
 
+  const handleBack = () => {
+    navigate(-1);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto px-4 py-10">
+        {/* Back Button */}
+        <button
+          onClick={handleBack}
+          className="flex items-center gap-2 mb-6 text-gray-600 hover:text-green-600 transition-colors group"
+        >
+          <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+          <span className="font-medium">Back</span>
+        </button>
+
         <h1 className="text-3xl font-bold mb-6">Your Likes</h1>
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">

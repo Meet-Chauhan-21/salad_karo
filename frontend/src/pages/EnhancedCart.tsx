@@ -49,7 +49,7 @@ const EnhancedCart: React.FC = () => {
       navigate('/login');
       return;
     }
-    
+
     // Check if profile is complete
     console.log('User data:', user);
     console.log('Phone:', user.phone, 'City:', user.city, 'Address:', user.address);
@@ -276,7 +276,7 @@ const EnhancedCart: React.FC = () => {
                           <h3 className="text-lg font-semibold text-gray-900 mb-1 hover:text-green-600 transition-colors">
                             {item.name}
                           </h3>
-                          <p className="text-gray-600 text-sm mb-3 line-clamp-2 hidden sm:block">{item.description}</p>
+                          <p className="text-gray-600 text-sm mb-3 line-clamp-2">{item.description}</p>
 
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
