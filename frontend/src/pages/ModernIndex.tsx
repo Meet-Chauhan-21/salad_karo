@@ -3,7 +3,7 @@ import QuickOrderTopBar from '../components/QuickOrderTopBar';
 import Header from '../components/Header';
 import ModernHero from '../components/ModernHero';
 import PremiumSaladMenu from '../components/PremiumSaladMenu';
-import EnhancedSubscriptionPacks from '../components/EnhancedSubscriptionPacks';
+import MembershipPreview from '../components/MembershipPreview';
 import CustomisedPlan from '../components/CustomisedPlan';
 import NewsletterSignup from '../components/NewsletterSignup';
 import ModernFooter from '../components/ModernFooter';
@@ -22,8 +22,8 @@ const ModernIndex = () => {
         <ModernHero />
         {/* Enhanced Fresh Salad Menu */}
         <PremiumSaladMenu />
-        {/* Enhanced Subscription Packs */}
-        <EnhancedSubscriptionPacks />
+        {/* Membership Preview */}
+        <MembershipPreview />
         {/* Customised Plan Section */}
         <CustomisedPlan />
         {/* Newsletter Signup */}

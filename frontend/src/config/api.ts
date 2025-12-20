@@ -43,5 +43,14 @@ export const API_ENDPOINTS = {
   CREATE_SALAD: '/salads/create',
   UPDATE_SALAD: '/salads/update',
   DELETE_SALAD: '/salads/delete',
-  TOGGLE_SALAD_STATUS: '/salads/toggle-status'
+  TOGGLE_SALAD_STATUS: '/salads/toggle-status',
+
+  // Membership endpoints
+  GET_ALL_PLANS: '/memberships/all',
+  CREATE_PLAN: '/memberships/create',
+  UPDATE_PLAN: '/memberships/update',
+  DELETE_PLAN: '/memberships/delete',
+  TOGGLE_PLAN_STATUS: '/memberships/toggle-status',
+  GET_ALL_SUBSCRIPTIONS: '/memberships/subscriptions',
+  UPDATE_SUBSCRIPTION_STATUS: '/memberships/update-status'
 };

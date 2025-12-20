@@ -17,7 +17,6 @@ import Membership from "./pages/Membership";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import Likes from "./pages/Likes";
-import Cart from "./pages/Cart";
 import EnhancedCart from "./pages/EnhancedCart";
 import Login from "./pages/Login";
 import Register from "./pages/Register";

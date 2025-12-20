@@ -71,6 +71,7 @@ const EnhancedCart: React.FC = () => {
       const orderData = {
         userEmail: user.email,
         items: cart.items.map(item => ({
+          productId: item.id,
           name: item.name,
           quantity: item.quantity,
           price: item.price
@@ -99,6 +100,9 @@ const EnhancedCart: React.FC = () => {
 
         cart.items.forEach((item, index) => {
           message += `${index + 1}. *${item.name}*\n`;
+          if (item.description) {
+            message += `   Details: ${item.description}\n`;
+          }
           message += `   Quantity: ${item.quantity}\n`;
           message += `   Price: ₹${item.price} each\n`;
           message += `   Subtotal: ₹${item.price * item.quantity}\n\n`;

@@ -1,5 +1,6 @@
 const OrderModel = require("../model/Order");
 const UserModel = require("../model/User");
+const MembershipModel = require("../model/Membership");
 
 const createOrder = async (req, res) => {
     try {
@@ -20,6 +21,35 @@ const createOrder = async (req, res) => {
                 message: "User not found",
                 success: false
             });
+        }
+
+        // Check if any item is a membership plan
+        for (const item of items) {
+            if (item.productId) {
+                try {
+                    const membershipPlan = await MembershipModel.findById(item.productId);
+
+                    if (membershipPlan) {
+                        // User purchased a membership
+                        const startDate = new Date();
+                        const endDate = new Date(startDate);
+                        const durationMonths = membershipPlan.duration || 1;
+                        endDate.setMonth(endDate.getMonth() + durationMonths);
+
+                        user.membership = membershipPlan._id;
+                        user.membershipStartDate = startDate;
+                        user.membershipEndDate = endDate;
+                        user.membershipStatus = 'Active';
+                        user.ordersUsed = 0; // Reset orders/salads used count
+
+                        await user.save();
+                        console.log(`Updated user ${userEmail} with membership ${membershipPlan.planName}`);
+                    }
+                } catch (err) {
+                    console.log(`Item ${item.productId} is not a membership plan or valid ID:`, err.message);
+                    // Continue processing order even if membership lookup fails (it might just be a regular salad)
+                }
+            }
         }
 
         // Create delivery date (next day)
