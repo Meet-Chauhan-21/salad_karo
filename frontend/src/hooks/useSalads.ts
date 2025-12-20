@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 import { getImageUrl } from '../utils/imageUtils';
 
@@ -17,50 +17,43 @@ export interface Product {
 }
 
 export const useSalads = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: products = [], isLoading: loading, error, refetch } = useQuery({
+    queryKey: ['salads'],
+    queryFn: async () => {
+      try {
+        const response = await fetch(buildApiUrl(API_ENDPOINTS.GET_ALL_SALADS));
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
 
-  const fetchSalads = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(buildApiUrl(API_ENDPOINTS.GET_ALL_SALADS));
-      const data = await response.json();
-      if (data.success) {
-        // Transform the database salads to match the Product interface
-        const transformedProducts = data.salads
-          .filter((salad: any) => salad.isActive) // Only show active salads
-          .map((salad: any) => ({
-            id: salad._id, // Use MongoDB _id instead of generating sequential IDs
-            name: salad.name,
-            description: salad.description,
-            price: salad.price,
-            originalPrice: salad.originalPrice,
-            image: getImageUrl(salad.image),
-            rating: salad.rating || 5,
-            reviews: salad.reviews || 0,
-            badge: salad.badge,
-            category: salad.category,
-            isActive: salad.isActive
-          }));
-        setProducts(transformedProducts);
-        setError(null);
-      } else {
-        setError('Failed to fetch salads');
+        if (data.success) {
+          // Transform the database salads to match the Product interface
+          return data.salads
+            .filter((salad: any) => salad.isActive) // Only show active salads
+            .map((salad: any) => ({
+              id: salad._id, // Use MongoDB _id instead of generating sequential IDs
+              name: salad.name,
+              description: salad.description,
+              price: salad.price,
+              originalPrice: salad.originalPrice,
+              image: getImageUrl(salad.image),
+              rating: salad.rating || 5,
+              reviews: salad.reviews || 0,
+              badge: salad.badge,
+              category: salad.category,
+              isActive: salad.isActive
+            }));
+        } else {
+          throw new Error('Failed to fetch salads');
+        }
+      } catch (err) {
+        console.error('Error fetching salads:', err);
+        throw err;
       }
-    } catch (err) {
-      console.error('Error fetching salads:', err);
-      setError('Failed to fetch salads');
-      // Fallback to empty array
-      setProducts([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+  });
 
-  useEffect(() => {
-    fetchSalads();
-  }, []);
-
-  return { products, loading, error, refetch: fetchSalads };
+  return { products, loading, error, refetch };
 };
