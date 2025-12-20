@@ -38,7 +38,7 @@ const PremiumSaladMenu = () => {
     if (selectedCategory === 'All') {
       return products;
     }
-    return products.filter(product => 
+    return products.filter(product =>
       product.badge && product.badge.toLowerCase() === selectedCategory.toLowerCase()
     );
   }, [products, selectedCategory]);
@@ -51,7 +51,7 @@ const PremiumSaladMenu = () => {
     if (e) e.stopPropagation();
     const currentQty = getProductQuantity(productId);
     const newQty = currentQty + change;
-    
+
     if (newQty <= 0) {
       removeFromCart(productId);
     } else {
@@ -62,9 +62,9 @@ const PremiumSaladMenu = () => {
   const handleProductClick = (product: any) => {
     // Detect if device is mobile
     const isMobile = window.innerWidth <= 768;
-    
+
     console.log('Product clicked:', product.name, 'isMobile:', isMobile, 'width:', window.innerWidth);
-    
+
     if (isMobile) {
       // Navigate to mobile detail page
       console.log('Navigating to mobile page for product:', product.id);
@@ -107,7 +107,7 @@ const PremiumSaladMenu = () => {
   }
 
   return (
-    <section id="menu" className="relative py-20 overflow-hidden bg-gradient-to-b from-white to-green-50">
+    <section id="menu" className="relative pt-2 pb-4 md:py-20 overflow-hidden bg-gradient-to-b from-white to-green-50">
       {/* Background Decoration */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-10 w-40 h-40 bg-green-200/20 rounded-full blur-3xl"></div>
@@ -116,41 +116,40 @@ const PremiumSaladMenu = () => {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        {/* Section Header */}
-        <div id="fresh-menu" className="text-center mb-16 scroll-mt-24 md:scroll-mt-32">
+        {/* Section Header - Hidden on Mobile */}
+        <div id="fresh-menu" className="hidden md:block text-center mb-16 scroll-mt-24 md:scroll-mt-32">
           <div className="inline-flex items-center px-6 py-3 bg-green-100 rounded-full text-sm font-medium text-green-700 mb-6">
             <Utensils className="w-4 h-4 mr-2" />
             Fresh Menu
           </div>
-          
+
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
             Premium <span className="bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent">Salad Collection</span>
           </h2>
-          
+
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Handcrafted with love using the freshest organic ingredients. Each salad is a perfect blend of taste, nutrition, and wellness.
           </p>
         </div>
 
         {/* Enhanced Category Filters */}
-        <div className="mb-16">
-          {/* Mobile: Flex Wrap for All Filters Visible */}
-          <div className="md:hidden px-4">
+        <div className="mb-6 md:mb-16">
+          {/* Mobile: Flex Wrap for All Filters Visible - HIDDEN ON MOBILE */}
+          <div className="hidden px-4">
             <div className="flex flex-wrap gap-2 justify-center">
               {categories.map((category) => {
                 const IconComponent = category.icon;
                 const isActive = selectedCategory === category.name;
-                
+
                 return (
                   <button
                     key={category.name}
                     data-filter={category.filter}
                     onClick={() => setSelectedCategory(category.name)}
-                    className={`filter-chip group relative px-3 py-2 sm:px-4 sm:py-3 rounded-xl font-medium transition-all duration-300 transform active:scale-95 ${
-                      isActive
-                        ? `bg-gradient-to-r ${category.color} text-white shadow-lg scale-105`
-                        : 'bg-white text-gray-700 shadow-md'
-                    } border-2 ${isActive ? 'border-transparent' : 'border-gray-100'} focus:outline-none focus:ring-2 focus:ring-green-300`}
+                    className={`filter-chip group relative px-3 py-2 sm:px-4 sm:py-3 rounded-xl font-medium transition-all duration-300 transform active:scale-95 ${isActive
+                      ? `bg-gradient-to-r ${category.color} text-white shadow-lg scale-105`
+                      : 'bg-white text-gray-700 shadow-md'
+                      } border-2 ${isActive ? 'border-transparent' : 'border-gray-100'} focus:outline-none focus:ring-2 focus:ring-green-300`}
                     aria-label={`Filter by ${category.name}`}
                     aria-pressed={isActive}
                   >
@@ -169,17 +168,16 @@ const PremiumSaladMenu = () => {
             {categories.map((category) => {
               const IconComponent = category.icon;
               const isActive = selectedCategory === category.name;
-              
+
               return (
                 <button
                   key={category.name}
                   data-filter={category.filter}
                   onClick={() => setSelectedCategory(category.name)}
-                  className={`filter-chip group relative px-6 py-4 rounded-2xl font-semibold transition-all duration-300 transform hover:scale-[1.06] active:scale-95 ${
-                    isActive
-                      ? `bg-gradient-to-r ${category.color} text-white shadow-xl scale-105`
-                      : 'bg-white text-gray-700 hover:bg-gray-50 shadow-lg hover:shadow-xl'
-                  } border-2 ${isActive ? 'border-transparent' : 'border-gray-100 hover:border-green-200'} focus:outline-none focus:ring-4 focus:ring-green-300`}
+                  className={`filter-chip group relative px-6 py-4 rounded-2xl font-semibold transition-all duration-300 transform hover:scale-[1.06] active:scale-95 ${isActive
+                    ? `bg-gradient-to-r ${category.color} text-white shadow-xl scale-105`
+                    : 'bg-white text-gray-700 hover:bg-gray-50 shadow-lg hover:shadow-xl'
+                    } border-2 ${isActive ? 'border-transparent' : 'border-gray-100 hover:border-green-200'} focus:outline-none focus:ring-4 focus:ring-green-300`}
                   aria-label={`Filter by ${category.name}`}
                   aria-pressed={isActive}
                 >
@@ -187,12 +185,12 @@ const PremiumSaladMenu = () => {
                     <IconComponent className={`w-5 h-5 transition-transform duration-200 ${isActive ? 'text-white' : 'text-gray-600'} group-hover:scale-110`} />
                     {category.name}
                   </span>
-                  
+
                   {/* Glow effect for active state */}
                   {isActive && (
                     <div className={`absolute inset-0 bg-gradient-to-r ${category.color} rounded-2xl blur opacity-50 -z-10`}></div>
                   )}
-                  
+
                   {/* Hover glow effect */}
                   <div className={`absolute inset-0 bg-gradient-to-r ${category.color} rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 -z-10`}></div>
                 </button>
@@ -206,7 +204,7 @@ const PremiumSaladMenu = () => {
           {filteredProducts.map((product, index) => {
             const quantity = getProductQuantity(product.id);
             const isProductLiked = isLiked(product.id);
-            
+
             return (
               <div
                 key={product.id}
@@ -221,10 +219,10 @@ const PremiumSaladMenu = () => {
                     className="w-full h-48 object-cover transition-transform duration-500 ease-out group-hover:scale-110"
                     loading="lazy"
                   />
-                  
+
                   {/* Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  
+
                   {/* CTA Overlay on Hover */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
                     <div className="bg-white/95 backdrop-blur-sm rounded-2xl px-6 py-3 shadow-lg">
@@ -232,24 +230,22 @@ const PremiumSaladMenu = () => {
                       <p className="text-xs text-gray-600 text-center">or add to cart</p>
                     </div>
                   </div>
-                  
+
                   {/* Like Button */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleLike(product.id);
                     }}
-                    className={`favorite-btn absolute top-4 right-4 p-3 rounded-full shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-110 active:scale-95 focus:outline-none focus:ring-4 focus:ring-red-300 ${
-                      isProductLiked 
-                        ? 'bg-red-500 text-white animate-bounce-in' 
-                        : 'bg-white/90 text-gray-600 hover:text-red-500'
-                    }`}
+                    className={`favorite-btn absolute top-4 right-4 p-3 rounded-full shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-110 active:scale-95 focus:outline-none focus:ring-4 focus:ring-red-300 ${isProductLiked
+                      ? 'bg-red-500 text-white animate-bounce-in'
+                      : 'bg-white/90 text-gray-600 hover:text-red-500'
+                      }`}
                     aria-label={isProductLiked ? 'Remove from favorites' : 'Add to favorites'}
                   >
                     <Heart
-                      className={`w-5 h-5 transition-all duration-300 ${
-                        isProductLiked ? 'fill-white scale-110' : 'hover:fill-red-500'
-                      }`}
+                      className={`w-5 h-5 transition-all duration-300 ${isProductLiked ? 'fill-white scale-110' : 'hover:fill-red-500'
+                        }`}
                     />
                   </button>
 
@@ -276,11 +272,10 @@ const PremiumSaladMenu = () => {
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`w-3 h-3 md:w-4 md:h-4 ${
-                            i < Math.floor(product.rating)
-                              ? 'fill-yellow-400 text-yellow-400'
-                              : 'text-gray-300'
-                          }`}
+                          className={`w-3 h-3 md:w-4 md:h-4 ${i < Math.floor(product.rating)
+                            ? 'fill-yellow-400 text-yellow-400'
+                            : 'text-gray-300'
+                            }`}
                         />
                       ))}
                     </div>
@@ -290,7 +285,7 @@ const PremiumSaladMenu = () => {
                   <h3 className="text-sm md:text-xl font-bold text-gray-900 mb-2 group-hover:text-green-700 transition-colors duration-300 line-clamp-2">
                     {product.name}
                   </h3>
-                  
+
                   {/* Description - Desktop Only */}
                   <p className="hidden md:block text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
                     {product.description}
@@ -313,7 +308,7 @@ const PremiumSaladMenu = () => {
                         </span>
                       )}
                     </div>
-                    
+
                     {/* Dynamic Add/Quantity Button */}
                     {quantity === 0 ? (
                       <button
@@ -382,7 +377,7 @@ const PremiumSaladMenu = () => {
       </div>
 
       {/* Salad Detail Overlay */}
-      <SaladDetailOverlay 
+      <SaladDetailOverlay
         product={selectedProduct}
         isOpen={isOverlayOpen}
         onClose={handleCloseOverlay}
