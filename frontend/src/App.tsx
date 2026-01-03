@@ -9,6 +9,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { LikesProvider } from "./contexts/LikesContext";
 import { OverlayProvider } from "./contexts/OverlayContext";
 import { OrderHistoryProvider } from "./contexts/OrderHistoryContext";
+import { AdminDataProvider } from "./contexts/AdminDataContext";
 import GlobalCartBar from "./components/GlobalCartBar";
 import Index from "./pages/Index";
 import ModernIndex from "./pages/ModernIndex";
@@ -41,16 +42,17 @@ const App = () => (
 
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <OrderHistoryProvider>
-        <CartProvider>
-          <LikesProvider>
-            <OverlayProvider>
-              <ToastProvider>
-                <TooltipProvider>
-                  <ScrollToTop />
-                  <Toaster />
-                  <Sonner />
-                  <Routes>
+      <AdminDataProvider>
+        <OrderHistoryProvider>
+          <CartProvider>
+            <LikesProvider>
+              <OverlayProvider>
+                <ToastProvider>
+                  <TooltipProvider>
+                    <ScrollToTop />
+                    <Toaster />
+                    <Sonner />
+                    <Routes>
                     <Route path="/" element={<ModernIndex />} />
                     <Route path="/classic" element={<Index />} />
                     <Route path="/menu" element={<SaladMenu />} />
@@ -87,6 +89,7 @@ const App = () => (
           </LikesProvider>
         </CartProvider>
       </OrderHistoryProvider>
+      </AdminDataProvider>
     </AuthProvider>
   </QueryClientProvider>
 );

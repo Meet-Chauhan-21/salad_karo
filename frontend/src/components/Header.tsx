@@ -88,9 +88,9 @@ const Header = () => {
           {/* Logo */}
           <div className="flex items-center space-x-1 sm:space-x-2">
             <img
-              src="/images/saladkaro-logo.jpg"
+              src="/images/salad-logo.png"
               alt="SaladKaro Logo"
-              className="w-8 h-8 sm:w-10 sm:h-10 object-cover rounded-full"
+              className="w-10 h-10 sm:w-12 sm:h-12 object-contain rounded-full"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
@@ -278,9 +278,9 @@ const Header = () => {
             <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-white">
               <div className="flex items-center space-x-3">
                 <img
-                  src="/images/saladkaro-logo.jpg"
+                  src="/images/salad-logo.png"
                   alt="SaladKaro Logo"
-                  className="w-9 h-9 object-cover rounded-full"
+                  className="w-12 h-12 object-contain rounded-full"
                 />
                 <div className="flex flex-col">
                   <h2 className="text-base font-semibold text-gray-900">SaladKaro</h2>

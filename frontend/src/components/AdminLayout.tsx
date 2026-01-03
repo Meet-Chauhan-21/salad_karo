@@ -91,7 +91,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage }) => {
       <div className={`fixed inset-y-0 left-0 z-50 w-64 sm:w-72 lg:w-64 bg-white shadow-lg transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen flex flex-col`}>
         <div className="flex items-center justify-between h-14 sm:h-16 px-4 sm:px-6 border-b border-gray-200">
           <div className="flex items-center space-x-2">
-            <Salad className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+            <img
+              src="/images/salad-logo.png"
+              alt="Salad Karo Logo"
+              className="h-10 w-10 sm:h-12 sm:w-12 object-contain rounded-full"
+            />
             <h1 className="text-lg sm:text-xl font-bold text-gray-900">Salad Karo</h1>
           </div>
           <button

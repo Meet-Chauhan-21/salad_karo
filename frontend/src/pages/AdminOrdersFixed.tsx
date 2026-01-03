@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../components/AdminLayout';
-import { buildApiUrl, API_ENDPOINTS } from '../config/api';
+import { useAdminData } from '../contexts/AdminDataContext';
 import {
   Search,
   Eye,
@@ -63,8 +63,8 @@ interface Order {
 }
 
 const AdminOrders: React.FC = () => {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Use admin data context
+  const { orders, ordersLoading: loading, fetchOrders, updateOrderStatus: updateStatus } = useAdminData();
   const [changedOrders, setChangedOrders] = useState<Map<string, string>>(new Map());
 
   // Pagination State
@@ -72,30 +72,9 @@ const AdminOrders: React.FC = () => {
   const itemsPerPage = 10;
 
   useEffect(() => {
-    console.log('AdminOrders component mounted');
-    fetchOrders();
-  }, []);
-
-  const fetchOrders = async () => {
-    try {
-      const response = await fetch(buildApiUrl(API_ENDPOINTS.GET_ALL_ORDERS));
-      const data = await response.json();
-      if (data.success) {
-        // Sort by date descending (newest first)
-        const sortedOrders = data.orders.sort((a: Order, b: Order) =>
-          new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime()
-        );
-        setOrders(sortedOrders);
-      } else {
-        console.error('API returned success:false');
-      }
-    } catch (error) {
-      console.error('Error fetching orders:', error);
-      alert('Failed to fetch orders: ' + (error as any).message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    console.log('AdminOrders component mounted - using cached data');
+    fetchOrders(); // Will use cache if already fetched
+  }, [fetchOrders]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -136,12 +115,8 @@ const AdminOrders: React.FC = () => {
     }
   };
 
-  const updateOrderStatus = (orderId: string, newStatus: string) => {
-    // Update locally first
-    setOrders(orders.map(order =>
-      order._id === orderId ? { ...order, status: newStatus as Order['status'] } : order
-    ));
-    // Track the change
+  const handleUpdateOrderStatus = (orderId: string, newStatus: string) => {
+    // Track the change locally
     setChangedOrders(prev => new Map(prev).set(orderId, newStatus));
   };
 
@@ -150,26 +125,15 @@ const AdminOrders: React.FC = () => {
       const newStatus = changedOrders.get(orderId);
       if (!newStatus) return;
 
-      const response = await fetch(buildApiUrl(`${API_ENDPOINTS.UPDATE_ORDER_STATUS}/${orderId}`), {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          status: newStatus
-        })
+      await updateStatus(orderId, newStatus);
+      
+      // Remove from changed orders after successful save
+      setChangedOrders(prev => {
+        const newMap = new Map(prev);
+        newMap.delete(orderId);
+        return newMap;
       });
-      const data = await response.json();
-
-      if (data.success) {
-        // Remove from changed orders after successful save
-        setChangedOrders(prev => {
-          const newMap = new Map(prev);
-          newMap.delete(orderId);
-          return newMap;
-        });
-        alert('Order status updated successfully!');
-      }
+      alert('Order status updated successfully!');
     } catch (error) {
       console.error('Error saving order status:', error);
       alert('Failed to update order status');
@@ -351,7 +315,7 @@ const AdminOrders: React.FC = () => {
                               <DropdownMenuSeparator />
                               {statusOptions.map((status) => (
                                 <DropdownMenuItem key={status} onClick={() => {
-                                  updateOrderStatus(order._id, status);
+                                  handleUpdateOrderStatus(order._id, status);
                                 }}>
                                   {status}
                                 </DropdownMenuItem>
@@ -422,7 +386,7 @@ const AdminOrders: React.FC = () => {
                         <DropdownMenuLabel>Update Status</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         {statusOptions.map((status) => (
-                          <DropdownMenuItem key={status} onClick={() => updateOrderStatus(order._id, status)}>
+                          <DropdownMenuItem key={status} onClick={() => handleUpdateOrderStatus(order._id, status)}>
                             {status}
                           </DropdownMenuItem>
                         ))}

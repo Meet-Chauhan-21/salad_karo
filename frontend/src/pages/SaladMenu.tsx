@@ -231,131 +231,30 @@ const SaladMenu = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100 overflow-x-hidden">
       <Header />
-      
-      {/* Hero Section */}
-      <section className="relative pt-16 sm:pt-20 pb-12 sm:pb-16 bg-gradient-to-br from-green-600 via-green-500 to-green-400 overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-5 sm:top-10 left-5 sm:left-10 w-16 sm:w-24 lg:w-32 h-16 sm:h-24 lg:h-32 bg-white rounded-full"></div>
-          <div className="absolute top-10 sm:top-20 right-5 sm:right-10 lg:right-20 w-12 sm:w-18 lg:w-24 h-12 sm:h-18 lg:h-24 bg-white rounded-full"></div>
-          <div className="absolute bottom-5 sm:bottom-10 left-1/4 sm:left-1/3 w-20 sm:w-28 lg:w-40 h-20 sm:h-28 lg:h-40 bg-white rounded-full"></div>
-        </div>
-        
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-6 sm:gap-8 lg:gap-10 text-white">
-            {/* Left: Headline & Description */}
-            <div className="text-center lg:text-left">
-              {/* Hero Qualities */}
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 mb-4 sm:mb-6 animate-fade-in-up">
-                <span className="inline-flex items-center gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-white/60 text-green-800 text-xs font-semibold shadow-sm">
-                  <Leaf className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="hidden sm:inline">Fresh</span>
-                  <span className="sm:hidden">🌿</span>
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-white/60 text-green-800 text-xs font-semibold shadow-sm">
-                  <svg className="w-3 h-3 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 20c0-4 2-8 5-11a12 12 0 0 1 5-3"/><path d="M3 20c0-6 3-11 8-15"/></svg>
-                  <span className="hidden sm:inline">Organic</span>
-                  <span className="sm:hidden">🌱</span>
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-white/60 text-green-800 text-xs font-semibold shadow-sm">
-                  <svg className="w-3 h-3 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10V6a2 2 0 0 0-2-2h-4"/><path d="M3 10V6a2 2 0 0 1 2-2h4"/><path d="M7 22h10"/><path d="M7 10h10"/><path d="M12 2v20"/></svg>
-                  <span className="hidden sm:inline">Local</span>
-                  <span className="sm:hidden">🏪</span>
-                </span>
-              </div>
 
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight mb-4 sm:mb-6 animate-fade-in-up">
-                <span className="block">Our Fresh & Healthy</span>
-                <span className="block bg-gradient-to-r from-yellow-300 to-yellow-400 bg-clip-text text-transparent">
-                  Salad Menu
-                </span>
-              </h1>
-
-              <p className="text-xl md:text-2xl text-white/90 max-w-2xl lg:max-w-xl mx-auto lg:mx-0 leading-relaxed animate-fade-in-up">
-                Discover our handcrafted salads made with premium ingredients, 
-                perfect for every taste and dietary preference.
-              </p>
-            </div>
-
-            {/* Right: CTAs + Trust Badges */}
-            <div className="flex flex-col items-center lg:items-end gap-6 animate-fade-in-up">
-              {/* CTA Group */}
-              <div className="flex items-center justify-center lg:justify-end gap-4">
-                <button
-                  onClick={handleOrderNow}
-                  className="px-6 py-3 rounded-xl bg-white text-green-700 font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-95 transition-all"
-                >
-                  Order Now
-                </button>
-                <a
-                  href="/membership"
-                  className="px-6 py-3 rounded-xl bg-white/10 text-white border border-white/30 font-semibold backdrop-blur hover:bg-white/15 hover:border-white/40 transition-all"
-                >
-                  View Plans
-                </a>
-              </div>
-
-              {/* Trust Badges */}
-              <div className="flex flex-col items-stretch w-full max-w-sm gap-3">
-                <div className="flex items-center justify-between bg-black px-4 py-3 rounded-2xl backdrop-blur">
-                  <div className="flex items-center gap-2">
-                    <Star className="w-4 h-4 text-yellow-300" />
-                    <span className="text-white/90 font-semibold">4.9/5</span>
-                  </div>
-                  <span className="text-white/70">Average Rating</span>
-                </div>
-                <div className="flex items-center justify-between bg-black px-4 py-3 rounded-2xl backdrop-blur">
-                  <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4 text-yellow-300" />
-                    <span className="text-white/90 font-semibold">10K+</span>
-                  </div>
-                  <span className="text-white/70">Happy Customers</span>
-                </div>
-                <div className="flex items-center justify-between bg-black px-4 py-3 rounded-2xl backdrop-blur">
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-yellow-300" />
-                    <span className="text-white/90 font-semibold">Same‑Day</span>
-                  </div>
-                  <span className="text-white/70">Fresh Delivery</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Wave Divider */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1200 120" fill="none" className="w-full h-auto">
-            <path 
-              d="M0,60 C300,120 900,0 1200,60 L1200,120 L0,120 Z" 
-              fill="white" 
-              className="opacity-90"
-            />
-          </svg>
-        </div>
-      </section>
-
-      <main className="py-8 sm:py-12 overflow-x-hidden">
+      <main className="pt-4 pb-8 sm:pb-12 overflow-x-hidden">
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          {/* Search and Filter Bar */}
+          {/* Search Bar - Standalone */}
+          <div className="mb-4 sm:mb-6 animate-fade-in-up">
+            <div className="relative max-w-2xl mx-auto">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search salads, ingredients, or descriptions..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-12 pr-4 py-3 sm:py-4 border border-gray-200 rounded-xl sm:rounded-2xl bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+              />
+            </div>
+          </div>
+
+          {/* Category and Filter Bar */}
           <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 animate-fade-in-up">
-            <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 items-center">
-              
-              {/* Search Bar */}
-              <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search salads, ingredients, or descriptions..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                />
-              </div>
+            <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 items-center justify-between">
               
               {/* Category Filter */}
-              <div className="w-full lg:w-auto">
+              <div className="w-full lg:flex-1">
                 <div className="flex flex-wrap gap-2 sm:gap-3 justify-center lg:justify-start">
                   {CATEGORIES.map(category => (
                     <button
@@ -376,7 +275,7 @@ const SaladMenu = () => {
               {/* Filter Toggle */}
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
+                className="flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-colors shadow-md hover:shadow-lg w-full lg:w-auto justify-center"
               >
                 <Filter className="w-5 h-5" />
                 Filters

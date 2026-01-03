@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../components/AdminLayout';
-import { buildApiUrl, API_ENDPOINTS } from '../config/api';
+import { useAdminData } from '../contexts/AdminDataContext';
 import { getImageUrl, getAvailableImages } from '../utils/imageUtils';
 import vegetableSaladImg from '../assets/vegetable-salad.jpg';
 import heroSaladImg from '../assets/hero-salad.jpg';
@@ -63,8 +63,17 @@ interface Salad {
 }
 
 const AdminSalads: React.FC = () => {
-  const [salads, setSalads] = useState<Salad[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Use admin data context
+  const { 
+    salads, 
+    saladsLoading: loading, 
+    fetchSalads, 
+    addSalad: addSaladToDb,
+    updateSalad: updateSaladInDb,
+    deleteSalad: deleteSaladFromDb,
+    toggleSaladStatus: toggleSaladStatusInDb
+  } = useAdminData();
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -75,23 +84,9 @@ const AdminSalads: React.FC = () => {
   const categories = ['Classic', 'Mediterranean', 'Italian', 'Mexican', 'Healthy', 'Indian', 'Premium', 'Diet'];
 
   useEffect(() => {
-    fetchSalads();
-  }, []);
-
-  const fetchSalads = async () => {
-    try {
-      const response = await fetch(buildApiUrl(API_ENDPOINTS.GET_ALL_SALADS));
-      const data = await response.json();
-      if (data.success) {
-        setSalads(data.salads);
-      }
-    } catch (error) {
-      console.error('Error fetching salads:', error);
-      alert('Failed to fetch salads');
-    } finally {
-      setLoading(false);
-    }
-  };
+    console.log('AdminSalads component mounted - using cached data');
+    fetchSalads(); // Will use cache if already fetched
+  }, [fetchSalads]);
 
   const filteredSalads = salads.filter(salad => {
     const matchesSearch = salad.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -132,31 +127,11 @@ const AdminSalads: React.FC = () => {
   const handleSave = async () => {
     try {
       if (modalType === 'add') {
-        const response = await fetch(buildApiUrl(API_ENDPOINTS.CREATE_SALAD), {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(formData)
-        });
-        const data = await response.json();
-        if (data.success) {
-          alert('Salad added successfully!');
-          fetchSalads();
-        }
+        await addSaladToDb(formData);
+        alert('Salad added successfully!');
       } else if (modalType === 'edit' && selectedSalad) {
-        const response = await fetch(buildApiUrl(`${API_ENDPOINTS.UPDATE_SALAD}/${selectedSalad._id}`), {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(formData)
-        });
-        const data = await response.json();
-        if (data.success) {
-          alert('Salad updated successfully!');
-          fetchSalads();
-        }
+        await updateSaladInDb(selectedSalad._id, formData);
+        alert('Salad updated successfully!');
       }
       closeModal();
     } catch (error) {
@@ -168,14 +143,8 @@ const AdminSalads: React.FC = () => {
   const deleteSalad = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this salad?')) {
       try {
-        const response = await fetch(buildApiUrl(`${API_ENDPOINTS.DELETE_SALAD}/${id}`), {
-          method: 'DELETE'
-        });
-        const data = await response.json();
-        if (data.success) {
-          alert('Salad deleted successfully!');
-          fetchSalads();
-        }
+        await deleteSaladFromDb(id);
+        alert('Salad deleted successfully!');
       } catch (error) {
         console.error('Error deleting salad:', error);
         alert('Failed to delete salad');
@@ -185,13 +154,7 @@ const AdminSalads: React.FC = () => {
 
   const toggleSaladStatus = async (id: string) => {
     try {
-      const response = await fetch(buildApiUrl(`${API_ENDPOINTS.TOGGLE_SALAD_STATUS}/${id}`), {
-        method: 'PUT'
-      });
-      const data = await response.json();
-      if (data.success) {
-        fetchSalads();
-      }
+      await toggleSaladStatusInDb(id);
     } catch (error) {
       console.error('Error toggling status:', error);
       alert('Failed to toggle status');

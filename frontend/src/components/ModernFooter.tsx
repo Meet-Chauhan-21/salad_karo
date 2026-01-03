@@ -79,9 +79,11 @@ const ModernFooter = () => {
             {/* Brand Section */}
             <div className="sm:col-span-2 lg:col-span-1 space-y-4 sm:space-y-6">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-green-400 to-blue-400 rounded-xl sm:rounded-2xl flex items-center justify-center">
-                  <Leaf className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                </div>
+                <img
+                  src="/images/salad-logo.png"
+                  alt="Salad Karo Logo"
+                  className="w-14 h-14 sm:w-16 sm:h-16 object-contain rounded-2xl"
+                />
                 <div>
                   <h3 className="text-xl sm:text-2xl font-bold">Salad Karo</h3>
                   <p className="text-xs sm:text-sm text-gray-400">Fresh Bites</p>

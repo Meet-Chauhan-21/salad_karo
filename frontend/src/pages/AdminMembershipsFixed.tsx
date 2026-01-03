@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import AdminLayout from '../components/AdminLayout';
+import { useAdminData } from '../contexts/AdminDataContext';
 import {
   Search,
   Filter,
@@ -76,29 +77,35 @@ interface UserMembership {
 }
 
 const AdminMemberships: React.FC = () => {
-  const [memberships, setMemberships] = useState<Membership[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Use admin data context
+  const { 
+    memberships, 
+    membershipsLoading: loading, 
+    fetchMemberships,
+    addMembership: addMembershipToDb,
+    updateMembership: updateMembershipInDb,
+    deleteMembership: deleteMembershipFromDb,
+    toggleMembershipStatus: toggleMembershipStatusInDb
+  } = useAdminData();
 
   const [userMemberships, setUserMemberships] = useState<UserMembership[]>([]);
 
   useEffect(() => {
+    console.log('AdminMemberships component mounted - using cached data');
     fetchData();
-  }, []);
+  }, [fetchMemberships]);
 
   const fetchData = async () => {
     try {
-      setLoading(true);
-      const [plansRes, subsRes] = await Promise.all([
-        axios.get(buildApiUrl(API_ENDPOINTS.GET_ALL_PLANS)),
-        axios.get(buildApiUrl(API_ENDPOINTS.GET_ALL_SUBSCRIPTIONS))
-      ]);
-      setMemberships(plansRes.data);
+      // Fetch memberships from context (cached)
+      await fetchMemberships();
+      
+      // Still fetch user subscriptions separately
+      const subsRes = await axios.get(buildApiUrl(API_ENDPOINTS.GET_ALL_SUBSCRIPTIONS));
       setUserMemberships(subsRes.data);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast.error('Failed to load membership data');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -195,13 +202,12 @@ const AdminMemberships: React.FC = () => {
           discount: formData.discount,
           isActive: formData.isActive !== false
         };
-        await axios.post(buildApiUrl(API_ENDPOINTS.CREATE_PLAN), payload);
+        await addMembershipToDb(payload);
         toast.success('Plan created successfully');
       } else if (modalType === 'edit' && selectedItem && 'planName' in selectedItem) {
-        await axios.put(buildApiUrl(`${API_ENDPOINTS.UPDATE_PLAN}/${selectedItem.id}`), formData);
+        await updateMembershipInDb(selectedItem.id, formData);
         toast.success('Plan updated successfully');
       }
-      fetchData();
       closeModal();
     } catch (error) {
       console.error('Error saving plan:', error);
@@ -212,9 +218,8 @@ const AdminMemberships: React.FC = () => {
   const deleteMembership = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this membership plan?')) {
       try {
-        await axios.delete(buildApiUrl(`${API_ENDPOINTS.DELETE_PLAN}/${id}`));
+        await deleteMembershipFromDb(id);
         toast.success('Plan deleted successfully');
-        fetchData();
       } catch (error) {
         console.error('Error deleting plan:', error);
         toast.error('Failed to delete plan');
@@ -224,9 +229,8 @@ const AdminMemberships: React.FC = () => {
 
   const toggleMembershipStatus = async (id: string) => {
     try {
-      await axios.put(buildApiUrl(`${API_ENDPOINTS.TOGGLE_PLAN_STATUS}/${id}`));
+      await toggleMembershipStatusInDb(id);
       toast.success('Plan status updated');
-      fetchData();
     } catch (error) {
       console.error('Error updating status:', error);
       toast.error('Failed to update status');
@@ -681,7 +685,7 @@ const AdminMemberships: React.FC = () => {
             <div className="fixed inset-0 z-50 overflow-y-auto">
               <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                 <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
-                <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
                   <div className="bg-white px-6 pt-6 pb-4">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-xl font-semibold text-gray-900">
@@ -691,7 +695,7 @@ const AdminMemberships: React.FC = () => {
                         <X className="h-6 w-6" />
                       </button>
                     </div>
-                    <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Plan Name</label>
                         <input
@@ -713,46 +717,42 @@ const AdminMemberships: React.FC = () => {
                           <option value="Elite">Elite</option>
                         </select>
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
-                          <input
-                            type="number"
-                            value={formData.price || ''}
-                            onChange={(e) => setFormData({ ...formData, price: parseInt(e.target.value) || 0 })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Original Price (₹)</label>
-                          <input
-                            type="number"
-                            value={formData.originalPrice || ''}
-                            onChange={(e) => setFormData({ ...formData, originalPrice: parseInt(e.target.value) || 0 })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          />
-                        </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
+                        <input
+                          type="number"
+                          value={formData.price || ''}
+                          onChange={(e) => setFormData({ ...formData, price: parseInt(e.target.value) || 0 })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Salads Per Week</label>
-                          <input
-                            type="text"
-                            value={formData.saladsPerWeek || ''}
-                            onChange={(e) => setFormData({ ...formData, saladsPerWeek: e.target.value })}
-                            placeholder="e.g., 3 Salads/Week or Unlimited"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Duration (months)</label>
-                          <input
-                            type="number"
-                            value={formData.duration || ''}
-                            onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) || 1 })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          />
-                        </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Original Price (₹)</label>
+                        <input
+                          type="number"
+                          value={formData.originalPrice || ''}
+                          onChange={(e) => setFormData({ ...formData, originalPrice: parseInt(e.target.value) || 0 })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Salads Per Week</label>
+                        <input
+                          type="text"
+                          value={formData.saladsPerWeek || ''}
+                          onChange={(e) => setFormData({ ...formData, saladsPerWeek: e.target.value })}
+                          placeholder="e.g., 3 Salads/Week or Unlimited"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Duration (months)</label>
+                        <input
+                          type="number"
+                          value={formData.duration || ''}
+                          onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) || 1 })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Discount (%)</label>
@@ -760,15 +760,6 @@ const AdminMemberships: React.FC = () => {
                           type="number"
                           value={formData.discount || ''}
                           onChange={(e) => setFormData({ ...formData, discount: parseInt(e.target.value) || 0 })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Features (one per line)</label>
-                        <textarea
-                          value={formData.features?.join('\n') || ''}
-                          onChange={(e) => setFormData({ ...formData, features: e.target.value.split('\n').filter(f => f.trim()) })}
-                          rows={4}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                       </div>
@@ -780,6 +771,15 @@ const AdminMemberships: React.FC = () => {
                           className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                         />
                         <label className="ml-2 block text-sm text-gray-900">Active Plan</label>
+                      </div>
+                      <div className="col-span-1 md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Features (one per line)</label>
+                        <textarea
+                          value={formData.features?.join('\n') || ''}
+                          onChange={(e) => setFormData({ ...formData, features: e.target.value.split('\n').filter(f => f.trim()) })}
+                          rows={4}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
                       </div>
                     </div>
                   </div>
@@ -808,7 +808,7 @@ const AdminMemberships: React.FC = () => {
             <div className="fixed inset-0 z-50 overflow-y-auto">
               <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                 <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
-                <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
                   <div className="bg-white px-6 pt-6 pb-4">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-xl font-semibold text-gray-900">Subscription Details</h3>
@@ -816,32 +816,32 @@ const AdminMemberships: React.FC = () => {
                         <X className="h-6 w-6" />
                       </button>
                     </div>
-                    <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div>
-                        <h4 className="font-semibold text-gray-900 mb-3">User Information</h4>
-                        <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                          <div><span className="font-medium">Name:</span> {(selectedItem as UserMembership).userName}</div>
-                          <div><span className="font-medium">Email:</span> {(selectedItem as UserMembership).userEmail}</div>
-                          <div><span className="font-medium">User ID:</span> {(selectedItem as UserMembership).userId}</div>
+                        <h4 className="font-semibold text-gray-900 mb-3 text-sm uppercase tracking-wider">User Information</h4>
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 space-y-2.5">
+                          <div className="text-sm"><span className="font-medium text-gray-700">Name:</span> <span className="text-gray-900">{(selectedItem as UserMembership).userName}</span></div>
+                          <div className="text-sm"><span className="font-medium text-gray-700">Email:</span> <span className="text-gray-900 break-all">{(selectedItem as UserMembership).userEmail}</span></div>
+                          <div className="text-sm"><span className="font-medium text-gray-700">User ID:</span> <span className="text-gray-900">{(selectedItem as UserMembership).userId}</span></div>
                           {(selectedItem as UserMembership).userPhone && (
-                            <div><span className="font-medium">Phone:</span> {(selectedItem as UserMembership).userPhone}</div>
+                            <div className="text-sm"><span className="font-medium text-gray-700">Phone:</span> <span className="text-gray-900">{(selectedItem as UserMembership).userPhone}</span></div>
                           )}
                         </div>
                       </div>
 
                       <div>
-                        <h4 className="font-semibold text-gray-900 mb-3">Subscription Details</h4>
-                        <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                          <div><span className="font-medium">Plan:</span> {(selectedItem as UserMembership).planName}</div>
-                          <div><span className="font-medium">Type:</span>
+                        <h4 className="font-semibold text-gray-900 mb-3 text-sm uppercase tracking-wider">Subscription Details</h4>
+                        <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 space-y-2.5">
+                          <div className="text-sm"><span className="font-medium text-gray-700">Plan:</span> <span className="text-gray-900">{(selectedItem as UserMembership).planName}</span></div>
+                          <div className="text-sm"><span className="font-medium text-gray-700">Type:</span>
                             <span className={`ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getPlanColor((selectedItem as UserMembership).planType)}`}>
                               {getPlanIcon((selectedItem as UserMembership).planType)}
                               <span className="ml-1">{(selectedItem as UserMembership).planType}</span>
                             </span>
                           </div>
-                          <div><span className="font-medium">Start Date:</span> {formatDate((selectedItem as UserMembership).startDate)}</div>
-                          <div><span className="font-medium">End Date:</span> {formatDate((selectedItem as UserMembership).endDate)}</div>
-                          <div><span className="font-medium">Status:</span>
+                          <div className="text-sm"><span className="font-medium text-gray-700">Start Date:</span> <span className="text-gray-900">{formatDate((selectedItem as UserMembership).startDate)}</span></div>
+                          <div className="text-sm"><span className="font-medium text-gray-700">End Date:</span> <span className="text-gray-900">{formatDate((selectedItem as UserMembership).endDate)}</span></div>
+                          <div className="text-sm"><span className="font-medium text-gray-700">Status:</span>
                             <span className={`ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor((selectedItem as UserMembership).status)}`}>
                               {(selectedItem as UserMembership).status}
                             </span>
@@ -850,10 +850,10 @@ const AdminMemberships: React.FC = () => {
                       </div>
 
                       <div>
-                        <h4 className="font-semibold text-gray-900 mb-3">Usage Statistics</h4>
-                        <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-                          <div><span className="font-medium">Orders Used:</span> {(selectedItem as UserMembership).ordersUsed}</div>
-                          <div><span className="font-medium">Plan Allocation:</span> {(selectedItem as UserMembership).saladsPerWeek}</div>
+                        <h4 className="font-semibold text-gray-900 mb-3 text-sm uppercase tracking-wider">Usage Statistics</h4>
+                        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 space-y-3">
+                          <div className="text-sm"><span className="font-medium text-gray-700">Orders Used:</span> <span className="text-gray-900 font-semibold">{(selectedItem as UserMembership).ordersUsed}</span></div>
+                          <div className="text-sm"><span className="font-medium text-gray-700">Plan Allocation:</span> <span className="text-gray-900">{(selectedItem as UserMembership).saladsPerWeek}</span></div>
                         </div>
                       </div>
                     </div>

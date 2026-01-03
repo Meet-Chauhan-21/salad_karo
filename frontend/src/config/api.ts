@@ -36,21 +36,30 @@ export const API_ENDPOINTS = {
   CREATE_ORDER: '/orders/create',
   GET_USER_ORDERS: (email: string) => `/orders/user/${email}`,
   GET_ALL_ORDERS: '/orders/all',
-  UPDATE_ORDER_STATUS: '/orders/update-status',
+  UPDATE_ORDER_STATUS: (orderId: string) => `/orders/update-status/${orderId}`,
 
   // Salad endpoints
   GET_ALL_SALADS: '/salads/all',
   CREATE_SALAD: '/salads/create',
-  UPDATE_SALAD: '/salads/update',
-  DELETE_SALAD: '/salads/delete',
-  TOGGLE_SALAD_STATUS: '/salads/toggle-status',
+  UPDATE_SALAD: (id: string) => `/salads/update/${id}`,
+  DELETE_SALAD: (id: string) => `/salads/delete/${id}`,
+  TOGGLE_SALAD_STATUS: (id: string) => `/salads/toggle-status/${id}`,
+  ADD_SALAD: '/salads/create',
 
   // Membership endpoints
+  GET_ALL_MEMBERSHIPS: '/memberships/all',
+  ADD_MEMBERSHIP: '/memberships/create',
+  UPDATE_MEMBERSHIP: (id: string) => `/memberships/update/${id}`,
+  DELETE_MEMBERSHIP: (id: string) => `/memberships/delete/${id}`,
   GET_ALL_PLANS: '/memberships/all',
   CREATE_PLAN: '/memberships/create',
   UPDATE_PLAN: '/memberships/update',
   DELETE_PLAN: '/memberships/delete',
   TOGGLE_PLAN_STATUS: '/memberships/toggle-status',
   GET_ALL_SUBSCRIPTIONS: '/memberships/subscriptions',
-  UPDATE_SUBSCRIPTION_STATUS: '/memberships/update-status'
+  UPDATE_SUBSCRIPTION_STATUS: '/memberships/update-status',
+  
+  // User endpoints
+  GET_ALL_USERS: '/auth/users',
+  UPDATE_USER_STATUS: (id: string) => `/auth/users/${id}/status`
 };

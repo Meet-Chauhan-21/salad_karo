@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../components/AdminLayout';
-import { buildApiUrl, API_ENDPOINTS } from '../config/api';
+import { useAdminData } from '../contexts/AdminDataContext';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
@@ -50,9 +50,10 @@ interface User {
 }
 
 const AdminUsers = () => {
+  // Use admin data context
+  const { users, usersLoading: loading, fetchUsers, updateUserStatus } = useAdminData();
+  
   const [searchTerm, setSearchTerm] = useState('');
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -61,27 +62,9 @@ const AdminUsers = () => {
   const itemsPerPage = 10;
 
   useEffect(() => {
-    console.log('AdminUsers component mounted');
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
-    try {
-      const response = await fetch(buildApiUrl(API_ENDPOINTS.USERS));
-      const data = await response.json();
-      if (data.success) {
-        setUsers(data.users);
-      } else {
-        console.error('API returned success:false');
-      }
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      alert('Failed to fetch users: ' + (error as any).message);
-    } finally {
-      console.log('Setting loading to false');
-      setLoading(false);
-    }
-  };
+    console.log('AdminUsers component mounted - using cached data');
+    fetchUsers(); // Will use cache if already fetched
+  }, [fetchUsers]);
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
