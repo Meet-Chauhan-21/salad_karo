@@ -427,7 +427,6 @@ const AdminSalads: React.FC = () => {
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="grid gap-2">
                 <Label className="text-sm font-medium">Rating</Label>
                 <Select
