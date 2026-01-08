@@ -376,51 +376,51 @@ const AdminMemberships: React.FC = () => {
           {/* Controls & Filters */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 mb-8 overflow-hidden">
             <div className="border-b border-gray-100">
-              <nav className="flex px-2">
+              <nav className="flex px-2 overflow-x-auto">
                 <button
                   onClick={() => setActiveTab('plans')}
-                  className={`px-8 py-5 text-sm font-bold border-b-2 transition-all duration-200 flex items-center gap-2 ${activeTab === 'plans'
+                  className={`px-4 sm:px-8 py-4 sm:py-5 text-xs sm:text-sm font-bold border-b-2 transition-all duration-200 flex items-center gap-1.5 sm:gap-2 whitespace-nowrap ${activeTab === 'plans'
                     ? 'border-blue-600 text-blue-600 bg-blue-50/30'
                     : 'border-transparent text-gray-500 hover:text-gray-800 hover:bg-gray-50'
                     }`}
                 >
-                  <Award className="w-4 h-4" />
-                  Membership Plans <span className="ml-1 bg-gray-100 text-gray-600 py-0.5 px-2 rounded-full text-xs">{memberships.length}</span>
+                  <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Membership</span> Plans <span className="ml-1 bg-gray-100 text-gray-600 py-0.5 px-1.5 sm:px-2 rounded-full text-xs">{memberships.length}</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('users')}
-                  className={`px-8 py-5 text-sm font-bold border-b-2 transition-all duration-200 flex items-center gap-2 ${activeTab === 'users'
+                  className={`px-4 sm:px-8 py-4 sm:py-5 text-xs sm:text-sm font-bold border-b-2 transition-all duration-200 flex items-center gap-1.5 sm:gap-2 whitespace-nowrap ${activeTab === 'users'
                     ? 'border-blue-600 text-blue-600 bg-blue-50/30'
                     : 'border-transparent text-gray-500 hover:text-gray-800 hover:bg-gray-50'
                     }`}
                 >
-                  <Users className="w-4 h-4" />
-                  User Subscriptions <span className="ml-1 bg-gray-100 text-gray-600 py-0.5 px-2 rounded-full text-xs">{userMemberships.length}</span>
+                  <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">User</span> Subscriptions <span className="ml-1 bg-gray-100 text-gray-600 py-0.5 px-1.5 sm:px-2 rounded-full text-xs">{userMemberships.length}</span>
                 </button>
               </nav>
             </div>
 
-            <div className="p-6 bg-gray-50/50">
-              <div className="flex flex-col md:flex-row gap-4">
+            <div className="p-4 sm:p-6 bg-gray-50/50">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <div className="flex-1">
                   <div className="relative group">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                    <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
                     <input
                       type="text"
-                      placeholder={activeTab === 'plans' ? "Search by plan name or type..." : "Search by user, email or plan..."}
+                      placeholder={activeTab === 'plans' ? "Search plans..." : "Search users..."}
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-12 pr-4 py-3.5 border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all bg-white shadow-sm"
+                      className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2.5 sm:py-3.5 text-sm border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all bg-white shadow-sm"
                     />
                   </div>
                 </div>
-                <div className="md:w-64 relative">
+                <div className="w-full sm:w-64 relative">
                   <div className="relative">
-                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 pointer-events-none">
-                      <Filter className="h-5 w-5 text-gray-500" />
+                    <div className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 z-10 pointer-events-none">
+                      <Filter className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500" />
                     </div>
                     <Select value={statusFilter} onValueChange={setStatusFilter}>
-                      <SelectTrigger className="w-full pl-12 pr-4 py-3.5 border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 bg-white shadow-sm h-auto">
+                      <SelectTrigger className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2.5 sm:py-3.5 text-sm border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 bg-white shadow-sm h-auto">
                         <SelectValue placeholder="All Statuses" />
                       </SelectTrigger>
                       <SelectContent>
@@ -545,7 +545,8 @@ const AdminMemberships: React.FC = () => {
           ) : (
             /* User Subscriptions Table */
             <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/40 border border-gray-200 overflow-hidden">
-              <div className="overflow-x-auto">
+              {/* Desktop Table */}
+              <div className="hidden lg:block overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-gray-50/80 border-b border-gray-200">
                     <tr>
@@ -664,6 +665,116 @@ const AdminMemberships: React.FC = () => {
                   </tbody>
                 </table>
               </div>
+              
+              {/* Mobile Card View */}
+              <div className="lg:hidden divide-y divide-gray-100">
+                {filteredUserMemberships.map((subscription) => {
+                  let progress = calculateDaysProgress(subscription.startDate, subscription.endDate);
+                  let daysLeft = getDaysRemaining(subscription.endDate);
+                  const isExpired = subscription.status === 'Expired';
+                  const isCancelled = subscription.status === 'Cancelled';
+
+                  if (isExpired || isCancelled) {
+                    progress = 100;
+                    daysLeft = 0;
+                  }
+
+                  return (
+                    <div key={subscription.id} className="p-4 sm:p-5 hover:bg-blue-50/30 transition-colors">
+                      {/* User Info */}
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-bold text-gray-900 text-base truncate">{subscription.userName}</h4>
+                          <p className="text-sm text-gray-500 truncate">{subscription.userEmail}</p>
+                          {subscription.userPhone && (
+                            <p className="text-xs text-blue-600 font-medium mt-1">{subscription.userPhone}</p>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => openModal('view', subscription)}
+                          className="ml-2 p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors flex-shrink-0"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+                      </div>
+
+                      {/* Plan Info */}
+                      <div className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100">
+                        <div className="flex items-center gap-2">
+                          {getPlanIcon(subscription.planType)}
+                          <span className="font-bold text-gray-800 text-sm">{subscription.planName}</span>
+                        </div>
+                        <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase border ${getPlanColor(subscription.planType)}`}>
+                          {subscription.planType}
+                        </span>
+                      </div>
+
+                      {/* Progress Bar */}
+                      <div className="space-y-2 mb-3">
+                        <div className="flex justify-between text-xs text-gray-500">
+                          <span>Started {formatDate(subscription.startDate)}</span>
+                          <span>Ends {formatDate(subscription.endDate)}</span>
+                        </div>
+                        <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden shadow-inner">
+                          <div
+                            className={`h-full rounded-full transition-all duration-500 ${isCancelled ? 'bg-red-500' :
+                              isExpired ? 'bg-gray-500' :
+                                daysLeft < 5 ? 'bg-red-500' :
+                                  progress > 80 ? 'bg-orange-500' : 'bg-green-500'
+                              }`}
+                            style={{ width: `${progress}%` }}
+                          ></div>
+                        </div>
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="font-bold text-gray-700">{progress}% utilized</span>
+                          <span className={`font-bold px-2 py-0.5 rounded-md ${isCancelled ? 'bg-red-100 text-red-700' :
+                            isExpired ? 'bg-gray-100 text-gray-700' :
+                              daysLeft < 5 ? 'bg-red-100 text-red-700' : 'bg-blue-50 text-blue-700'
+                            }`}>
+                            {isCancelled ? 'Cancelled' :
+                              isExpired ? 'Expired' :
+                                `${daysLeft} days left`}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Status and Orders */}
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-sm text-gray-600">
+                          <span className="font-semibold text-gray-900">{subscription.ordersUsed}</span> items ordered
+                        </span>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className={`font-bold border rounded-lg h-8 px-3 text-xs
+                                ${subscription.status === 'Active' ? 'bg-green-50 border-green-200 text-green-700' : ''}
+                                ${subscription.status === 'Expired' ? 'bg-amber-50 border-amber-200 text-amber-700' : ''}
+                                ${subscription.status === 'Cancelled' ? 'bg-red-50 border-red-200 text-red-700' : ''}
+                              `}
+                            >
+                              {subscription.status}
+                              <ChevronDown className="h-3 w-3 ml-1 opacity-50" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleUpdateSubscriptionStatus(subscription.id, 'Active')}>
+                              Active
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleUpdateSubscriptionStatus(subscription.id, 'Expired')}>
+                              Expired
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleUpdateSubscriptionStatus(subscription.id, 'Cancelled')}>
+                              Cancelled
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
 
@@ -684,25 +795,25 @@ const AdminMemberships: React.FC = () => {
           {isModalOpen && (modalType === 'add' || modalType === 'edit') && (
             <div className="fixed inset-0 z-50 overflow-y-auto">
               <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
-                <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
-                  <div className="bg-white px-6 pt-6 pb-4">
-                    <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-xl font-semibold text-gray-900">
+                <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onClick={closeModal}></div>
+                <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full max-w-[95vw] sm:max-w-4xl">
+                  <div className="bg-white px-4 sm:px-6 pt-5 sm:pt-6 pb-4">
+                    <div className="flex items-center justify-between mb-4 sm:mb-6">
+                      <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
                         {modalType === 'add' ? 'Add New Plan' : 'Edit Plan'}
                       </h3>
-                      <button onClick={closeModal} className="text-gray-400 hover:text-gray-600 transition-colors duration-200">
-                        <X className="h-6 w-6" />
+                      <button onClick={closeModal} className="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-1">
+                        <X className="h-5 w-5 sm:h-6 sm:w-6" />
                       </button>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 sm:gap-x-6 gap-y-3 sm:gap-y-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Plan Name</label>
                         <input
                           type="text"
                           value={formData.planName || ''}
                           onChange={(e) => setFormData({ ...formData, planName: e.target.value })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                       </div>
                       <div>
@@ -710,7 +821,7 @@ const AdminMemberships: React.FC = () => {
                         <select
                           value={formData.planType || 'Starter'}
                           onChange={(e) => setFormData({ ...formData, planType: e.target.value as 'Starter' | 'Popular' | 'Elite' })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
                           <option value="Starter">Starter</option>
                           <option value="Popular">Popular</option>
@@ -723,7 +834,7 @@ const AdminMemberships: React.FC = () => {
                           type="number"
                           value={formData.price || ''}
                           onChange={(e) => setFormData({ ...formData, price: parseInt(e.target.value) || 0 })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                       </div>
                       <div>
@@ -732,7 +843,7 @@ const AdminMemberships: React.FC = () => {
                           type="number"
                           value={formData.originalPrice || ''}
                           onChange={(e) => setFormData({ ...formData, originalPrice: parseInt(e.target.value) || 0 })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                       </div>
                       <div>
@@ -741,8 +852,8 @@ const AdminMemberships: React.FC = () => {
                           type="text"
                           value={formData.saladsPerWeek || ''}
                           onChange={(e) => setFormData({ ...formData, saladsPerWeek: e.target.value })}
-                          placeholder="e.g., 3 Salads/Week or Unlimited"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="e.g., 3 Salads/Week"
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                       </div>
                       <div>
@@ -751,7 +862,7 @@ const AdminMemberships: React.FC = () => {
                           type="number"
                           value={formData.duration || ''}
                           onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) || 1 })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                       </div>
                       <div>
@@ -760,7 +871,7 @@ const AdminMemberships: React.FC = () => {
                           type="number"
                           value={formData.discount || ''}
                           onChange={(e) => setFormData({ ...formData, discount: parseInt(e.target.value) || 0 })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                       </div>
                       <div className="flex items-center">
@@ -778,24 +889,24 @@ const AdminMemberships: React.FC = () => {
                           value={formData.features?.join('\n') || ''}
                           onChange={(e) => setFormData({ ...formData, features: e.target.value.split('\n').filter(f => f.trim()) })}
                           rows={4}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                       </div>
                     </div>
                   </div>
-                  <div className="bg-gray-50 px-6 py-4 sm:flex sm:flex-row-reverse">
+                  <div className="bg-gray-50 px-4 sm:px-6 py-3 sm:py-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-3">
+                    <button
+                      onClick={closeModal}
+                      className="w-full sm:w-auto inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+                    >
+                      Cancel
+                    </button>
                     <button
                       onClick={handleSave}
-                      className="w-full inline-flex justify-center items-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm transition-colors duration-200"
+                      className="w-full sm:w-auto inline-flex justify-center items-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
                     >
                       <Save className="h-4 w-4 mr-2" />
                       {modalType === 'add' ? 'Add Plan' : 'Save Changes'}
-                    </button>
-                    <button
-                      onClick={closeModal}
-                      className="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors duration-200"
-                    >
-                      Cancel
                     </button>
                   </div>
                 </div>
@@ -807,41 +918,41 @@ const AdminMemberships: React.FC = () => {
           {isModalOpen && modalType === 'view' && selectedItem && 'userName' in selectedItem && (
             <div className="fixed inset-0 z-50 overflow-y-auto">
               <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
-                <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
-                  <div className="bg-white px-6 pt-6 pb-4">
-                    <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-xl font-semibold text-gray-900">Subscription Details</h3>
-                      <button onClick={closeModal} className="text-gray-400 hover:text-gray-600 transition-colors duration-200">
-                        <X className="h-6 w-6" />
+                <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onClick={closeModal}></div>
+                <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full max-w-[95vw] sm:max-w-4xl">
+                  <div className="bg-white px-4 sm:px-6 pt-5 sm:pt-6 pb-4">
+                    <div className="flex items-center justify-between mb-4 sm:mb-6">
+                      <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Subscription Details</h3>
+                      <button onClick={closeModal} className="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-1">
+                        <X className="h-5 w-5 sm:h-6 sm:w-6" />
                       </button>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                       <div>
-                        <h4 className="font-semibold text-gray-900 mb-3 text-sm uppercase tracking-wider">User Information</h4>
-                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 space-y-2.5">
-                          <div className="text-sm"><span className="font-medium text-gray-700">Name:</span> <span className="text-gray-900">{(selectedItem as UserMembership).userName}</span></div>
-                          <div className="text-sm"><span className="font-medium text-gray-700">Email:</span> <span className="text-gray-900 break-all">{(selectedItem as UserMembership).userEmail}</span></div>
-                          <div className="text-sm"><span className="font-medium text-gray-700">User ID:</span> <span className="text-gray-900">{(selectedItem as UserMembership).userId}</span></div>
+                        <h4 className="font-semibold text-gray-900 mb-2 sm:mb-3 text-xs sm:text-sm uppercase tracking-wider">User Information</h4>
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-2.5">
+                          <div className="text-xs sm:text-sm"><span className="font-medium text-gray-700">Name:</span> <span className="text-gray-900">{(selectedItem as UserMembership).userName}</span></div>
+                          <div className="text-xs sm:text-sm"><span className="font-medium text-gray-700">Email:</span> <span className="text-gray-900 break-all">{(selectedItem as UserMembership).userEmail}</span></div>
+                          <div className="text-xs sm:text-sm"><span className="font-medium text-gray-700">User ID:</span> <span className="text-gray-900 text-xs">{(selectedItem as UserMembership).userId}</span></div>
                           {(selectedItem as UserMembership).userPhone && (
-                            <div className="text-sm"><span className="font-medium text-gray-700">Phone:</span> <span className="text-gray-900">{(selectedItem as UserMembership).userPhone}</span></div>
+                            <div className="text-xs sm:text-sm"><span className="font-medium text-gray-700">Phone:</span> <span className="text-gray-900">{(selectedItem as UserMembership).userPhone}</span></div>
                           )}
                         </div>
                       </div>
 
                       <div>
-                        <h4 className="font-semibold text-gray-900 mb-3 text-sm uppercase tracking-wider">Subscription Details</h4>
-                        <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 space-y-2.5">
-                          <div className="text-sm"><span className="font-medium text-gray-700">Plan:</span> <span className="text-gray-900">{(selectedItem as UserMembership).planName}</span></div>
-                          <div className="text-sm"><span className="font-medium text-gray-700">Type:</span>
+                        <h4 className="font-semibold text-gray-900 mb-2 sm:mb-3 text-xs sm:text-sm uppercase tracking-wider">Subscription Details</h4>
+                        <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-2.5">
+                          <div className="text-xs sm:text-sm"><span className="font-medium text-gray-700">Plan:</span> <span className="text-gray-900">{(selectedItem as UserMembership).planName}</span></div>
+                          <div className="text-xs sm:text-sm"><span className="font-medium text-gray-700">Type:</span>
                             <span className={`ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getPlanColor((selectedItem as UserMembership).planType)}`}>
                               {getPlanIcon((selectedItem as UserMembership).planType)}
                               <span className="ml-1">{(selectedItem as UserMembership).planType}</span>
                             </span>
                           </div>
-                          <div className="text-sm"><span className="font-medium text-gray-700">Start Date:</span> <span className="text-gray-900">{formatDate((selectedItem as UserMembership).startDate)}</span></div>
-                          <div className="text-sm"><span className="font-medium text-gray-700">End Date:</span> <span className="text-gray-900">{formatDate((selectedItem as UserMembership).endDate)}</span></div>
-                          <div className="text-sm"><span className="font-medium text-gray-700">Status:</span>
+                          <div className="text-xs sm:text-sm"><span className="font-medium text-gray-700">Start:</span> <span className="text-gray-900">{formatDate((selectedItem as UserMembership).startDate)}</span></div>
+                          <div className="text-xs sm:text-sm"><span className="font-medium text-gray-700">End:</span> <span className="text-gray-900">{formatDate((selectedItem as UserMembership).endDate)}</span></div>
+                          <div className="text-xs sm:text-sm"><span className="font-medium text-gray-700">Status:</span>
                             <span className={`ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor((selectedItem as UserMembership).status)}`}>
                               {(selectedItem as UserMembership).status}
                             </span>
@@ -850,18 +961,18 @@ const AdminMemberships: React.FC = () => {
                       </div>
 
                       <div>
-                        <h4 className="font-semibold text-gray-900 mb-3 text-sm uppercase tracking-wider">Usage Statistics</h4>
-                        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 space-y-3">
-                          <div className="text-sm"><span className="font-medium text-gray-700">Orders Used:</span> <span className="text-gray-900 font-semibold">{(selectedItem as UserMembership).ordersUsed}</span></div>
-                          <div className="text-sm"><span className="font-medium text-gray-700">Plan Allocation:</span> <span className="text-gray-900">{(selectedItem as UserMembership).saladsPerWeek}</span></div>
+                        <h4 className="font-semibold text-gray-900 mb-2 sm:mb-3 text-xs sm:text-sm uppercase tracking-wider">Usage Statistics</h4>
+                        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3">
+                          <div className="text-xs sm:text-sm"><span className="font-medium text-gray-700">Orders Used:</span> <span className="text-gray-900 font-semibold">{(selectedItem as UserMembership).ordersUsed}</span></div>
+                          <div className="text-xs sm:text-sm"><span className="font-medium text-gray-700">Plan Allocation:</span> <span className="text-gray-900">{(selectedItem as UserMembership).saladsPerWeek}</span></div>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className="bg-gray-50 px-6 py-4 sm:flex sm:flex-row-reverse">
+                  <div className="bg-gray-50 px-4 sm:px-6 py-3 sm:py-4 flex justify-end">
                     <button
                       onClick={closeModal}
-                      className="w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm transition-colors duration-200"
+                      className="w-full sm:w-auto inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
                     >
                       Close
                     </button>

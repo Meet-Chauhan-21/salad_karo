@@ -486,30 +486,30 @@ const AdminOrders: React.FC = () => {
       {isModalOpen && selectedOrder && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
-            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-              <div className="bg-white px-6 pt-6 pb-4">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-semibold text-gray-900">Order Details</h3>
+            <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onClick={() => setIsModalOpen(false)}></div>
+            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl w-full max-w-[95vw]">
+              <div className="bg-white px-4 sm:px-6 pt-5 sm:pt-6 pb-4">
+                <div className="flex items-center justify-between mb-4 sm:mb-6">
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Order Details</h3>
                   <button
                     onClick={() => setIsModalOpen(false)}
-                    className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                    className="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-1"
                   >
-                    <X className="h-6 w-6" />
+                    <X className="h-5 w-5 sm:h-6 sm:w-6" />
                   </button>
                 </div>
 
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4 sm:space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-3">Customer Information</h4>
-                      <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                      <h4 className="font-semibold text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">Customer Information</h4>
+                      <div className="bg-gray-50 rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3 text-sm">
                         <div>
                           <span className="font-medium">Name:</span> {selectedOrder.userName || 'N/A'}
                         </div>
                         <div className="flex items-center">
-                          <Mail className="h-4 w-4 mr-2 text-gray-400" />
-                          <span>{selectedOrder.userEmail}</span>
+                          <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-2 text-gray-400" />
+                          <span className="break-all">{selectedOrder.userEmail}</span>
                         </div>
                         <div>
                           <span className="font-medium">Phone:</span> {selectedOrder.userPhone || 'N/A'}
@@ -518,10 +518,10 @@ const AdminOrders: React.FC = () => {
                     </div>
 
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-3">Order Information</h4>
-                      <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-                        <div><span className="font-medium">Order Date:</span> {formatDate(selectedOrder.orderDate)}</div>
-                        <div><span className="font-medium">Delivery Date:</span> {formatDate(selectedOrder.deliveryDate)}</div>
+                      <h4 className="font-semibold text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">Order Information</h4>
+                      <div className="bg-gray-50 rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3 text-sm">
+                        <div><span className="font-medium">Order Date:</span> <span className="text-xs sm:text-sm">{formatDate(selectedOrder.orderDate)}</span></div>
+                        <div><span className="font-medium">Delivery Date:</span> <span className="text-xs sm:text-sm">{formatDate(selectedOrder.deliveryDate)}</span></div>
                         <div><span className="font-medium">Status:</span>
                           <span className={`ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedOrder.status)}`}>
                             {getStatusIcon(selectedOrder.status)}
@@ -533,29 +533,29 @@ const AdminOrders: React.FC = () => {
                   </div>
 
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-3">Order Items</h4>
-                    <div className="bg-gray-50 rounded-lg p-4">
+                    <h4 className="font-semibold text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">Order Items</h4>
+                    <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
                       {selectedOrder.items.map((item, index) => (
-                        <div key={index} className="flex justify-between items-center py-3 border-b border-gray-200 last:border-b-0">
-                          <div>
-                            <span className="font-medium">{item.name}</span>
-                            <span className="text-gray-500 ml-2">x{item.quantity}</span>
+                        <div key={index} className="flex justify-between items-center py-2 sm:py-3 border-b border-gray-200 last:border-b-0 text-sm">
+                          <div className="flex-1 min-w-0">
+                            <span className="font-medium block truncate">{item.name}</span>
+                            <span className="text-gray-500 text-xs">Qty: {item.quantity}</span>
                           </div>
-                          <span className="font-medium">₹{item.price * item.quantity}</span>
+                          <span className="font-medium ml-2">₹{item.price * item.quantity}</span>
                         </div>
                       ))}
-                      <div className="flex justify-between items-center pt-4 mt-4 border-t border-gray-300">
-                        <span className="text-lg font-bold">Total:</span>
-                        <span className="text-lg font-bold text-green-600">₹{selectedOrder.total}</span>
+                      <div className="flex justify-between items-center pt-3 sm:pt-4 mt-3 sm:mt-4 border-t border-gray-300">
+                        <span className="text-base sm:text-lg font-bold">Total:</span>
+                        <span className="text-base sm:text-lg font-bold text-green-600">₹{selectedOrder.total}</span>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="bg-gray-50 px-6 py-4 sm:flex sm:flex-row-reverse">
+              <div className="bg-gray-50 px-4 sm:px-6 py-3 sm:py-4 sm:flex sm:flex-row-reverse">
                 <button
                   onClick={() => setIsModalOpen(false)}
-                  className="w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm transition-colors duration-200"
+                  className="w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm sm:text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto transition-colors duration-200"
                 >
                   Close
                 </button>

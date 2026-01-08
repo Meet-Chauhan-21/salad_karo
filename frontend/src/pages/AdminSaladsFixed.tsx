@@ -374,62 +374,67 @@ const AdminSalads: React.FC = () => {
 
       {/* Dialog for Add/Edit Salad */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
           <DialogHeader>
-            <DialogTitle>{modalType === 'add' ? 'Add New Salad' : 'Edit Salad'}</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-lg sm:text-xl">{modalType === 'add' ? 'Add New Salad' : 'Edit Salad'}</DialogTitle>
+            <DialogDescription className="text-sm">
               Fill in the details below to {modalType === 'add' ? 'create a new' : 'update the'} salad.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-6 py-4">
+          <div className="grid gap-4 sm:gap-6 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="name">Salad Name</Label>
+              <Label htmlFor="name" className="text-sm font-medium">Salad Name</Label>
               <Input
                 id="name"
                 value={formData.name || ''}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Enter salad name"
+                className="text-base"
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description" className="text-sm font-medium">Description</Label>
               <Textarea
                 id="description"
                 value={formData.description || ''}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Enter description"
+                className="text-base min-h-[80px]"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="price">Price (₹)</Label>
+                <Label htmlFor="price" className="text-sm font-medium">Price (₹)</Label>
                 <Input
                   id="price"
                   type="number"
                   value={formData.price || ''}
                   onChange={(e) => setFormData({ ...formData, price: parseInt(e.target.value) || 0 })}
                   placeholder="0"
+                  className="text-base"
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="originalPrice">Original Price (₹)</Label>
+                <Label htmlFor="originalPrice" className="text-sm font-medium">Original Price (₹)</Label>
                 <Input
                   id="originalPrice"
                   type="number"
                   value={formData.originalPrice || ''}
                   onChange={(e) => setFormData({ ...formData, originalPrice: parseInt(e.target.value) || 0 })}
                   placeholder="Optional"
+                  className="text-base"
                 />
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="grid gap-2">
-                <Label>Rating</Label>
+                <Label className="text-sm font-medium">Rating</Label>
                 <Select
                   value={String(formData.rating || 5)}
                   onValueChange={(val) => setFormData({ ...formData, rating: parseInt(val) })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="text-base">
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
@@ -440,22 +445,23 @@ const AdminSalads: React.FC = () => {
                 </Select>
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="reviews">Reviews</Label>
+                <Label htmlFor="reviews" className="text-sm font-medium">Reviews</Label>
                 <Input
                   id="reviews"
                   type="number"
                   value={formData.reviews || ''}
                   onChange={(e) => setFormData({ ...formData, reviews: parseInt(e.target.value) || 0 })}
                   placeholder="0"
+                  className="text-base"
                 />
               </div>
               <div className="grid gap-2">
-                <Label>Badge</Label>
+                <Label className="text-sm font-medium">Badge</Label>
                 <Select
                   value={formData.badge || "none"}
                   onValueChange={(val) => setFormData({ ...formData, badge: val === "none" ? "" : val })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="text-base">
                     <SelectValue placeholder="None" />
                   </SelectTrigger>
                   <SelectContent>
@@ -472,12 +478,12 @@ const AdminSalads: React.FC = () => {
               </div>
             </div>
             <div className="grid gap-2">
-              <Label>Category</Label>
+              <Label className="text-sm font-medium">Category</Label>
               <Select
                 value={formData.category || ""}
                 onValueChange={(val) => setFormData({ ...formData, category: val })}
               >
-                <SelectTrigger>
+                <SelectTrigger className="text-base">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -488,14 +494,15 @@ const AdminSalads: React.FC = () => {
               </Select>
             </div>
             <div className="grid gap-2">
-              <Label>Image URL & Preview</Label>
+              <Label className="text-sm font-medium">Image URL & Preview</Label>
               <div className="space-y-4">
                 <Input
                   value={formData.image || ''}
                   onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                   placeholder="/images/vegetable-salad.jpg"
+                  className="text-base"
                 />
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {getAvailableImages().map((img) => (
                     <button
                       key={img.filename}
@@ -525,9 +532,9 @@ const AdminSalads: React.FC = () => {
               <Label htmlFor="isActive" className="cursor-pointer">Active (visible to customers)</Label>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={closeModal}>Cancel</Button>
-            <Button onClick={handleSave} className="bg-green-600 hover:bg-green-700">
+          <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
+            <Button variant="outline" onClick={closeModal} className="w-full sm:w-auto">Cancel</Button>
+            <Button onClick={handleSave} className="bg-green-600 hover:bg-green-700 w-full sm:w-auto">
               {modalType === 'add' ? 'Add Salad' : 'Save Changes'}
             </Button>
           </DialogFooter>

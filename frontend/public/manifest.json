@@ -1,0 +1,24 @@
+{
+  "name": "SaladKaro - Fresh & Healthy Salads",
+  "short_name": "SaladKaro",
+  "description": "Order fresh and healthy salads delivered to your door. Premium quality salads with customizable plans.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#16a34a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/images/transparant-salad-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/transparant-salad-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
