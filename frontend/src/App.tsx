@@ -11,7 +11,6 @@ import { OverlayProvider } from "./contexts/OverlayContext";
 import { OrderHistoryProvider } from "./contexts/OrderHistoryContext";
 import { AdminDataProvider } from "./contexts/AdminDataContext";
 import GlobalCartBar from "./components/GlobalCartBar";
-import Index from "./pages/Index";
 import ModernIndex from "./pages/ModernIndex";
 import SaladMenu from "./pages/SaladMenu";
 import Membership from "./pages/Membership";
@@ -26,11 +25,11 @@ import ReturnPolicy from "./pages/ReturnPolicy";
 import RefundPolicy from "./pages/RefundPolicy";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Disclaimer from "./pages/Disclaimer";
-import AdminSalads from "./pages/AdminSaladsFixed";
-import AdminOrders from "./pages/AdminOrdersFixed";
-import AdminMemberships from "./pages/AdminMembershipsFixed";
-import AdminSettings from "./pages/AdminSettingsFixed";
-import AdminUsers from "./pages/AdminUsersFixed";
+import AdminSalads from "./pages/AdminSalads";
+import AdminOrders from "./pages/AdminOrders";
+import AdminMemberships from "./pages/AdminMemberships";
+import AdminSettings from "./pages/AdminSettings";
+import AdminUsers from "./pages/AdminUsers";
 import AdminRoute from "./components/AdminRoute";
 import SaladDetailMobilePage from "./pages/SaladDetailMobilePage";
 
@@ -54,7 +53,6 @@ const App = () => (
                     <Sonner />
                     <Routes>
                     <Route path="/" element={<ModernIndex />} />
-                    <Route path="/classic" element={<Index />} />
                     <Route path="/menu" element={<SaladMenu />} />
                     <Route path="/membership" element={<Membership />} />
                     <Route path="/about" element={<About />} />

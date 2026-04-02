@@ -1,6 +1,6 @@
 import React from 'react';
 import Header from '../components/Header';
-import Footer from '../components/Footer';
+import ModernFooter from '../components/ModernFooter';
 import ProductCard from '../components/ProductCard';
 import SaladDetailOverlay from '../components/SaladDetailOverlay';
 import { useLikes } from '../contexts/LikesContext';
@@ -158,7 +158,7 @@ const Likes: React.FC = () => {
         onClose={handleCloseDetail}
         initialQuantity={selectedProduct ? (getProductQuantity(selectedProduct.id) || 1) : 1}
       />
-      <Footer />
+      <ModernFooter />
     </div>
   );
 };
